@@ -56,6 +56,29 @@
 		<dependency org="com.h2database" name="h2" rev="1.3.176" conf="prod->default" />
 		<dependency org="c3p0" name="c3p0" rev="0.9.1.2" conf="prod->default" />
 
+		<!-- diagnoseIT dependencies -->
+		<dependency org="org.mvel" name="mvel2" rev="2.2.4.Final" conf="prod->default" />
+		<dependency org="org.slf4j" name="slf4j-api" rev="1.7.2" conf="prod->default" />
+		<dependency org="org.kie" name="kie-internal" rev="6.2.0.Final" conf="prod->default" />
+		<dependency org="commons-codec" name="commons-codec" rev="1.4" conf="prod->default" />
+		<dependency org="org.antlr" name="antlr-runtime" rev="3.5" conf="prod->default" />
+		<dependency org="org.eclipse.jdt.core.compiler" name="ecj" rev="4.3.1" conf="prod->default" />
+		<dependency org="com.thoughtworks.xstream" name="xstream" rev="1.4.7" conf="prod->default" />
+		<dependency org="xmlpull" name="xmlpull" rev="1.1.3.1" conf="prod->default" />
+		<dependency org="xpp3" name="xpp3_min" rev="1.1.4c" conf="prod->default" />
+		<dependency org="com.google.protobuf" name="protobuf-java" rev="2.5.0" conf="prod->default" />
+		<dependency org="org.kie" name="kie-api" rev="6.2.0.Final" conf="prod->default" />
+		<dependency org="org.apache.commons" name="commons-pool2" rev="2.4.2" conf="prod->default" />
+		<dependency org="org.drools" name="drools-core" rev="6.2.0.Final" conf="prod->default" />
+		<dependency org="org.drools" name="drools-compiler" rev="6.2.0.Final" conf="prod->default" />
+		
+		<dependency org="diagnoseit.spike" name="adapters.inspectit" rev="0.1.0-SNAPSHOT" conf="prod->default" />
+		
+		<dependency org="rocks.cta" name="cta.api" rev="0.1.0-SNAPSHOT" conf="prod->default" />
+		<dependency org="diagnoseit.spike" name="trace.services" rev="0.1.0-SNAPSHOT" conf="prod->default" />
+		<dependency org="diagnoseit.spike" name="shared" rev="0.1.0-SNAPSHOT" conf="prod->default" />
+		<dependency org="diagnoseit.spike" name="diagnoseit" rev="0.1.0-SNAPSHOT" conf="prod->default" />
+
 		<!-- Test -->
 		<!-- Test NG should be on the build path via the Eclipse plug-in -->
 		<dependency org="org.springframework" name="spring-test" rev="3.1.0.RELEASE" conf="test->default" />

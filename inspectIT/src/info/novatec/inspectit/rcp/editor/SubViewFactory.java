@@ -2,6 +2,9 @@ package info.novatec.inspectit.rcp.editor;
 
 import info.novatec.inspectit.rcp.InspectIT;
 import info.novatec.inspectit.rcp.InspectITImages;
+import info.novatec.inspectit.rcp.diagnoseit.details.DITSashSubView;
+import info.novatec.inspectit.rcp.diagnoseit.details.DITProblemInstanceDetailsSubView;
+import info.novatec.inspectit.rcp.diagnoseit.overview.DITOverviewInputController;
 import info.novatec.inspectit.rcp.editor.composite.GridCompositeSubView;
 import info.novatec.inspectit.rcp.editor.composite.SashCompositeSubView;
 import info.novatec.inspectit.rcp.editor.composite.TabbedCompositeSubView;
@@ -197,6 +200,20 @@ public final class SubViewFactory {
 			return taggedHttpSashSubView;
 		case CHARTING_HTTP_TIMER_SENSOR:
 			return new GraphSubView(SensorTypeEnum.CHARTING_HTTP_TIMER_SENSOR);
+		case DIAGNOSEIT_RESULTS:
+			return new DITSashSubView();
+//
+//			TabbedCompositeSubView diagnoseITTabbedSubView = new TabbedCompositeSubView();
+//			DITProblemInstanceDetailsSubView subView2 = new DITProblemInstanceDetailsSubView();
+//			
+//			
+//			diagnoseITTabbedSubView.addSubView(subView2, "Details", InspectIT.getDefault().getImage(InspectITImages.IMG_DATABASE));
+//			
+//			SashCompositeSubView diagnoseITSubView = new SashCompositeSubView();
+//			ISubView diagnoseITOverview = new TreeSubView(new DITOverviewInputController());
+//			diagnoseITSubView.addSubView(diagnoseITOverview, 1);
+//			diagnoseITSubView.addSubView(diagnoseITTabbedSubView, 2);
+//			return diagnoseITSubView;
 		default:
 			throw new IllegalArgumentException("Could not create sub-view. Not supported: " + sensorTypeEnum.toString());
 		}

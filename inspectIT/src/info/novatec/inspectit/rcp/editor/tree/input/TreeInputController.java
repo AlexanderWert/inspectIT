@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -63,6 +64,10 @@ public interface TreeInputController extends SubViewClassificationController {
 	 *            The event object.
 	 */
 	void doubleClick(DoubleClickEvent event);
+	
+	
+	void selectionChanged(SelectionChangedEvent event);
+	
 
 	/**
 	 * Generates and returns the input for the tree. Returning <code>null</code> is possible and

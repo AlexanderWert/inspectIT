@@ -401,6 +401,10 @@
             id="info.novatec.inspectit.rcp.commands.copyContextParameters"
             name="Copy Context Parameters">
       </command>
+      <command
+            id="info.novatec.inspectit.rcp.commands.openDiagnoseITResultsView"
+            name="Show DiagnoseIT Results">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -1488,6 +1492,35 @@
             </and>
          </activeWhen>
       </handler>
+      <handler
+            class="info.novatec.inspectit.rcp.handlers.OpenDiagnoseITResultsHandler"
+            commandId="info.novatec.inspectit.rcp.commands.openDiagnoseITResultsView">
+         <activeWhen>
+            <or>
+               <iterate
+                     ifEmpty="false">
+                  <instanceof
+                        value="info.novatec.inspectit.rcp.provider.ICmrRepositoryProvider">
+                  </instanceof>
+                  <test
+                        property="info.novatec.inspectit.onlineStatus"
+                        value="ONLINE">
+                  </test>
+               </iterate>
+               <with
+                     variable="activePart">
+                  <test
+                        property="info.novatec.inspectit.repositoryType"
+                        value="cmrRepositoryDefinition">
+                  </test>
+                  <test
+                        property="info.novatec.inspectit.onlineStatus"
+                        value="ONLINE">
+                  </test>
+               </with>
+            </or>
+         </activeWhen>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.core.expressions.propertyTesters">
@@ -2174,6 +2207,16 @@
                visible="true">
          </separator>
          <command
+               commandId="info.novatec.inspectit.rcp.commands.openDiagnoseITResultsView"
+               icon="icons/selfmade/diagnoseIT.gif"
+               style="push"
+               tooltip="Show diagnoseIT Results">
+         </command>
+         <separator
+               name="info.novatec.inspectit.rcp.repositoryManagerToolbar.separator4"
+               visible="true">
+         </separator>
+         <command
                commandId="org.eclipse.ui.file.refresh"
                icon="icons/eclipse/refresh.gif"
                style="push"
@@ -2330,6 +2373,16 @@
                commandId="org.eclipse.ui.edit.delete"
                label="Delete Agent"
                style="push">
+         </command>
+         <separator
+               name="info.novatec.inspectit.rcp.repositoryManagerToolbar.separator4"
+               visible="true">
+         </separator>
+         <command
+               commandId="info.novatec.inspectit.rcp.commands.openDiagnoseITResultsView"
+               icon="icons/selfmade/diagnoseIT.gif"
+               style="push"
+               tooltip="Show diagnoseIT results">
          </command>
       </menuContribution>
       <menuContribution

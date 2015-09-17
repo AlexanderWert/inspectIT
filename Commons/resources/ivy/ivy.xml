@@ -50,6 +50,10 @@
 		
 		<dependency org="com.google.guava" name="guava-jdk5" rev="13.0" conf="prod->default" />
 		
+		<!-- diagnoseIT dependencies -->
+		<dependency org="rocks.cta" name="cta.api" rev="0.1.0-SNAPSHOT" conf="prod->default" />
+		<dependency org="diagnoseit.spike" name="trace.services" rev="0.1.0-SNAPSHOT" conf="prod->default" />
+		
 		<!-- Test -->
 		<!-- Test NG should be on the build path via the Eclipse plug-in -->
 		<dependency org="org.mockito" name="mockito-core" rev="1.9.0" conf="test->default" />

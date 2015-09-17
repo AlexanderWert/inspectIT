@@ -1,6 +1,7 @@
 package info.novatec.inspectit.rcp.repository;
 
 import info.novatec.inspectit.cmr.model.PlatformIdent;
+import info.novatec.inspectit.cmr.service.IDITResultsAccessService;
 import info.novatec.inspectit.cmr.service.IExceptionDataAccessService;
 import info.novatec.inspectit.cmr.service.IGlobalDataAccessService;
 import info.novatec.inspectit.cmr.service.IHttpTimerDataAccessService;
@@ -161,6 +162,15 @@ public class StorageRepositoryDefinition implements RepositoryDefinition {
 	 */
 	public IHttpTimerDataAccessService getHttpTimerDataAccessService() {
 		return httpTimerDataAccessService;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IDITResultsAccessService getDiagnoseITResultsAccessService() {
+		// TODO: storage for diagnoseIT results not yet implemented!
+		return null;
 	}
 
 	/**

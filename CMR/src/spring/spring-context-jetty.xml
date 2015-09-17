@@ -164,6 +164,21 @@
 		<property name="pathSpec" value="/remoting/HttpTimerDataAccessService" />
 	</bean>
 	<!-- END -->
+	
+	<!-- diagnoseIT Result Access Service -->
+	<bean name="diagnoseITResultsAccessRequestHandlerServlet" class="org.springframework.web.context.support.HttpRequestHandlerServlet">
+	</bean>
+
+	<bean id="diagnoseITResultsAccessServiceServletHolder" class="org.mortbay.jetty.servlet.ServletHolder">
+		<property name="name" value="diagnoseITResultsAccessServiceExporter" />
+		<property name="servlet" ref="diagnoseITResultsAccessRequestHandlerServlet" />
+	</bean>
+
+	<bean id="diagnoseITResultsAccessServiceMapping" class="org.mortbay.jetty.servlet.ServletMapping">
+		<property name="servletName" value="diagnoseITResultsAccessServiceExporter" />
+		<property name="pathSpec" value="/remoting/DITResultsAccessService" />
+	</bean>
+	<!-- END -->
 
 	<!-- Storage Service -->
 	<bean name="storageServiceRequestHandlerServlet" class="org.springframework.web.context.support.HttpRequestHandlerServlet">
@@ -288,6 +303,7 @@
 				<ref bean="cmrManagementServiceServletHolder" />
 				<ref bean="timerDataAccessServiceServletHolder" />
 				<ref bean="httpTimerDataAccessServiceServletHolder" />
+				<ref bean="diagnoseITResultsAccessServiceServletHolder" />
 				<ref bean="storageServiceServletHolder" />
 				<ref bean="defaultServletHolder" />
 				<ref bean="uploadServletHolder" />
@@ -304,6 +320,7 @@
 				<ref bean="cmrManagementServiceServiceMapping" />
 				<ref bean="timerDataAccessServiceServiceMapping" />
 				<ref bean="httpTimerDataAccessServiceServiceMapping" />
+				<ref bean="diagnoseITResultsAccessServiceMapping" />
 				<ref bean="storageServiceServiceMapping" />
 				<ref bean="defaultServletMapping" />
 				<ref bean="uploadServletMapping" />

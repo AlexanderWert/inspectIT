@@ -32,7 +32,9 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -132,6 +134,13 @@ public class TreeSubView extends AbstractSubView implements ISearchExecutor {
 				}
 			}
 		});
+
+		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				treeInputController.selectionChanged(event);
+			}
+		});
+
 		treeViewer.setComparator(treeInputController.getComparator());
 		if (null != treeViewer.getComparator()) {
 			TreeColumn[] treeColumns = treeViewer.getTree().getColumns();

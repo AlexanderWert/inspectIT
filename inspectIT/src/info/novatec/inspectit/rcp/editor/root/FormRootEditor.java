@@ -71,7 +71,11 @@ public class FormRootEditor extends AbstractRootEditor {
 		PlatformIdent platformIdent = repositoryDefinition.getCachedDataService().getPlatformIdentForId(getInputDefinition().getIdDefinition().getPlatformId());
 		breadcrumbTitleComposite = new BreadcrumbTitleComposite(form.getHead(), SWT.NONE);
 		breadcrumbTitleComposite.setRepositoryDefinition(repositoryDefinition);
-		breadcrumbTitleComposite.setAgent(TextFormatter.getAgentDescription(platformIdent), InspectIT.getDefault().getImage(InspectITImages.IMG_AGENT));
+		if (platformIdent != null) {
+			breadcrumbTitleComposite.setAgent(TextFormatter.getAgentDescription(platformIdent), InspectIT.getDefault().getImage(InspectITImages.IMG_AGENT));
+		} else {
+			breadcrumbTitleComposite.setAgent(null, null);
+		}
 		breadcrumbTitleComposite.setGroup(getInputDefinition().getEditorPropertiesData().getSensorName(), getInputDefinition().getEditorPropertiesData().getSensorImage());
 		breadcrumbTitleComposite.setView(getInputDefinition().getEditorPropertiesData().getViewName(), getInputDefinition().getEditorPropertiesData().getViewImage());
 		form.setHeadClient(breadcrumbTitleComposite);

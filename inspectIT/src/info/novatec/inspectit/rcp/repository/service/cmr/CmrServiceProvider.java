@@ -1,6 +1,7 @@
 package info.novatec.inspectit.rcp.repository.service.cmr;
 
 import info.novatec.inspectit.cmr.service.ICmrManagementService;
+import info.novatec.inspectit.cmr.service.IDITResultsAccessService;
 import info.novatec.inspectit.cmr.service.IExceptionDataAccessService;
 import info.novatec.inspectit.cmr.service.IGlobalDataAccessService;
 import info.novatec.inspectit.cmr.service.IHttpTimerDataAccessService;
@@ -179,6 +180,28 @@ public abstract class CmrServiceProvider {
 	 */
 	protected abstract IHttpTimerDataAccessService getHttpTimerDataAccessService();
 
+
+	/**
+	 * Returns properly initialized {@link DITResultsAccessService}.
+	 * 
+	 * @param cmrRepositoryDefinition
+	 *            {@link CmrRepositoryDefinition} to bound service to.
+	 * @return Returns {@link DITResultsAccessService}.
+	 */
+	public IDITResultsAccessService getDiagnoseITResultsAccessService(CmrRepositoryDefinition cmrRepositoryDefinition) {
+		IDITResultsAccessService diagnoseITResultsAccessService = getDiagnoseITResultsAccessService();
+		((ICmrService) diagnoseITResultsAccessService).initService(cmrRepositoryDefinition);
+		return diagnoseITResultsAccessService;
+	}
+	
+	/**
+	 * Returns Spring created {@link DITResultsAccessService}.
+	 * 
+	 * @return Returns Spring created {@link DITResultsAccessService}.
+	 */
+	protected abstract IDITResultsAccessService getDiagnoseITResultsAccessService();
+	
+	
 	/**
 	 * Returns properly initialized {@link StorageService}.
 	 * 

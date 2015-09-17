@@ -75,6 +75,21 @@ public class BreadcrumbTitleComposite extends Composite implements CmrRepository
 	private CLabel viewLabel;
 
 	/**
+	 * First arrow in title.
+	 */
+	private Label firstArrow;
+
+	/**
+	 * Second arrow in title.
+	 */
+	private Label secondArrow;
+
+	/**
+	 * Third arrow in title.
+	 */
+	private Label thirdArrow;
+
+	/**
 	 * Default constructor.
 	 * 
 	 * @param parent
@@ -106,17 +121,20 @@ public class BreadcrumbTitleComposite extends Composite implements CmrRepository
 		repositoryLabel = new CLabel(breadcrumbComposite, SWT.NONE);
 		repositoryLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
-		new Label(breadcrumbComposite, SWT.NONE).setImage(arrow);
+		firstArrow = new Label(breadcrumbComposite, SWT.NONE);
+		firstArrow.setImage(arrow);
 
 		agentLabel = new CLabel(breadcrumbComposite, SWT.NONE);
 		agentLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
-		new Label(breadcrumbComposite, SWT.NONE).setImage(arrow);
+		secondArrow = new Label(breadcrumbComposite, SWT.NONE);
+		secondArrow.setImage(arrow);
 
 		groupLabel = new CLabel(breadcrumbComposite, SWT.NONE);
 		groupLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
-		new Label(breadcrumbComposite, SWT.NONE).setImage(arrow);
+		thirdArrow = new Label(breadcrumbComposite, SWT.NONE);
+		thirdArrow.setImage(arrow);
 
 		viewLabel = new CLabel(breadcrumbComposite, SWT.NONE);
 		viewLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -164,11 +182,19 @@ public class BreadcrumbTitleComposite extends Composite implements CmrRepository
 	 *            the current image will be done.
 	 */
 	public void setAgent(String agentName, Image agentImg) {
-		agentLabel.setText(TextFormatter.crop(agentName, MAX_TEXT_LENGTH));
-		agentLabel.setToolTipText(agentName);
-		if (null != agentImg) {
-			agentLabel.setImage(agentImg);
+		if (agentName == null) {
+			agentLabel.dispose();
+			firstArrow.dispose();
+//			agentLabel.setVisible(false);
+//			firstArrow.setVisible(false);
+		} else {
+			agentLabel.setText(TextFormatter.crop(agentName, MAX_TEXT_LENGTH));
+			agentLabel.setToolTipText(agentName);
+			if (null != agentImg) {
+				agentLabel.setImage(agentImg);
+			}
 		}
+
 	}
 
 	/**
@@ -181,10 +207,15 @@ public class BreadcrumbTitleComposite extends Composite implements CmrRepository
 	 *            current image will be done.
 	 */
 	public void setGroup(String group, Image groupdImg) {
-		groupLabel.setText(TextFormatter.crop(group, MAX_TEXT_LENGTH));
-		groupLabel.setToolTipText(group);
-		if (null != groupdImg) {
-			groupLabel.setImage(groupdImg);
+		if (group == null) {
+			groupLabel.setVisible(false);
+			secondArrow.setVisible(false);
+		} else {
+			groupLabel.setText(TextFormatter.crop(group, MAX_TEXT_LENGTH));
+			groupLabel.setToolTipText(group);
+			if (null != groupdImg) {
+				groupLabel.setImage(groupdImg);
+			}
 		}
 		layoutInternal();
 	}
@@ -199,10 +230,15 @@ public class BreadcrumbTitleComposite extends Composite implements CmrRepository
 	 *            changed to the current image will be done.
 	 */
 	public void setView(String view, Image viewImg) {
-		viewLabel.setText(view);
-		viewLabel.setToolTipText(view);
-		if (null != viewImg) {
-			viewLabel.setImage(viewImg);
+		if (view == null) {
+			viewLabel.setVisible(false);
+			thirdArrow.setVisible(false);
+		} else {
+			viewLabel.setText(view);
+			viewLabel.setToolTipText(view);
+			if (null != viewImg) {
+				viewLabel.setImage(viewImg);
+			}
 		}
 		layoutInternal();
 	}

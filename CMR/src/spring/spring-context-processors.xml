@@ -33,6 +33,7 @@
 			</util:list>
 		</constructor-arg>
 	</bean>
+	<bean id="diagnoseITProcessor" class="info.novatec.inspectit.cmr.processor.impl.DiagnoseITProcessor" />
 	<bean id="recorderCmrProcessor" class="info.novatec.inspectit.cmr.processor.impl.RecorderCmrProcessor" />
 
 	<util:list value-type="info.novatec.inspectit.cmr.processor.AbstractCmrDataProcessor" id="cmrDataProcessorList">
@@ -44,6 +45,7 @@
 		<ref bean="sqlExclusiveTimeCmrProcessor" />
 		<ref bean="timerDataChartingCmrProcessor" />
 		<ref bean="invocationModifierCmrProcessor" />
+		<ref bean="diagnoseITProcessor" />
 		<ref bean="recorderCmrProcessor" /> <!-- Must be last when all are processed -->
 	</util:list>
 	

@@ -7,6 +7,7 @@
 			<ibiblio name="SpringSource - External Bundle Releases" m2compatible="true" root="http://repository.springsource.com/maven/bundles/external/" usepoms="true" />
 			<ibiblio name="SpringSource - SpringSource Bundle Releases" m2compatible="true" root="http://repository.springsource.com/maven/bundles/release/" usepoms="true" />
 			<ibiblio name="JBoss Public" m2compatible="true" root="https://repository.jboss.org/nexus/content/groups/public/" usepoms="true" />
+			<ibiblio name="NexusDiagnoseIT" m2compatible="true" root="http://repository.novatec-gmbh.de/content/repositories/diagnoseIT-snapshots/" usepoms="true" />
 		</chain>
 	</resolvers>
 </ivysettings>

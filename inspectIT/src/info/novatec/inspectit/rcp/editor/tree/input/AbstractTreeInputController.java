@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.ViewerComparator;
@@ -94,6 +95,14 @@ public abstract class AbstractTreeInputController implements TreeInputController
 	 * Do nothing by default, sub-classes may override.
 	 */
 	public void doubleClick(DoubleClickEvent event) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * Do nothing by default, sub-classes may override.
+	 */
+	public void selectionChanged(SelectionChangedEvent event) {
 	}
 
 	/**

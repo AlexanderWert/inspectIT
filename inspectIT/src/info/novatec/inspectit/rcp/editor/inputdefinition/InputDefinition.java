@@ -55,6 +55,7 @@ public class InputDefinition {
 		 * The ID of the method for the view.Default is {@link ID_NOT_USED}.
 		 */
 		private long methodId = ID_NOT_USED;
+		
 
 		/**
 		 * Gets {@link #platformId}.

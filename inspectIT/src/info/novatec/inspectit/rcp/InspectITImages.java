@@ -146,7 +146,14 @@ public interface InspectITImages {
 	String IMG_MEMORY_OVERVIEW = InspectITConstants.ICON_PATH_FUGUE + "memory.png";
 	String IMG_SYSTEM_OVERVIEW = InspectITConstants.ICON_PATH_FUGUE + "system-monitor.png";
 	String IMG_VM_SUMMARY = InspectITConstants.ICON_PATH_FUGUE + "resource-monitor.png";
-
+	
+	// diagnoseIT images
+	String IMG_DIAGNOSEIT = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT.gif";
+	String IMG_DIAGNOSEIT_BT = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_BT.gif";
+	String IMG_DIAGNOSEIT_EP = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_EP.gif";
+	String IMG_DIAGNOSEIT_PC = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_PC.gif";
+	String IMG_DIAGNOSEIT_C = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_C.gif";
+	
 	// labels just pointing to existing ones
 	String IMG_ASSIGNEE_LABEL_ICON = IMG_USER;
 	String IMG_DATE_LABEL_ICON = IMG_CALENDAR;

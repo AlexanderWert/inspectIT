@@ -72,6 +72,18 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.diagnoseit.spike.result.AffectedNodeData;
+import org.diagnoseit.spike.result.CauseExecutionType;
+import org.diagnoseit.spike.result.GenericProblemDescriptionText;
+import org.diagnoseit.spike.result.ProblemInstance;
+import org.diagnoseit.spike.result.ProblemInstanceID;
+import org.diagnoseit.spike.traceservices.aggregation.AbstractAggregatedTimedCallable;
+import org.diagnoseit.spike.traceservices.aggregation.AggregatedDatabaseInvocation;
+import org.diagnoseit.spike.traceservices.aggregation.AggregatedHTTPRequestProcessing;
+import org.diagnoseit.spike.traceservices.aggregation.AggregatedMethodInvocation;
+import org.diagnoseit.spike.traceservices.aggregation.AggregatedRemoteInvocation;
+import org.diagnoseit.spike.traceservices.aggregation.NumericStatistics;
+import org.diagnoseit.spike.traceservices.aggregation.Signature;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -80,6 +92,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationResult;
 import org.springframework.stereotype.Component;
+
+import rocks.cta.api.core.callables.HTTPRequestProcessing.HTTPMethod;
+import rocks.cta.api.core.callables.TimedCallable;
 
 import com.esotericsoftware.kryo.ClassResolver;
 import com.esotericsoftware.kryo.Kryo;
@@ -302,6 +317,23 @@ public class SerializationManager implements ISerializer, IKryoProvider, Initial
 				return new InvocationTargetException(null);
 			}
 		});
+
+		// added with diagnoseIT spike integration
+		kryo.register(ProblemInstance.class, new FieldSerializer<ProblemInstance>(kryo, ProblemInstance.class));
+		kryo.register(ProblemInstanceID.class, new FieldSerializer<ProblemInstanceID>(kryo, ProblemInstanceID.class));
+		kryo.register(AbstractAggregatedTimedCallable.class, new FieldSerializer<AbstractAggregatedTimedCallable<? extends TimedCallable>>(kryo, AbstractAggregatedTimedCallable.class));
+
+		kryo.register(AggregatedDatabaseInvocation.class, new FieldSerializer<AggregatedDatabaseInvocation>(kryo, AggregatedDatabaseInvocation.class));
+		kryo.register(AggregatedHTTPRequestProcessing.class, new FieldSerializer<AggregatedHTTPRequestProcessing>(kryo, AggregatedHTTPRequestProcessing.class));
+		kryo.register(AggregatedMethodInvocation.class, new FieldSerializer<AggregatedMethodInvocation>(kryo, AggregatedMethodInvocation.class));
+		kryo.register(Signature.class, new FieldSerializer<Signature>(kryo, Signature.class));
+		kryo.register(AggregatedRemoteInvocation.class, new FieldSerializer<AggregatedRemoteInvocation>(kryo, AggregatedRemoteInvocation.class));
+
+		kryo.register(NumericStatistics.class, new FieldSerializer<NumericStatistics<? extends Number>>(kryo, NumericStatistics.class));
+		kryo.register(CauseExecutionType.class, new EnumSerializer(CauseExecutionType.class));
+		kryo.register(HTTPMethod.class, new EnumSerializer(HTTPMethod.class));
+		kryo.register(AffectedNodeData.class, new FieldSerializer<AffectedNodeData>(kryo, AffectedNodeData.class));
+		kryo.register(GenericProblemDescriptionText.class, new FieldSerializer<GenericProblemDescriptionText>(kryo, GenericProblemDescriptionText.class));
 	}
 
 	/**
