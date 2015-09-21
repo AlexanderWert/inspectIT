@@ -12,7 +12,7 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 public class FormTextSection extends SectionPart {
 
-	private static final int DFLT_MAX_HEIGHT = 200;
+	private static final int DFLT_MAX_HEIGHT = 400;
 
 	private ScrolledFormText scrolledFormText;
 

@@ -16,6 +16,8 @@ import java.util.Set;
 import org.diagnoseit.spike.result.GenericProblemDescriptionText;
 import org.diagnoseit.spike.result.ProblemInstance;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -35,6 +37,7 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 
 	private FormTextSection problemDescriptionSection;
 	private FormTextSection fullInformationSection;
+	private FormTextSection affectedNodesSection;
 	private TableSection problemContextSection;
 	private ManagedForm managedForm;
 	private Composite rootComposite;
@@ -65,7 +68,27 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 
 		createProblemDescriptionSection(toolkit, mainForm.getBody());
 		
-		createFullInformationSection(toolkit, mainForm.getBody());
+		
+		TableWrapData layoutData = new TableWrapData();
+		layoutData.grabHorizontal = true;
+		layoutData.grabVertical = true;
+		layoutData.align = TableWrapData.FILL;
+		layoutData.valign = TableWrapData.FILL;
+		
+		TableWrapLayout layout = new TableWrapLayout();
+		layout.numColumns = 1;
+		
+		SashForm sashForm = new SashForm(mainForm.getBody(), SWT.HORIZONTAL);
+		sashForm.setLayout(layout);
+		sashForm.setLayoutData(layoutData);
+		
+		
+		createAffectedNodesSection(toolkit, sashForm);
+		
+		createFullNamesSection(toolkit, sashForm);
+		
+		int [] weights = {1,1};
+		sashForm.setWeights(weights);
 		
 	}
 
@@ -112,8 +135,15 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 		managedForm.addPart(problemDescriptionSection);
 	}
 
-	private void createFullInformationSection(FormToolkit toolkit, Composite parent) {
-		fullInformationSection = new FormTextSection(parent, toolkit, "Full Information");
+	private void createAffectedNodesSection(FormToolkit toolkit, Composite parent) {
+		affectedNodesSection = new FormTextSection(parent, toolkit, "Affected Nodes");
+		affectedNodesSection.expand(false);
+	
+		managedForm.addPart(affectedNodesSection);
+	}
+	
+	private void createFullNamesSection(FormToolkit toolkit, Composite parent) {
+		fullInformationSection = new FormTextSection(parent, toolkit, "Full Names");
 		fullInformationSection.expand(false);
 		fullInformationSection.addImage(IMAGE_BT_KEY, InspectIT.getDefault().getImage(InspectITImages.IMG_DIAGNOSEIT_BT));
 		fullInformationSection.addImage(IMAGE_EP_KEY, InspectIT.getDefault().getImage(InspectITImages.IMG_DIAGNOSEIT_EP));
@@ -152,28 +182,44 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 
 		ContextInformationInputElement[] input = new ContextInformationInputElement[4];
 		input[0] = new ContextInformationInputElement(problemInstance.getBusinessTransaction(), "business transaction", InspectITImages.IMG_DIAGNOSEIT_BT,
-				problemInstance.getBusinessTransactionData(), null, null);
+				problemInstance.getBusinessTransactionData(), null, null, null);
 		input[1] = new ContextInformationInputElement(NameUtils.getStringRepresentationFromElementData(problemInstance.getEntryPointData()), "entry point", InspectITImages.IMG_DIAGNOSEIT_EP,
-				problemInstance.getEntryPointData(), null, null);
+				problemInstance.getEntryPointData(), null, null, null);
 		input[2] = new ContextInformationInputElement(NameUtils.getStringRepresentationFromElementData(problemInstance.getProblemContextData()), "problem context", InspectITImages.IMG_DIAGNOSEIT_PC,
-				problemInstance.getProblemContextData(), null, null);
+				problemInstance.getProblemContextData(), null, null, null);
 		input[3] = new ContextInformationInputElement(NameUtils.getStringRepresentationFromElementData(problemInstance.getCauseData()), "cause", InspectITImages.IMG_DIAGNOSEIT_C,
-				problemInstance.getCauseData(), problemInstance.getCauseEclusiveTimeSumStats(), problemInstance.getCauseCPUEclusiveTimeSumStats());
+				problemInstance.getCauseData(), problemInstance.getCauseEclusiveTimeSumStats(), problemInstance.getCauseCPUEclusiveTimeSumStats(), problemInstance.getCauseCountStats());
 		problemContextSection.setInput(input);
 
 		problemDescriptionSection.setText(buildDescriptionText(problemInstance));
 
+		affectedNodesSection.setText(buildAffectedNodesText(problemInstance));
+		
+		fullInformationSection.setText(buildFullNamesText(problemInstance));
+		
+		managedForm.refresh();
+		managedForm.getForm().reflow(true);
+
+	}
+
+	private String buildAffectedNodesText(ProblemInstance problemInstance) {
+		String text = "<form>";
+		for(String affNode : problemInstance.getAffectedNodes()){
+			text += "<li>"+problemInstance.getNodeType() +": "+affNode+"</li>";
+		}
+		
+		text += "</form>";
+		return text;
+	}
+
+	private String buildFullNamesText(ProblemInstance problemInstance) {
 		String text = "<form>";
 		text += "<p><img href='" + IMAGE_BT_KEY + "'/> " + problemInstance.getBusinessTransaction() + "</p>";
 		text += "<p><img href='" + IMAGE_EP_KEY + "'/> " + problemInstance.getEntryPoint() + "</p>";
 		text += "<p><img href='" + IMAGE_PC_KEY + "'/> " + problemInstance.getProblemContext() + "</p>";
 		text += "<p><img href='" + IMAGE_C_KEY + "'/> " + problemInstance.getCause() + "</p>";
 		text += "</form>";
-		fullInformationSection.setText(text);
-		
-		managedForm.refresh();
-		managedForm.getForm().reflow(true);
-
+		return text;
 	}
 
 	private String buildDescriptionText(ProblemInstance problemInstance) {

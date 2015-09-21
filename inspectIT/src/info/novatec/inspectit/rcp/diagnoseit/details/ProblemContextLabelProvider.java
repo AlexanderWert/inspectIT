@@ -22,15 +22,47 @@ public class ProblemContextLabelProvider extends ColumnLabelProvider {
 	public String getText(Object element) {
 		ContextInformationInputElement ctxInfo = (ContextInformationInputElement) element;
 		switch (column) {
+		case MIN_COUNT:
+			if (ctxInfo.getCountStatistics() == null) {
+				return "1";
+			} else {
+				return String.valueOf(ctxInfo.getCountStatistics().getMin());
+			}
 		case AVG_COUNT:
-			return String.valueOf(ctxInfo.getData().getCount());
+			if (ctxInfo.getCountStatistics() == null) {
+				return "1";
+			} else {
+				return String.valueOf(ctxInfo.getCountStatistics().getMean());
+			}
+		case MAX_COUNT:
+			if (ctxInfo.getCountStatistics() == null) {
+				return "1";
+			} else {
+				return String.valueOf(ctxInfo.getCountStatistics().getMax());
+			}
+		case MIN_DURATION:
+			return formatter.format(((double) ctxInfo.getData().getResponseTimeStats().getMin()) * Trace.NANOS_TO_MILLIS_FACTOR);
 		case AVG_DURATION:
-			return formatter.format(((double) ctxInfo.getData().getResponseTimeAvg()) * Trace.NANOS_TO_MILLIS_FACTOR);
+			return formatter.format(((double) ctxInfo.getData().getResponseTimeStats().getMean()) * Trace.NANOS_TO_MILLIS_FACTOR);
+		case MAX_DURATION:
+			return formatter.format(((double) ctxInfo.getData().getResponseTimeStats().getMax()) * Trace.NANOS_TO_MILLIS_FACTOR);
 		case AVG_EXCL_TIME:
-			return formatter.format(((double) ctxInfo.getData().getExclusiveTimeAvg()) * Trace.NANOS_TO_MILLIS_FACTOR);
+			return formatter.format(((double) ctxInfo.getData().getExclusiveTimeStats().getMean()) * Trace.NANOS_TO_MILLIS_FACTOR);
+		case MIN_EXCL_TIME_SUM:
+			if (ctxInfo.getExclusiveTimeSumStatistics() != null) {
+				return formatter.format(((double) ctxInfo.getExclusiveTimeSumStatistics().getMin()) * Trace.NANOS_TO_MILLIS_FACTOR);
+			} else {
+				return "---";
+			}
 		case AVG_EXCL_TIME_SUM:
 			if (ctxInfo.getExclusiveTimeSumStatistics() != null) {
 				return formatter.format(((double) ctxInfo.getExclusiveTimeSumStatistics().getMean()) * Trace.NANOS_TO_MILLIS_FACTOR);
+			} else {
+				return "---";
+			}
+		case MAX_EXCL_TIME_SUM:
+			if (ctxInfo.getExclusiveTimeSumStatistics() != null) {
+				return formatter.format(((double) ctxInfo.getExclusiveTimeSumStatistics().getMax()) * Trace.NANOS_TO_MILLIS_FACTOR);
 			} else {
 				return "---";
 			}
@@ -38,6 +70,7 @@ public class ProblemContextLabelProvider extends ColumnLabelProvider {
 			return ctxInfo.getName();
 		case CONTEXT:
 			return "";
+		
 		default:
 			break;
 		}

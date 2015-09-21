@@ -10,10 +10,16 @@ import org.eclipse.swt.graphics.Image;
 public enum DITProblemContextColumn {
 	CONTEXT(" ", 25, null),
 	CALLABLE("Callable", 400, null),
+	MIN_COUNT(NameUtils.MIN_CHARACTER + " Count", 60, null),
 	AVG_COUNT(NameUtils.AVG_CHARACTER + " Count", 60, null),
-	AVG_DURATION(NameUtils.AVG_CHARACTER + " Duration [ms]", 100, null),
-	AVG_EXCL_TIME(NameUtils.AVG_CHARACTER + " Excl. Time [ms]", 110, null),
-	AVG_EXCL_TIME_SUM(NameUtils.AVG_CHARACTER +" "+NameUtils.SUM_CHARACTER+ " Excl. Time [ms]", 120, null);
+	MAX_COUNT(NameUtils.MAX_CHARACTER + " Count", 60, null),
+	MIN_DURATION(NameUtils.MIN_CHARACTER + " Duration", 80, null),
+	AVG_DURATION(NameUtils.AVG_CHARACTER + " Duration", 80, null),
+	MAX_DURATION(NameUtils.MAX_CHARACTER + " Duration", 80, null),
+	AVG_EXCL_TIME(NameUtils.AVG_CHARACTER + " Excl. Time", 90, null),
+	MIN_EXCL_TIME_SUM(NameUtils.MIN_CHARACTER +" "+NameUtils.SUM_CHARACTER+ " Excl. Time", 100, null),
+	AVG_EXCL_TIME_SUM(NameUtils.AVG_CHARACTER +" "+NameUtils.SUM_CHARACTER+ " Excl. Time", 100, null),
+	MAX_EXCL_TIME_SUM(NameUtils.MAX_CHARACTER +" "+NameUtils.SUM_CHARACTER+ " Excl. Time", 100, null);
 
 	/** The name. */
 	private String name;

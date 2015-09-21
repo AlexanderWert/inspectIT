@@ -9,12 +9,13 @@ public class ContextInformationInputElement {
 	private String name;
 	private String context;
 	private AbstractAggregatedTimedCallable<? extends TimedCallable> data;
+	private NumericStatistics<Integer> countStatistics;
 	private NumericStatistics<Long> exclusiveTimeSumStatistics;
 	private NumericStatistics<Long> exclusiveCPUTimeSumStatistics;
 	private String imageIdentifier;
 
 	public ContextInformationInputElement(String name, String context, String imageIdentifier, AbstractAggregatedTimedCallable<? extends TimedCallable> data,
-			NumericStatistics<Long> exclusiveTimeSumStatistics, NumericStatistics<Long> exclusiveCPUTimeSumStatistics) {
+			NumericStatistics<Long> exclusiveTimeSumStatistics, NumericStatistics<Long> exclusiveCPUTimeSumStatistics, NumericStatistics<Integer> countStatistics) {
 		super();
 		this.name = name;
 		this.imageIdentifier = imageIdentifier;
@@ -22,6 +23,7 @@ public class ContextInformationInputElement {
 		this.data = data;
 		this.exclusiveTimeSumStatistics = exclusiveTimeSumStatistics;
 		this.exclusiveCPUTimeSumStatistics = exclusiveCPUTimeSumStatistics;
+		this.setCountStatistics(countStatistics);
 	}
 
 	/**
@@ -125,6 +127,14 @@ public class ContextInformationInputElement {
 
 	public void setImageIdentifier(String imageIdentifier) {
 		this.imageIdentifier = imageIdentifier;
+	}
+
+	public NumericStatistics<Integer> getCountStatistics() {
+		return countStatistics;
+	}
+
+	public void setCountStatistics(NumericStatistics<Integer> countStatistics) {
+		this.countStatistics = countStatistics;
 	}
 
 }

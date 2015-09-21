@@ -13,6 +13,8 @@ import rocks.cta.api.core.callables.RemoteInvocation;
 import rocks.cta.api.core.callables.TimedCallable;
 
 public class NameUtils {
+	public static final String MAX_CHARACTER = "\u2191";
+	public static final String MIN_CHARACTER = "\u2193";
 	public static final String AVG_CHARACTER = "\u00D8";
 	public static final String SUM_CHARACTER = "\u03A3";
 	
