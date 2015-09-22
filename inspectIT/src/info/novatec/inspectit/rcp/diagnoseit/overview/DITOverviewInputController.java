@@ -1,6 +1,7 @@
 package info.novatec.inspectit.rcp.diagnoseit.overview;
 
 import info.novatec.inspectit.cmr.service.IDITResultsAccessService;
+import info.novatec.inspectit.rcp.editor.inputdefinition.extra.InputDefinitionExtrasMarkerFactory;
 import info.novatec.inspectit.rcp.editor.preferences.PreferenceEventCallback.PreferenceEvent;
 import info.novatec.inspectit.rcp.editor.preferences.PreferenceId;
 import info.novatec.inspectit.rcp.editor.root.IRootEditor;
@@ -185,15 +186,29 @@ public class DITOverviewInputController extends AbstractTreeInputController {
 	};
 
 	private void loadDataFromService() {
-		IDITResultsAccessService dITResultsAccessService = getInputDefinition().getRepositoryDefinition().getDiagnoseITResultsAccessService();
+		if (getInputDefinition().hasInputDefinitionExtra(InputDefinitionExtrasMarkerFactory.DIAGNOSEIT_ANALYSIS_EXTRAS_MARKER)) {
+			Set<Long> invocationSequenceIds = getInputDefinition().getInputDefinitionExtra(InputDefinitionExtrasMarkerFactory.DIAGNOSEIT_ANALYSIS_EXTRAS_MARKER).getInvocationSequenceIds();
+			long platformId = getInputDefinition().getIdDefinition().getPlatformId();
+			IDITResultsAccessService dITResultsAccessService = getInputDefinition().getRepositoryDefinition().getDiagnoseITResultsAccessService();
 
-		DITResultOverviewBuilder resultBuilder = new DITResultOverviewBuilder();
-		List<ProblemInstance> problemInstances = dITResultsAccessService.getProblemInstances();
+			DITResultOverviewBuilder resultBuilder = new DITResultOverviewBuilder();
+			List<ProblemInstance> problemInstances = dITResultsAccessService.analyzeInteractively(platformId, new ArrayList<Long>(invocationSequenceIds));
 
-		for (ProblemInstance pInstance : problemInstances) {
-			resultBuilder.addProblemInstance(pInstance);
+			for (ProblemInstance pInstance : problemInstances) {
+				resultBuilder.addProblemInstance(pInstance);
+			}
+			problemGroups = resultBuilder.getResultList();
+		} else {
+			IDITResultsAccessService dITResultsAccessService = getInputDefinition().getRepositoryDefinition().getDiagnoseITResultsAccessService();
+
+			DITResultOverviewBuilder resultBuilder = new DITResultOverviewBuilder();
+			List<ProblemInstance> problemInstances = dITResultsAccessService.getProblemInstances();
+
+			for (ProblemInstance pInstance : problemInstances) {
+				resultBuilder.addProblemInstance(pInstance);
+			}
+			problemGroups = resultBuilder.getResultList();
 		}
-		problemGroups = resultBuilder.getResultList();
 
 	}
 
@@ -220,10 +235,10 @@ public class DITOverviewInputController extends AbstractTreeInputController {
 		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			// manager = new DeferredTreeContentManager((AbstractTreeViewer) viewer);
-			
+
 			if (newInput != null && newInput instanceof List && !((List<?>) newInput).isEmpty()) {
-					StructuredSelection structuredSelection = new StructuredSelection(((List<?>) newInput).get(0));
-					viewer.setSelection(structuredSelection, true);
+				StructuredSelection structuredSelection = new StructuredSelection(((List<?>) newInput).get(0));
+				viewer.setSelection(structuredSelection, true);
 			}
 		}
 

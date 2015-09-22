@@ -94,6 +94,14 @@ public class NavigationTester extends PropertyTester {
 					return true;
 				}
 			}
+		} else if ("canExecuteDiagnoseIT".equals(property)) {
+			if (receiver instanceof StructuredSelection) {
+				StructuredSelection selection = (StructuredSelection) receiver;
+				Object selectedObject = selection.getFirstElement();
+				if (selectedObject instanceof InvocationSequenceData) {
+					return true;
+				} 
+			}
 		}
 
 		return false;

@@ -403,7 +403,11 @@
       </command>
       <command
             id="info.novatec.inspectit.rcp.commands.openDiagnoseITResultsView"
-            name="Show DiagnoseIT Results">
+            name="Show diagnoseIT Results">
+      </command>
+      <command
+            id="info.novatec.inspectit.rcp.commands.executeDiagnoseITAnalysis"
+            name="Execute diagnoseIT Analysis">
       </command>
    </extension>
    <extension
@@ -1521,6 +1525,29 @@
             </or>
          </activeWhen>
       </handler>
+      <handler
+            class="info.novatec.inspectit.rcp.handlers.ExecuteDiagnoseITAnalysisHandler"
+            commandId="info.novatec.inspectit.rcp.commands.executeDiagnoseITAnalysis">
+         <activeWhen>
+            <and>
+               <count
+                     value="+">
+               </count>
+               <with
+                     variable="activeEditor">
+                  <instanceof
+                        value="info.novatec.inspectit.rcp.editor.root.AbstractRootEditor">
+                  </instanceof>
+               </with>
+               <with
+                     variable="selection">
+                  <test
+                        property="info.novatec.inspectit.canExecuteDiagnoseIT">
+                  </test>
+               </with>
+            </and>
+         </activeWhen>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.core.expressions.propertyTesters">
@@ -1542,7 +1569,7 @@
             class="info.novatec.inspectit.rcp.editor.testers.NavigationTester"
             id="info.novatec.inspectit.NavigationTester"
             namespace="info.novatec.inspectit"
-            properties="canNavigateToPlotting, canNavigateToInvocations, canNavigateToExceptionType, canNavigateToAggregatedTimerData, canNavigateToAggregatedSqlData"
+            properties="canNavigateToPlotting, canNavigateToInvocations, canNavigateToExceptionType, canNavigateToAggregatedTimerData, canNavigateToAggregatedSqlData, canExecuteDiagnoseIT"
             type="org.eclipse.jface.viewers.StructuredSelection">
       </propertyTester>
       <propertyTester
@@ -1931,6 +1958,12 @@
             <visibleWhen
                   checkEnabled="true">
             </visibleWhen>
+         </command>
+         <command
+               commandId="info.novatec.inspectit.rcp.commands.executeDiagnoseITAnalysis"
+               icon="icons/selfmade/diagnoseIT.gif"
+               label="diagnoseIT"
+               style="push">
          </command>
       </menuContribution>
       <menuContribution

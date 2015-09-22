@@ -72,7 +72,7 @@ public enum SensorTypeEnum {
 	/** The multi invocation timer data sensor type. */
 	MULTI_INVOC_DATA("info.novatec.inspectit.agent.sensor.method.MultiInvocSensor", InspectITImages.IMG_INVOCATION),
 	/** diagnoseIT results. */
-	DIAGNOSEIT_RESULTS("org.diagnoseit.spike", InspectITImages.IMG_DIAGNOSEIT);
+	DIAGNOSEIT_RESULTS("org.diagnoseit.spike", "diagnoseIT Results", InspectITImages.IMG_DIAGNOSEIT);
 
 	/**
 	 * The LOOKUP map which is used to get an element of the enumeration when passing the full
@@ -85,6 +85,11 @@ public enum SensorTypeEnum {
 			LOOKUP.put(s.getFqn(), s);
 		}
 	}
+
+	/**
+	 * The name string.
+	 */
+	private String name;
 
 	/**
 	 * The full qualified name string.
@@ -111,6 +116,12 @@ public enum SensorTypeEnum {
 	 */
 	private SensorTypeEnum(String fqn, String imageName) {
 		this.fqn = fqn;
+		this.image = InspectIT.getDefault().getImage(imageName);
+	}
+
+	private SensorTypeEnum(String fqn, String name, String imageName) {
+		this.fqn = fqn;
+		this.name = name;
 		this.image = InspectIT.getDefault().getImage(imageName);
 	}
 
@@ -189,22 +200,27 @@ public enum SensorTypeEnum {
 	 * @return The displayable name.
 	 */
 	public String getDisplayName() {
-		StringBuilder name = new StringBuilder(name().toLowerCase().replaceAll("_", " "));
-		Character character = name.charAt(0);
-		character = Character.toUpperCase(character);
-		name.setCharAt(0, character);
+		if (this.name != null) {
+			return this.name;
+		} else {
+			StringBuilder name = new StringBuilder(name().toLowerCase().replaceAll("_", " "));
+			Character character = name.charAt(0);
+			character = Character.toUpperCase(character);
+			name.setCharAt(0, character);
 
-		int i = 0;
-		while (i >= 0) {
-			i = name.indexOf(" ", i);
-			if (i >= 0) {
-				i = i + 1;
-				character = Character.toUpperCase(name.charAt(i));
-				name.setCharAt(i, character);
+			int i = 0;
+			while (i >= 0) {
+				i = name.indexOf(" ", i);
+				if (i >= 0) {
+					i = i + 1;
+					character = Character.toUpperCase(name.charAt(i));
+					name.setCharAt(i, character);
+				}
 			}
+
+			return name.toString();
 		}
 
-		return name.toString();
 	}
 
 	/**

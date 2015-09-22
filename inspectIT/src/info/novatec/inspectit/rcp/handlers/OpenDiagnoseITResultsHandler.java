@@ -45,11 +45,13 @@ public class OpenDiagnoseITResultsHandler extends AbstractHandler {
 				EditorPropertiesData editorPropertiesData = new EditorPropertiesData();
 				editorPropertiesData.setSensorName(SensorTypeEnum.DIAGNOSEIT_RESULTS.getDisplayName());
 				editorPropertiesData.setSensorImage(SensorTypeEnum.DIAGNOSEIT_RESULTS.getImage());
-				editorPropertiesData.setViewName("All");
+				editorPropertiesData.setViewName("All Results");
 				editorPropertiesData.setViewImage(InspectIT.getDefault().getImage(InspectITImages.IMG_SHOW_ALL));
-				editorPropertiesData.setPartNameFlag(PartType.SENSOR);
+				editorPropertiesData.setPartNameFlag(PartType.VIEW);
 				inputDefinition.setEditorPropertiesData(editorPropertiesData);
-
+				
+				IdDefinition idDefinition = new IdDefinition();
+				idDefinition.setSensorTypeId(SensorTypeEnum.DIAGNOSEIT_RESULTS.hashCode());
 				inputDefinition.setIdDefinition(new IdDefinition());
 				// open the view via command
 				ICommandService commandService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);

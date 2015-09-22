@@ -1,5 +1,7 @@
 package info.novatec.inspectit.rcp.editor.inputdefinition.extra;
 
+import info.novatec.inspectit.rcp.diagnoseit.overview.DITAnalysisInputDefinitionExtra;
+
 import com.google.common.base.Objects;
 
 /**
@@ -16,6 +18,15 @@ public final class InputDefinitionExtrasMarkerFactory {
 	private InputDefinitionExtrasMarkerFactory() {
 	}
 
+	
+	public static final InputDefinitionExtraMarker<DITAnalysisInputDefinitionExtra> DIAGNOSEIT_ANALYSIS_EXTRAS_MARKER = new InputDefinitionExtraMarker<DITAnalysisInputDefinitionExtra>() {
+		@Override
+		public Class<DITAnalysisInputDefinitionExtra> getInputDefinitionExtraClass() {
+			return DITAnalysisInputDefinitionExtra.class;
+		}
+
+	};
+	
 	/**
 	 * Marker for {@link NavigationSteppingInputDefinitionExtra}.
 	 */

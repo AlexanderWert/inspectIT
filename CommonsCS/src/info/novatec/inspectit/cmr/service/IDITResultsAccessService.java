@@ -9,4 +9,6 @@ public interface IDITResultsAccessService {
 
 	List<ProblemInstance> getProblemInstances();
 	
+	List<ProblemInstance> analyzeInteractively(long platformId, List<Long> traceIds);
+	
 }
