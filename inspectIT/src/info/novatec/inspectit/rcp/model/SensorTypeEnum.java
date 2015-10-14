@@ -72,7 +72,9 @@ public enum SensorTypeEnum {
 	/** The multi invocation timer data sensor type. */
 	MULTI_INVOC_DATA("info.novatec.inspectit.agent.sensor.method.MultiInvocSensor", InspectITImages.IMG_INVOCATION),
 	/** diagnoseIT results. */
-	DIAGNOSEIT_RESULTS("org.diagnoseit.spike", "diagnoseIT Results", InspectITImages.IMG_DIAGNOSEIT);
+	DIAGNOSEIT_RESULTS("org.diagnoseit.spike", "diagnoseIT Results", InspectITImages.IMG_DIAGNOSEIT),
+	/** diagnoseIT results shown in invocation sequences. */
+	DIAGNOSEIT_RESULTS_SEQUENCES("org.diagnoseit.spike.backNavigation", "diagnoseIT Invocation Sequences", InspectITImages.IMG_DIAGNOSEIT_SEQUENCE);
 
 	/**
 	 * The LOOKUP map which is used to get an element of the enumeration when passing the full

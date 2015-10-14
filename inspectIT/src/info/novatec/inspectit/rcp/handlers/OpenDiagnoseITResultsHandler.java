@@ -9,6 +9,7 @@ import info.novatec.inspectit.rcp.editor.inputdefinition.InputDefinition.IdDefin
 import info.novatec.inspectit.rcp.model.SensorTypeEnum;
 import info.novatec.inspectit.rcp.provider.ICmrRepositoryProvider;
 import info.novatec.inspectit.rcp.repository.CmrRepositoryDefinition;
+import info.novatec.inspectit.rcp.repository.RepositoryDefinition;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.Command;
@@ -27,7 +28,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * @author Alexander Wert
  *
  */
-public class OpenDiagnoseITResultsHandler extends AbstractHandler {
+public class OpenDiagnoseITResultsHandler extends AbstractDiagnoseITResultsHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -36,35 +37,9 @@ public class OpenDiagnoseITResultsHandler extends AbstractHandler {
 		if (selection instanceof StructuredSelection) {
 			Object selectedObject = ((StructuredSelection) selection).getFirstElement();
 			if (selectedObject instanceof ICmrRepositoryProvider) {
-				final CmrRepositoryDefinition cmrRepositoryDefinition = ((ICmrRepositoryProvider) selectedObject).getCmrRepositoryDefinition();
+				RepositoryDefinition repositoryDefinition = ((ICmrRepositoryProvider) selectedObject).getCmrRepositoryDefinition();
 
-				InputDefinition inputDefinition = new InputDefinition();
-				inputDefinition.setRepositoryDefinition(cmrRepositoryDefinition);
-				inputDefinition.setId(SensorTypeEnum.DIAGNOSEIT_RESULTS);
-
-				EditorPropertiesData editorPropertiesData = new EditorPropertiesData();
-				editorPropertiesData.setSensorName(SensorTypeEnum.DIAGNOSEIT_RESULTS.getDisplayName());
-				editorPropertiesData.setSensorImage(SensorTypeEnum.DIAGNOSEIT_RESULTS.getImage());
-				editorPropertiesData.setViewName("All Results");
-				editorPropertiesData.setViewImage(InspectIT.getDefault().getImage(InspectITImages.IMG_SHOW_ALL));
-				editorPropertiesData.setPartNameFlag(PartType.VIEW);
-				inputDefinition.setEditorPropertiesData(editorPropertiesData);
-				
-				IdDefinition idDefinition = new IdDefinition();
-				idDefinition.setSensorTypeId(SensorTypeEnum.DIAGNOSEIT_RESULTS.hashCode());
-				inputDefinition.setIdDefinition(new IdDefinition());
-				// open the view via command
-				ICommandService commandService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
-
-				Command command = commandService.getCommand(OpenViewHandler.COMMAND);
-				IEvaluationContext context = (IEvaluationContext) event.getApplicationContext();
-				context.addVariable(OpenViewHandler.INPUT, inputDefinition);
-
-				try {
-					command.executeWithChecks(event);
-				} catch (Exception e) {
-					InspectIT.getDefault().createErrorDialog(e.getMessage(), e, -1);
-				}
+				openDiagnoseITResultsView(event, repositoryDefinition);
 
 			}
 		}

@@ -149,10 +149,20 @@ public interface InspectITImages {
 	
 	// diagnoseIT images
 	String IMG_DIAGNOSEIT = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT.gif";
+	String IMG_DIAGNOSEIT_SEQUENCE = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_sequence.gif";
 	String IMG_DIAGNOSEIT_BT = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_BT.gif";
 	String IMG_DIAGNOSEIT_EP = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_EP.gif";
 	String IMG_DIAGNOSEIT_PC = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_PC.gif";
 	String IMG_DIAGNOSEIT_C = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_C.gif";
+	
+	String IMG_DIAGNOSEIT_BT_OVERLAY = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_BT_overlay.gif";
+	String IMG_DIAGNOSEIT_EP_OVERLAY = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_EP_overlay.gif";
+	String IMG_DIAGNOSEIT_PC_OVERLAY = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_PC_overlay.gif";
+	String IMG_DIAGNOSEIT_C_OVERLAY = InspectITConstants.ICON_PATH_SELFMADE + "diagnoseIT_C_overlay.gif";
+	
+
+	
+	
 	
 	// labels just pointing to existing ones
 	String IMG_ASSIGNEE_LABEL_ICON = IMG_USER;

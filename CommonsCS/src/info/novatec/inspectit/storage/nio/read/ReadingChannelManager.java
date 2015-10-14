@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.file.Path;
 
 import org.slf4j.Logger;
+import org.springframework.stereotype.Component;
 
 /**
  * Channel manager that performs reading.
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
  * @author Ivan Senic
  * 
  */
+@Component
 public class ReadingChannelManager extends AbstractChannelManager {
 
 	/**

@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -691,6 +692,27 @@ public class CmrStorageManager extends StorageManager implements ApplicationList
 	 *             If {@link IOException} occurs.
 	 */
 	public Map<String, Long> getFilesHttpLocation(StorageData storageData, final String extension) throws IOException {
+		Map<String, Long> result = new HashMap<String, Long>();
+		for (Entry<Path, Long> entry : getFilesLocation(storageData, extension).entrySet()) {
+			result.put(getPathAsHttp(entry.getKey()), entry.getValue());
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns list of files paths with given extension for a storage in HTTP form.
+	 * 
+	 * @param storageData
+	 *            Storage.
+	 * @param extension
+	 *            Files extension.
+	 * @return Returns the map containing pair with file name with given extension for a storage and
+	 *         size of each file.
+	 * @throws IOException
+	 *             If {@link IOException} occurs.
+	 */
+	public Map<Path, Long> getFilesLocation(StorageData storageData, final String extension) throws IOException {
 		Path storagePath = getStoragePath(storageData);
 		if (storagePath == null || !Files.isDirectory(storagePath)) {
 			return Collections.emptyMap();
@@ -707,9 +729,9 @@ public class CmrStorageManager extends StorageManager implements ApplicationList
 			}
 		});
 
-		Map<String, Long> result = new HashMap<String, Long>();
+		Map<Path, Long> result = new HashMap<Path, Long>();
 		for (Path path : filesPaths) {
-			result.put(getPathAsHttp(path), Files.size(path));
+			result.put(path, Files.size(path));
 		}
 
 		return result;

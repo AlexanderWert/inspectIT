@@ -8,6 +8,7 @@ import info.novatec.inspectit.communication.data.InvocationSequenceData;
 import info.novatec.inspectit.communication.data.SqlStatementData;
 import info.novatec.inspectit.communication.data.TimerData;
 import info.novatec.inspectit.indexing.storage.IStorageTreeComponent;
+import info.novatec.inspectit.rcp.repository.CmrRepositoryDefinition;
 import info.novatec.inspectit.rcp.repository.StorageRepositoryDefinition;
 import info.novatec.inspectit.storage.LocalStorageData;
 
@@ -174,5 +175,31 @@ public abstract class StorageServiceProvider {
 		storageGlobalDataAccessService.setIndexingTree(storageTreeComponent);
 		storageGlobalDataAccessService.setAgents(platformIdents);
 		return storageGlobalDataAccessService;
+	}
+	
+	
+
+	
+	/**
+	 * @return Spring created {@link StorageDITResultsAccessService}.
+	 */
+	protected abstract StorageDITResultsAccessService createStorageDITResultsAccessService();
+
+	/**
+	 * Properly initialized {@link StorageTimerDataAccessService}.
+	 * 
+	 * @param storageRepositoryDefinition
+	 *            {@link StorageRepositoryDefinition}.
+	 * @param localStorageData
+	 *            {@link LocalStorageData}.
+	 * @param cmrRepositoryDefinition
+	 *            CMR Repository Definition.
+	 * @return Properly initialized {@link StorageDITResultsAccessService}.
+	 */
+	public StorageDITResultsAccessService createStorageDITResultsAccessService(LocalStorageData localStorageData, CmrRepositoryDefinition cmrRepositoryDefinition) {
+		StorageDITResultsAccessService ditResultsAccessService = createStorageDITResultsAccessService(); 
+		ditResultsAccessService.setCmrRepositoryDefinition(cmrRepositoryDefinition);
+		ditResultsAccessService.setStorageDataId(localStorageData.getId());
+		return ditResultsAccessService;
 	}
 }

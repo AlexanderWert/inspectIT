@@ -409,6 +409,14 @@
             id="info.novatec.inspectit.rcp.commands.executeDiagnoseITAnalysis"
             name="Execute diagnoseIT Analysis">
       </command>
+      <command
+            id="info.novatec.inspectit.rcp.commands.showAffectedInvocationSequences"
+            name="Show Affected Invocation Sequence(s)">
+      </command>
+      <command
+            id="info.novatec.inspectit.rcp.commands.diagnoseITStorage"
+            name="diagnoseIT Storage">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -1412,9 +1420,16 @@
                      value="1">
                </count>
                <iterate>
-                  <instanceof
-                        value="info.novatec.inspectit.communication.DefaultData">
-                  </instanceof>
+                  <and>
+                     <instanceof
+                           value="info.novatec.inspectit.communication.DefaultData">
+                     </instanceof>
+                     <not>
+                        <instanceof
+                              value="info.novatec.inspectit.rcp.diagnoseit.overview.DITResultElement">
+                        </instanceof>
+                     </not>
+                  </and>
                </iterate>
             </and>
          </activeWhen>
@@ -1535,9 +1550,14 @@
                </count>
                <with
                      variable="activeEditor">
-                  <instanceof
-                        value="info.novatec.inspectit.rcp.editor.root.AbstractRootEditor">
-                  </instanceof>
+                  <and>
+                     <instanceof
+                           value="info.novatec.inspectit.rcp.editor.root.AbstractRootEditor">
+                     </instanceof>
+                     <test
+                           property="info.novatec.inspectit.isCMRRepositoryAvailable">
+                     </test>
+                  </and>
                </with>
                <with
                      variable="selection">
@@ -1545,6 +1565,46 @@
                         property="info.novatec.inspectit.canExecuteDiagnoseIT">
                   </test>
                </with>
+            </and>
+         </activeWhen>
+      </handler>
+      <handler
+            class="info.novatec.inspectit.rcp.handlers.ShowAffectedInvocationSequencesHandler"
+            commandId="info.novatec.inspectit.rcp.commands.showAffectedInvocationSequences">
+         <activeWhen>
+            <and>
+               <with
+                     variable="selection">
+                  <test
+                        property="info.novatec.inspectit.canNavigateToAffectedInvocationSequences">
+                  </test>
+               </with>
+               <with
+                     variable="activeEditor">
+                  <instanceof
+                        value="info.novatec.inspectit.rcp.editor.root.AbstractRootEditor">
+                  </instanceof>
+               </with>
+            </and>
+         </activeWhen>
+      </handler>
+      <handler
+            class="info.novatec.inspectit.rcp.handlers.OpenStorageDiagnoseITResultsHandler"
+            commandId="info.novatec.inspectit.rcp.commands.diagnoseITStorage">
+         <activeWhen>
+            <and>
+               <count
+                     value="1">
+               </count>
+               <iterate>
+                  <instanceof
+                        value="info.novatec.inspectit.rcp.provider.IStorageDataProvider">
+                  </instanceof>
+                  <test
+                        property="info.novatec.inspectit.storageState"
+                        value="CLOSED">
+                  </test>
+               </iterate>
             </and>
          </activeWhen>
       </handler>
@@ -1569,7 +1629,7 @@
             class="info.novatec.inspectit.rcp.editor.testers.NavigationTester"
             id="info.novatec.inspectit.NavigationTester"
             namespace="info.novatec.inspectit"
-            properties="canNavigateToPlotting, canNavigateToInvocations, canNavigateToExceptionType, canNavigateToAggregatedTimerData, canNavigateToAggregatedSqlData, canExecuteDiagnoseIT"
+            properties="canNavigateToPlotting, canNavigateToInvocations, canNavigateToExceptionType, canNavigateToAggregatedTimerData, canNavigateToAggregatedSqlData, canExecuteDiagnoseIT, canNavigateToAffectedInvocationSequences"
             type="org.eclipse.jface.viewers.StructuredSelection">
       </propertyTester>
       <propertyTester
@@ -1647,6 +1707,13 @@
             namespace="info.novatec.inspectit"
             properties="canChart"
             type="info.novatec.inspectit.communication.data.TimerData">
+      </propertyTester>
+      <propertyTester
+            class="info.novatec.inspectit.rcp.editor.testers.RepositoryDefinitionTypeTester"
+            id="info.novatec.inspectit.RepositoryDefinitionTypeTester"
+            namespace="info.novatec.inspectit"
+            properties="isCMRRepositoryAvailable"
+            type="info.novatec.inspectit.rcp.editor.root.AbstractRootEditor">
       </propertyTester>
    </extension>
    <extension
@@ -1802,6 +1869,9 @@
          <command
                commandId="info.novatec.inspectit.rcp.commands.details"
                style="push">
+            <visibleWhen
+                  checkEnabled="true">
+            </visibleWhen>
          </command>
          <menu
                icon="icons/eclipse/next_nav.gif"
@@ -1964,6 +2034,18 @@
                icon="icons/selfmade/diagnoseIT.gif"
                label="diagnoseIT"
                style="push">
+            <visibleWhen
+                  checkEnabled="true">
+            </visibleWhen>
+         </command>
+         <command
+               commandId="info.novatec.inspectit.rcp.commands.showAffectedInvocationSequences"
+               icon="icons/selfmade/diagnoseIT_sequence.gif"
+               label="Navigate to Invocation Sequence(s)"
+               style="push">
+            <visibleWhen
+                  checkEnabled="true">
+            </visibleWhen>
          </command>
       </menuContribution>
       <menuContribution
@@ -2132,6 +2214,11 @@
          <command
                commandId="info.novatec.inspectit.rcp.commands.exportStorage"
                icon="icons/eclipse/export.gif"
+               style="push">
+         </command>
+         <command
+               commandId="info.novatec.inspectit.rcp.commands.diagnoseITStorage"
+               icon="icons/selfmade/diagnoseIT.gif"
                style="push">
          </command>
          <separator
@@ -2308,6 +2395,11 @@
          <command
                commandId="info.novatec.inspectit.rcp.commands.exportStorage"
                icon="icons/eclipse/export.gif"
+               style="push">
+         </command>
+         <command
+               commandId="info.novatec.inspectit.rcp.commands.diagnoseITStorage"
+               icon="icons/selfmade/diagnoseIT.gif"
                style="push">
          </command>
       </menuContribution>

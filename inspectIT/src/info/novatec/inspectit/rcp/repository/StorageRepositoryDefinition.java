@@ -77,6 +77,8 @@ public class StorageRepositoryDefinition implements RepositoryDefinition {
 	 */
 	private IHttpTimerDataAccessService httpTimerDataAccessService;
 
+	private IDITResultsAccessService ditResultsAccessService;
+
 	/**
 	 * {@link StorageServiceProvider} for instantiating storage services.
 	 */
@@ -169,8 +171,7 @@ public class StorageRepositoryDefinition implements RepositoryDefinition {
 	 */
 	@Override
 	public IDITResultsAccessService getDiagnoseITResultsAccessService() {
-		// TODO: storage for diagnoseIT results not yet implemented!
-		return null;
+		return ditResultsAccessService;
 	}
 
 	/**
@@ -185,6 +186,9 @@ public class StorageRepositoryDefinition implements RepositoryDefinition {
 		sqlDataAccessService = storageServiceProvider.createStorageSqlDataAccessService(this, localStorageData, (IStorageTreeComponent<SqlStatementData>) indexingTree);
 		timerDataAccessService = storageServiceProvider.createStorageTimerDataAccessService(this, localStorageData, (IStorageTreeComponent<TimerData>) indexingTree);
 		httpTimerDataAccessService = storageServiceProvider.createStorageHttpTimerDataAccessService(this, localStorageData, (IStorageTreeComponent<HttpTimerData>) indexingTree);
+		if (cmrRepositoryDefinition != null) {
+			ditResultsAccessService = storageServiceProvider.createStorageDITResultsAccessService(localStorageData, cmrRepositoryDefinition);
+		}
 
 		// for storage we use the regular cached data service because ids can never change
 		cachedDataService = new CachedDataService(globalDataAccessService);

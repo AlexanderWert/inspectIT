@@ -282,56 +282,63 @@ public class ProblemInstancesTableInputController extends AbstractTableInputCont
 			break;
 		case PROBLEM_INSTANCES:
 
-			Class<?> causeType = problemInstanceElement.getProblemInstance().getCauseData().getType();
-			if (causeType.isAssignableFrom(MethodInvocation.class)) {
-				AggregatedMethodInvocation methodInvocationData = (AggregatedMethodInvocation) problemInstanceElement.getProblemInstance().getCauseData();
-				Signature signature = methodInvocationData.getSignature();
-				String parameterStr = "";
-				boolean first = true;
-				for (String parType : signature.getParameterTypes()) {
-					if (!first) {
-						parameterStr += ", ";
-					}
-					int idx = parType.lastIndexOf('.');
-					if (idx >= 0) {
-						parameterStr += parType.substring(idx + 1);
-					} else {
-						parameterStr += parType;
-					}
-
-					first = false;
-				}
-				String mainText = signature.getClassName() + "." + signature.getMethodName() + "(" + parameterStr + ")";
-				styledString.append(mainText);
-				styledString.append(" - " + signature.getPackageName(), StyledString.QUALIFIER_STYLER);
-			} else if (causeType.isAssignableFrom(DatabaseInvocation.class)) {
-				AggregatedDatabaseInvocation dbInvocationData = (AggregatedDatabaseInvocation) problemInstanceElement.getProblemInstance().getCauseData();
-				String sql = dbInvocationData.getSQLStatement();
-				int prevLength = sql.length();
-				sql = sql.substring(0, Math.min(100, prevLength));
-				if (prevLength > sql.length()) {
-					sql += "...";
-				}
-				styledString.append("SQL");
-				styledString.append(" - " + sql, StyledString.QUALIFIER_STYLER);
-			} else if (causeType.isAssignableFrom(HTTPRequestProcessing.class)) {
-				AggregatedHTTPRequestProcessing httpInvocationData = (AggregatedHTTPRequestProcessing) problemInstanceElement.getProblemInstance().getCauseData();
-				String uri = httpInvocationData.getUri();
-				int prevLength = uri.length();
-				uri = uri.substring(uri.length() - Math.min(100, uri.length()), uri.length());
-				if (prevLength < uri.length()) {
-					uri = "..." + uri;
-				}
-				styledString.append("HTTP" + httpInvocationData.getRequestMethod().toString());
-				styledString.append(" - " + uri, StyledString.QUALIFIER_STYLER);
-			} else {
-				styledString.append(problemInstanceElement.getResultElementType() + ":  ", StyledString.QUALIFIER_STYLER);
-				styledString.append(problemInstanceElement.getColumnContent(DITOverviewColumn.PROBLEM_OVERVIEW));
-			}
+			styledString = getTextualRepresentation(problemInstanceElement);
 			break;
 		default:
 			break;
 		}
+		return styledString;
+	}
+
+	private StyledString getTextualRepresentation(DITResultProblemInstance problemInstanceElement) {
+		StyledString styledString = new StyledString();
+		Class<?> causeType = problemInstanceElement.getProblemInstance().getCauseData().getType();
+		if (causeType.isAssignableFrom(MethodInvocation.class)) {
+			AggregatedMethodInvocation methodInvocationData = (AggregatedMethodInvocation) problemInstanceElement.getProblemInstance().getCauseData();
+			Signature signature = methodInvocationData.getSignature();
+			String parameterStr = "";
+			boolean first = true;
+			for (String parType : signature.getParameterTypes()) {
+				if (!first) {
+					parameterStr += ", ";
+				}
+				int idx = parType.lastIndexOf('.');
+				if (idx >= 0) {
+					parameterStr += parType.substring(idx + 1);
+				} else {
+					parameterStr += parType;
+				}
+
+				first = false;
+			}
+			String mainText = signature.getClassName() + "." + signature.getMethodName() + "(" + parameterStr + ")";
+			styledString.append(mainText);
+			styledString.append(" - " + signature.getPackageName(), StyledString.QUALIFIER_STYLER);
+		} else if (causeType.isAssignableFrom(DatabaseInvocation.class)) {
+			AggregatedDatabaseInvocation dbInvocationData = (AggregatedDatabaseInvocation) problemInstanceElement.getProblemInstance().getCauseData();
+			String sql = dbInvocationData.getSQLStatement();
+			int prevLength = sql.length();
+			sql = sql.substring(0, Math.min(100, prevLength));
+			if (prevLength > sql.length()) {
+				sql += "...";
+			}
+			styledString.append("SQL");
+			styledString.append(" - " + sql, StyledString.QUALIFIER_STYLER);
+		} else if (causeType.isAssignableFrom(HTTPRequestProcessing.class)) {
+			AggregatedHTTPRequestProcessing httpInvocationData = (AggregatedHTTPRequestProcessing) problemInstanceElement.getProblemInstance().getCauseData();
+			String uri = httpInvocationData.getUri();
+			int prevLength = uri.length();
+			uri = uri.substring(uri.length() - Math.min(100, uri.length()), uri.length());
+			if (prevLength < uri.length()) {
+				uri = "..." + uri;
+			}
+			styledString.append("HTTP" + httpInvocationData.getRequestMethod().toString());
+			styledString.append(" - " + uri, StyledString.QUALIFIER_STYLER);
+		} else {
+			styledString.append(problemInstanceElement.getResultElementType() + ":  ", StyledString.QUALIFIER_STYLER);
+			styledString.append(problemInstanceElement.getColumnContent(DITOverviewColumn.PROBLEM_OVERVIEW));
+		}
+		
 		return styledString;
 	}
 

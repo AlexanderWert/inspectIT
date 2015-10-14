@@ -76,4 +76,6 @@ public class InvocationSequenceDataQueryFactory<E extends IIndexQuery> extends A
 		query.addIndexingRestriction(IndexQueryRestrictionFactory.isInCollection("id", invocationIdCollection));
 		return query;
 	}
+	
+
 }

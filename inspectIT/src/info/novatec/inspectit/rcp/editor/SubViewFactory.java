@@ -3,14 +3,14 @@ package info.novatec.inspectit.rcp.editor;
 import info.novatec.inspectit.rcp.InspectIT;
 import info.novatec.inspectit.rcp.InspectITImages;
 import info.novatec.inspectit.rcp.diagnoseit.details.DITSashSubView;
-import info.novatec.inspectit.rcp.diagnoseit.details.DITProblemInstanceDetailsSubView;
-import info.novatec.inspectit.rcp.diagnoseit.overview.DITOverviewInputController;
+import info.novatec.inspectit.rcp.diagnoseit.details.DITSteppingInvocDetailInputController;
 import info.novatec.inspectit.rcp.editor.composite.GridCompositeSubView;
 import info.novatec.inspectit.rcp.editor.composite.SashCompositeSubView;
 import info.novatec.inspectit.rcp.editor.composite.TabbedCompositeSubView;
 import info.novatec.inspectit.rcp.editor.graph.GraphSubView;
 import info.novatec.inspectit.rcp.editor.table.TableSubView;
 import info.novatec.inspectit.rcp.editor.table.input.AggregatedTimerSummaryInputController;
+import info.novatec.inspectit.rcp.editor.table.input.DITNavigationInvocOverviewInputController;
 import info.novatec.inspectit.rcp.editor.table.input.ExceptionSensorInvocInputController;
 import info.novatec.inspectit.rcp.editor.table.input.GroupedExceptionOverviewInputController;
 import info.novatec.inspectit.rcp.editor.table.input.HttpTimerDataInputController;
@@ -202,18 +202,28 @@ public final class SubViewFactory {
 			return new GraphSubView(SensorTypeEnum.CHARTING_HTTP_TIMER_SENSOR);
 		case DIAGNOSEIT_RESULTS:
 			return new DITSashSubView();
-//
-//			TabbedCompositeSubView diagnoseITTabbedSubView = new TabbedCompositeSubView();
-//			DITProblemInstanceDetailsSubView subView2 = new DITProblemInstanceDetailsSubView();
-//			
-//			
-//			diagnoseITTabbedSubView.addSubView(subView2, "Details", InspectIT.getDefault().getImage(InspectITImages.IMG_DATABASE));
-//			
-//			SashCompositeSubView diagnoseITSubView = new SashCompositeSubView();
-//			ISubView diagnoseITOverview = new TreeSubView(new DITOverviewInputController());
-//			diagnoseITSubView.addSubView(diagnoseITOverview, 1);
-//			diagnoseITSubView.addSubView(diagnoseITTabbedSubView, 2);
-//			return diagnoseITSubView;
+		case DIAGNOSEIT_RESULTS_SEQUENCES:
+			GridCompositeSubView sqlCombinedView2 = new GridCompositeSubView();
+			ISubView invocSql2 = new TreeSubView(new SqlInvocInputController());
+			ISubView invocSqlSummary2 = new TextSubView(new SqlInvocSummaryTextInputController());
+			sqlCombinedView2.addSubView(invocSql2, new GridData(SWT.FILL, SWT.FILL, true, true));
+			sqlCombinedView2.addSubView(invocSqlSummary2, new GridData(SWT.FILL, SWT.FILL, true, false));
+
+			TabbedCompositeSubView invocTabbedSubView2 = new TabbedCompositeSubView();
+			ISubView invocDetails2 = new SteppingTreeSubView(new DITSteppingInvocDetailInputController(false));
+			ISubView invocMethods2 = new TableSubView(new MethodInvocInputController());
+			ISubView invocExceptions2 = new TableSubView(new ExceptionSensorInvocInputController());
+			invocTabbedSubView2.addSubView(invocDetails2, "Call Hierarchy", InspectIT.getDefault().getImage(InspectITImages.IMG_CALL_HIERARCHY));
+			invocTabbedSubView2.addSubView(sqlCombinedView2, "SQL", InspectIT.getDefault().getImage(InspectITImages.IMG_DATABASE));
+			invocTabbedSubView2.addSubView(invocMethods2, "Methods", InspectIT.getDefault().getImage(InspectITImages.IMG_METHOD_PUBLIC));
+			invocTabbedSubView2.addSubView(invocExceptions2, "Exceptions", InspectIT.getDefault().getImage(InspectITImages.IMG_EXCEPTION_SENSOR));
+
+			SashCompositeSubView invocSubView2 = new SashCompositeSubView();
+			ISubView invocOverview2 = new TableSubView(new DITNavigationInvocOverviewInputController());
+			invocSubView2.addSubView(invocOverview2, 1);
+			invocSubView2.addSubView(invocTabbedSubView2, 2);
+
+			return invocSubView2;
 		default:
 			throw new IllegalArgumentException("Could not create sub-view. Not supported: " + sensorTypeEnum.toString());
 		}
