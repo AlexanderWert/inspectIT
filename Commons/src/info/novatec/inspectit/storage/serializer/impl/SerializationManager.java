@@ -95,7 +95,7 @@ import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationResult;
 import org.springframework.stereotype.Component;
 
-import rocks.cta.api.core.callables.HTTPRequestProcessing.HTTPMethod;
+import rocks.cta.api.core.callables.HTTPMethod;
 import rocks.cta.api.core.callables.TimedCallable;
 
 import com.esotericsoftware.kryo.ClassResolver;

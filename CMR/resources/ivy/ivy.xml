@@ -72,12 +72,12 @@
 		<dependency org="org.drools" name="drools-core" rev="6.2.0.Final" conf="prod->default" />
 		<dependency org="org.drools" name="drools-compiler" rev="6.2.0.Final" conf="prod->default" />
 		
-		<dependency org="diagnoseit.spike" name="adapters.inspectit" rev="0.1.0-SNAPSHOT" conf="prod->default" />
+		<dependency org="diagnoseit.spike" name="adapters.inspectit" rev="0.2.0-SNAPSHOT" conf="prod->default" />
 		
-		<dependency org="rocks.cta" name="cta.api" rev="0.1.0-SNAPSHOT" conf="prod->default" />
-		<dependency org="diagnoseit.spike" name="trace.services" rev="0.1.0-SNAPSHOT" conf="prod->default" />
-		<dependency org="diagnoseit.spike" name="shared" rev="0.1.0-SNAPSHOT" conf="prod->default" />
-		<dependency org="diagnoseit.spike" name="diagnoseit" rev="0.1.0-SNAPSHOT" conf="prod->default" />
+		<dependency org="rocks.cta" name="cta.api" rev="0.2.0-SNAPSHOT" conf="prod->default" />
+		<dependency org="diagnoseit.spike" name="trace.services" rev="0.2.0-SNAPSHOT" conf="prod->default" />
+		<dependency org="diagnoseit.spike" name="shared" rev="0.2.0-SNAPSHOT" conf="prod->default" />
+		<dependency org="diagnoseit.spike" name="diagnoseit" rev="0.2.0-SNAPSHOT" conf="prod->default" />
 
 		<!-- Test -->
 		<!-- Test NG should be on the build path via the Eclipse plug-in -->
