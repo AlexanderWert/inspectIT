@@ -73,10 +73,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.diagnoseit.spike.result.AffectedNodeData;
+import org.diagnoseit.spike.result.AntipatternInstance;
 import org.diagnoseit.spike.result.CauseExecutionType;
 import org.diagnoseit.spike.result.GenericProblemDescriptionText;
 import org.diagnoseit.spike.result.ProblemInstance;
 import org.diagnoseit.spike.result.ProblemInstanceID;
+import org.diagnoseit.spike.result.antipatterns.Nplus1AntipatternInstance;
 import org.diagnoseit.spike.traceservices.aggregation.AbstractAggregatedTimedCallable;
 import org.diagnoseit.spike.traceservices.aggregation.AggregatedDatabaseInvocation;
 import org.diagnoseit.spike.traceservices.aggregation.AggregatedHTTPRequestProcessing;
@@ -334,6 +336,9 @@ public class SerializationManager implements ISerializer, IKryoProvider, Initial
 		kryo.register(HTTPMethod.class, new EnumSerializer(HTTPMethod.class));
 		kryo.register(AffectedNodeData.class, new FieldSerializer<AffectedNodeData>(kryo, AffectedNodeData.class));
 		kryo.register(GenericProblemDescriptionText.class, new FieldSerializer<GenericProblemDescriptionText>(kryo, GenericProblemDescriptionText.class));
+		
+		kryo.register(AntipatternInstance.class, new FieldSerializer<AntipatternInstance>(kryo, AntipatternInstance.class));
+		kryo.register(Nplus1AntipatternInstance.class, new FieldSerializer<Nplus1AntipatternInstance>(kryo, Nplus1AntipatternInstance.class));
 	}
 
 	/**

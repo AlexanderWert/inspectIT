@@ -27,9 +27,10 @@ public class DITSashSubView extends SashCompositeSubView {
 
 		tabbedProblemInstanceDetailsSubView = new TabbedCompositeSubView();
 		DITProblemInstanceDetailsSubView generalProblemDesriptionSubView = new DITProblemInstanceDetailsSubView();
+		DITAntiPatternDetailsSubView antiPatternDetailsSubView = new DITAntiPatternDetailsSubView();
 
 		tabbedProblemInstanceDetailsSubView.addSubView(generalProblemDesriptionSubView, "General Details", InspectIT.getDefault().getImage(InspectITImages.IMG_DIAGNOSEIT));
-		tabbedProblemInstanceDetailsSubView.addSubView(new TabbedCompositeSubView(), "Anti-Patterns", InspectIT.getDefault().getImage(InspectITImages.IMG_DIAGNOSEIT));
+		tabbedProblemInstanceDetailsSubView.addSubView(antiPatternDetailsSubView, "Anti-Patterns", InspectIT.getDefault().getImage(InspectITImages.IMG_DIAGNOSEIT));
 		
 		problemInstanceOverviewSubView = new TableSubView(new ProblemInstancesTableInputController());
 
