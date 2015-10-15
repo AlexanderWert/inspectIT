@@ -142,4 +142,5 @@ public class DITResultNodeType extends DITResultElement {
 		return identifier.substring(0, Math.min(80, identifier.length()));
 	}
 
+
 }

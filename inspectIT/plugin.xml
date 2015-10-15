@@ -1863,6 +1863,15 @@
                   value="false">
             </parameter>
          </command>
+         <command
+               commandId="info.novatec.inspectit.rcp.commands.showAffectedInvocationSequences"
+               icon="icons/selfmade/diagnoseIT_sequence.gif"
+               label="Navigate to Invocation Sequence(s)"
+               style="push">
+            <visibleWhen
+                  checkEnabled="true">
+            </visibleWhen>
+         </command>
       </menuContribution>
       <menuContribution
             locationURI="popup:inspectit.editor.formrooteditor.tablesubview">

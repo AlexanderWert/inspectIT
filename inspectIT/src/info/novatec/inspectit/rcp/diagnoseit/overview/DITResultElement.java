@@ -57,6 +57,42 @@ public abstract class DITResultElement extends DefaultData{
 		}
 
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((getStringRepresentation() == null) ? 0 : getStringRepresentation().hashCode());
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		DITResultElement other = (DITResultElement) obj;
+		if (getStringRepresentation() == null) {
+			if (other.getStringRepresentation() != null) {
+				return false;
+			}
+		} else if (!getStringRepresentation().equals(other.getStringRepresentation())) {
+			return false;
+		}
+		return true;
+	}
 
 
 }

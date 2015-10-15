@@ -141,4 +141,8 @@ public class DITResultEntryPoint extends DITResultElement {
 		return NameUtils.getStringRepresentationFromElementData(entryPointData);
 	}
 
+
+	
+	
+
 }

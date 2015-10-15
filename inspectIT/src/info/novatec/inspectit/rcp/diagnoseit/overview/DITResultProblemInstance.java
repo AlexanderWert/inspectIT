@@ -136,4 +136,36 @@ public class DITResultProblemInstance extends DITResultElement {
 		return result;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((problemInstance == null) ? 0 : problemInstance.hashCode());
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DITResultProblemInstance other = (DITResultProblemInstance) obj;
+		if (problemInstance == null) {
+			if (other.problemInstance != null)
+				return false;
+		} else if (!problemInstance.equals(other.problemInstance))
+			return false;
+		return true;
+	}
+
+	
 }

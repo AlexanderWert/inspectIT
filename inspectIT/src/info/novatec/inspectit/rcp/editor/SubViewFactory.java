@@ -210,7 +210,7 @@ public final class SubViewFactory {
 			sqlCombinedView2.addSubView(invocSqlSummary2, new GridData(SWT.FILL, SWT.FILL, true, false));
 
 			TabbedCompositeSubView invocTabbedSubView2 = new TabbedCompositeSubView();
-			ISubView invocDetails2 = new SteppingTreeSubView(new DITSteppingInvocDetailInputController(false));
+			ISubView invocDetails2 = new SteppingTreeSubView(new DITSteppingInvocDetailInputController(true));
 			ISubView invocMethods2 = new TableSubView(new MethodInvocInputController());
 			ISubView invocExceptions2 = new TableSubView(new ExceptionSensorInvocInputController());
 			invocTabbedSubView2.addSubView(invocDetails2, "Call Hierarchy", InspectIT.getDefault().getImage(InspectITImages.IMG_CALL_HIERARCHY));

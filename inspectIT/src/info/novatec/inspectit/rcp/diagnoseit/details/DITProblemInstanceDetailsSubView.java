@@ -8,6 +8,9 @@ import info.novatec.inspectit.rcp.diagnoseit.overview.NameUtils;
 import info.novatec.inspectit.rcp.editor.AbstractSubView;
 import info.novatec.inspectit.rcp.editor.preferences.PreferenceEventCallback.PreferenceEvent;
 import info.novatec.inspectit.rcp.editor.preferences.PreferenceId;
+import info.novatec.inspectit.rcp.editor.root.AbstractRootEditor;
+import info.novatec.inspectit.rcp.handlers.ShowAffectedInvocationSequencesHandler;
+import info.novatec.inspectit.rcp.repository.RepositoryDefinition;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,12 +18,23 @@ import java.util.Set;
 
 import org.diagnoseit.spike.result.GenericProblemDescriptionText;
 import org.diagnoseit.spike.result.ProblemInstance;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TouchEvent;
+import org.eclipse.swt.events.TouchListener;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.forms.ManagedForm;
 import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -41,8 +55,8 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 	private TableSection problemContextSection;
 	private ManagedForm managedForm;
 	private Composite rootComposite;
-	ProblemInstance problemInstance;
-
+	private ProblemInstance problemInstance;
+	private DITResultProblemInstance ditResultProblemInstance;
 	@Override
 	public void init() {
 
@@ -59,6 +73,9 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 		ScrolledForm mainForm = managedForm.getForm();
 		managedForm.getToolkit().decorateFormHeading(mainForm.getForm());
 		mainForm.setText("General Problem Instance Details");
+//		toolkit.decorateFormHeading(mainForm.getForm());
+//		Composite header = createHeadComposite(mainForm.getForm().getHead(), toolkit);
+//		mainForm.getForm().setHeadClient(header);
 		mainForm.setLayout(new FillLayout());
 		mainForm.getBody().setLayout(new TableWrapLayout());
 
@@ -91,6 +108,29 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 		sashForm.setWeights(weights);
 		
 	}
+	
+	private Composite createHeadComposite(Composite parent, FormToolkit toolkit){
+		Composite header = toolkit.createComposite(parent);
+		GridLayout gridLayout = new GridLayout(2, false);
+		gridLayout.marginHeight = 0;
+		gridLayout.marginWidth = 0;
+		header.setLayout(gridLayout);
+		
+		ToolBar toolbar = new ToolBar(header, SWT.FLAT);
+		toolbar.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
+		ToolBarManager toolBarManager = new ToolBarManager(toolbar);
+		
+		final AbstractRootEditor rootEditor = this.getRootEditor();
+		Action action = new Action("Show Affected Invocation Sequences", InspectIT.getDefault().getImageDescriptor(InspectITImages.IMG_DIAGNOSEIT_SEQUENCE)) {
+			@Override
+			public void run() {
+				RepositoryDefinition repositoryDefinition = rootEditor.getInputDefinition().getRepositoryDefinition();
+				ShowAffectedInvocationSequencesHandler.openInvocationSequences(repositoryDefinition, ditResultProblemInstance);
+			}
+		};
+		toolBarManager.add(action);
+		return header;
+	}
 
 	private void createLegend(FormToolkit toolkit, Composite parent) {
 		FormText legend = toolkit.createFormText(parent, false);
@@ -115,6 +155,8 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 		tableWrapData.align = TableWrapData.FILL;
 		tableWrapData.maxHeight = 20;
 		legend.setLayoutData(tableWrapData);
+		
+		
 	}
 
 	private void createProblemContextSection(FormToolkit toolkit, Composite parent) {
@@ -172,7 +214,8 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 	@Override
 	public void setDataInput(List<? extends DefaultData> data) {
 		if (data.size() == 1 && (data.get(0) instanceof DITResultProblemInstance)) {
-			updateContent(((DITResultProblemInstance) (data.get(0))).getProblemInstance());
+			ditResultProblemInstance = (DITResultProblemInstance) data.get(0);
+			updateContent(ditResultProblemInstance.getProblemInstance());
 		} 
 
 	}

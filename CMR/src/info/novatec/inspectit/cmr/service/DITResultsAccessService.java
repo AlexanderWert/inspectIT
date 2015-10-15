@@ -39,6 +39,7 @@ import org.diagnoseit.spike.result.ProblemInstance;
 import org.diagnoseit.spike.rules.processing.DiagnoseIT;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import rocks.cta.api.core.Trace;
@@ -68,6 +69,9 @@ public class DITResultsAccessService implements IDITResultsAccessService {
 
 	@Autowired
 	private InputStreamProvider inputStreamProvider;
+
+	@Value("${diagnoseIT.responseTimeThreshold}")
+	private long threshold;
 
 	/**
 	 * {@inheritDoc}
@@ -117,8 +121,8 @@ public class DITResultsAccessService implements IDITResultsAccessService {
 		}
 	}
 
-	private List<Trace> retrieveSelectedTraces(long platformId, List<Long> traceIds, StorageData storageData, SerializationManager serializer, PlatformIdent pIdent)
-			throws IOException, SerializationException {
+	private List<Trace> retrieveSelectedTraces(long platformId, List<Long> traceIds, StorageData storageData, SerializationManager serializer, PlatformIdent pIdent) throws IOException,
+			SerializationException {
 		Set<Path> indexFilesLocations = storageManager.getFilesLocation(storageData, StorageFileType.INDEX_FILE.getExtension()).keySet();
 
 		List<IStorageTreeComponent<DefaultData>> list = new ArrayList<IStorageTreeComponent<DefaultData>>();
@@ -135,8 +139,7 @@ public class DITResultsAccessService implements IDITResultsAccessService {
 
 		StorageIndexQuery query = dataQueryFactory.getInvocationSequenceOverview(platformId, traceIds, Integer.MAX_VALUE);
 		query.setIncludeIds(traceIds);
-		
-		
+
 		List<IStorageDescriptor> descriptors = combStorageBranch.query(query);
 
 		InputStream result = inputStreamProvider.getExtendedByteBufferInputStream(storageData, descriptors);
@@ -161,8 +164,14 @@ public class DITResultsAccessService implements IDITResultsAccessService {
 			try (Input input = new Input(new FileInputStream(filePath.toFile()))) {
 				while (KryoUtil.hasMoreBytes(input)) {
 					Object invocation = serializer.deserialize(input);
-					if (invocation instanceof InvocationSequenceData) {
+					if (invocation instanceof InvocationSequenceData && ((InvocationSequenceData) invocation).getDuration() > threshold) {
+						InvocationSequenceData isData = (InvocationSequenceData) invocation;
+						// filter out short requests and invocation sequence templates
+						if (isData.getDuration() < threshold || (isData.getChildCount() > 0 && (null == isData.getNestedSequences() || isData.getNestedSequences().isEmpty()))) {
+							continue;
+						}
 						Trace trace = new IITTraceImpl((InvocationSequenceData) invocation, pIdent);
+						trace.toString();
 						traces.add(trace);
 					}
 				}
@@ -186,11 +195,12 @@ public class DITResultsAccessService implements IDITResultsAccessService {
 		}
 		return null;
 	}
-	
-	private List<ProblemInstance> analyzeTraces(Collection<Trace> traces){
+
+	private List<ProblemInstance> analyzeTraces(Collection<Trace> traces) {
 		List<ProblemInstance> results = new ArrayList<ProblemInstance>();
 		for (Trace trace : traces) {
-			results.addAll(DiagnoseIT.getInstance().analyzeInteractively(trace));
+			Collection<ProblemInstance> pInstances = DiagnoseIT.getInstance().analyzeInteractively(trace);
+			results.addAll(pInstances);
 		}
 
 		return results;

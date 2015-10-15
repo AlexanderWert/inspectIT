@@ -78,4 +78,43 @@ public class DITResultAffectedNode extends DITResultElement {
 		return result;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((affectedNode == null) ? 0 : affectedNode.hashCode());
+		result = prime * result + ((parent == null) ? 0 : parent.hashCode());
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DITResultAffectedNode other = (DITResultAffectedNode) obj;
+		if (affectedNode == null) {
+			if (other.affectedNode != null)
+				return false;
+		} else if (!affectedNode.equals(other.affectedNode))
+			return false;
+		if (parent == null) {
+			if (other.parent != null)
+				return false;
+		} else if (!parent.equals(other.parent))
+			return false;
+		return true;
+	}
+	
+	
+
 }

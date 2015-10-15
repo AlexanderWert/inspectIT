@@ -136,6 +136,10 @@ public interface InspectITImages {
 	String IMG_TOOL = InspectITConstants.ICON_PATH_ECLIPSE + "build.gif";
 	String IMG_TRANSFORM = InspectITConstants.ICON_PATH_ECLIPSE + "transform.gif";
 	String IMG_USER = InspectITConstants.ICON_PATH_ECLIPSE + "user.gif";
+	String IMG_METHOD_PUBLIC_SMALL = InspectITConstants.ICON_PATH_SELFMADE + "methpub_obj_small.gif";
+	String IMG_METHOD_PROTECTED_SMALL = InspectITConstants.ICON_PATH_SELFMADE + "methpro_obj_small.gif";
+	String IMG_METHOD_DEFAULT_SMALL = InspectITConstants.ICON_PATH_SELFMADE + "methdef_obj_small.gif";
+	String IMG_METHOD_PRIVATE_SMALL = InspectITConstants.ICON_PATH_SELFMADE + "methpri_obj_small.gif";
 
 	// Fugue set - license Creative Commons v3.0
 	String IMG_CPU_OVERVIEW = InspectITConstants.ICON_PATH_FUGUE + "processor.png";

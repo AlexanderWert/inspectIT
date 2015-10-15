@@ -78,6 +78,7 @@ import org.diagnoseit.spike.result.CauseExecutionType;
 import org.diagnoseit.spike.result.GenericProblemDescriptionText;
 import org.diagnoseit.spike.result.ProblemInstance;
 import org.diagnoseit.spike.result.ProblemInstanceID;
+import org.diagnoseit.spike.result.ProblemOccurrence;
 import org.diagnoseit.spike.result.antipatterns.Nplus1AntipatternInstance;
 import org.diagnoseit.spike.traceservices.aggregation.AbstractAggregatedTimedCallable;
 import org.diagnoseit.spike.traceservices.aggregation.AggregatedDatabaseInvocation;
@@ -335,6 +336,7 @@ public class SerializationManager implements ISerializer, IKryoProvider, Initial
 		kryo.register(CauseExecutionType.class, new EnumSerializer(CauseExecutionType.class));
 		kryo.register(HTTPMethod.class, new EnumSerializer(HTTPMethod.class));
 		kryo.register(AffectedNodeData.class, new FieldSerializer<AffectedNodeData>(kryo, AffectedNodeData.class));
+		kryo.register(ProblemOccurrence.class, new FieldSerializer<ProblemOccurrence>(kryo, ProblemOccurrence.class));
 		kryo.register(GenericProblemDescriptionText.class, new FieldSerializer<GenericProblemDescriptionText>(kryo, GenericProblemDescriptionText.class));
 		
 		kryo.register(AntipatternInstance.class, new FieldSerializer<AntipatternInstance>(kryo, AntipatternInstance.class));

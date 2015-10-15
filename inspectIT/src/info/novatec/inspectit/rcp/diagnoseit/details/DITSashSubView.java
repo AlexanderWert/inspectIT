@@ -18,6 +18,7 @@ import org.eclipse.jface.viewers.IPostSelectionProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.widgets.Composite;
@@ -52,29 +53,29 @@ public class DITSashSubView extends SashCompositeSubView {
 		super.createPartControl(parent, toolkit);
 		tabbedProblemInstanceDetailsSubView.getControl().setVisible(false);
 		problemInstanceOverviewSubView.getControl().setVisible(false);
-		problemInstanceOverviewSubView.getControl().addFocusListener(new FocusAdapter() {
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void focusGained(FocusEvent e) {
-				getRootEditor().setActiveSubView(problemInstanceOverviewSubView);
-			}
-		});
-		if (null != problemInstanceOverviewSubView.getSelectionProvider()) {
-			
-			ISelectionProvider prov = problemInstanceOverviewSubView.getSelectionProvider();
-			prov.addSelectionChangedListener(new ISelectionChangedListener() {
-				@Override
-				public void selectionChanged(SelectionChangedEvent event) {
-					getRootEditor().setSelection(event.getSelection());
-				}
-			});
-			prov.addSelectionChangedListener(getRootEditor().getSelectionChangedListener());
-			if (prov instanceof IPostSelectionProvider) {
-				((IPostSelectionProvider) prov).addPostSelectionChangedListener(getRootEditor().getPostSelectionChangedListener());
-			}
-		}
+//		problemInstanceOverviewSubView.getControl().addFocusListener(new FocusAdapter() {
+//			/**
+//			 * {@inheritDoc}
+//			 */
+//			@Override
+//			public void focusGained(FocusEvent e) {
+//				getRootEditor().setActiveSubView(problemInstanceOverviewSubView);
+//			}
+//		});
+//		if (null != problemInstanceOverviewSubView.getSelectionProvider()) {
+//			
+//			ISelectionProvider prov = problemInstanceOverviewSubView.getSelectionProvider();
+//			prov.addSelectionChangedListener(new ISelectionChangedListener() {
+//				@Override
+//				public void selectionChanged(SelectionChangedEvent event) {
+//					getRootEditor().setSelection(event.getSelection());
+//				}
+//			});
+//			prov.addSelectionChangedListener(getRootEditor().getSelectionChangedListener());
+//			if (prov instanceof IPostSelectionProvider) {
+//				((IPostSelectionProvider) prov).addPostSelectionChangedListener(getRootEditor().getPostSelectionChangedListener());
+//			}
+//		}
 	}
 
 	@Override
