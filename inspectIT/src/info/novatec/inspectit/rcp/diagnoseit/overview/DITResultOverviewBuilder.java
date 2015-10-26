@@ -1,6 +1,7 @@
 package info.novatec.inspectit.rcp.diagnoseit.overview;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.diagnoseit.spike.result.ProblemInstance;
@@ -98,7 +99,8 @@ public class DITResultOverviewBuilder {
 	}
 
 	public List<DITResultBusinessTransaction> getResultList() {
-		return resultList;
+		Collections.sort(resultList, new SeverityComperator());	
+		return 	resultList;
 	}
 
 }

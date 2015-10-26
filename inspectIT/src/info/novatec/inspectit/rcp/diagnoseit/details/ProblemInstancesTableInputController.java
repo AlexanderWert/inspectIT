@@ -6,7 +6,10 @@ import info.novatec.inspectit.rcp.InspectITImages;
 import info.novatec.inspectit.rcp.diagnoseit.overview.DITOverviewColumn;
 import info.novatec.inspectit.rcp.diagnoseit.overview.DITResultElement;
 import info.novatec.inspectit.rcp.diagnoseit.overview.DITResultProblemInstance;
+import info.novatec.inspectit.rcp.diagnoseit.overview.NameUtils;
 import info.novatec.inspectit.rcp.diagnoseit.overview.SeverityComperator;
+import info.novatec.inspectit.rcp.editor.composite.SashCompositeSubView;
+import info.novatec.inspectit.rcp.editor.composite.TabbedCompositeSubView;
 import info.novatec.inspectit.rcp.editor.root.IRootEditor;
 import info.novatec.inspectit.rcp.editor.table.input.AbstractTableInputController;
 import info.novatec.inspectit.rcp.editor.viewers.StyledCellIndexLabelProvider;
@@ -234,7 +237,7 @@ public class ProblemInstancesTableInputController extends AbstractTableInputCont
 						final List<DITResultProblemInstance> resultElementList = new ArrayList<DITResultProblemInstance>();
 						resultElementList.add(resultElement);
 						
-
+						
 						Display.getDefault().asyncExec(new Runnable() {
 							public void run() {
 								IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -246,6 +249,12 @@ public class ProblemInstancesTableInputController extends AbstractTableInputCont
 						monitor.done();
 					}
 				});
+				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+				IWorkbenchPage page = window.getActivePage();
+				IRootEditor rootEditor = (IRootEditor) page.getActiveEditor();
+				if (rootEditor.getSubView() instanceof SashCompositeSubView) {
+					((SashCompositeSubView) rootEditor.getSubView()).getSubView(TabbedCompositeSubView.class).doRefresh();
+				}
 			} catch (InvocationTargetException e) {
 				MessageDialog.openError(Display.getDefault().getActiveShell().getShell(), "Error", e.getCause().toString());
 			} catch (InterruptedException e) {
@@ -282,7 +291,7 @@ public class ProblemInstancesTableInputController extends AbstractTableInputCont
 			break;
 		case PROBLEM_INSTANCES:
 
-			styledString = getTextualRepresentation(problemInstanceElement);
+			styledString = NameUtils.getTextualRepresentation(problemInstanceElement.getProblemInstance().getCauseData());
 			break;
 		default:
 			break;
@@ -290,57 +299,7 @@ public class ProblemInstancesTableInputController extends AbstractTableInputCont
 		return styledString;
 	}
 
-	private StyledString getTextualRepresentation(DITResultProblemInstance problemInstanceElement) {
-		StyledString styledString = new StyledString();
-		Class<?> causeType = problemInstanceElement.getProblemInstance().getCauseData().getType();
-		if (causeType.isAssignableFrom(MethodInvocation.class)) {
-			AggregatedMethodInvocation methodInvocationData = (AggregatedMethodInvocation) problemInstanceElement.getProblemInstance().getCauseData();
-			Signature signature = methodInvocationData.getSignature();
-			String parameterStr = "";
-			boolean first = true;
-			for (String parType : signature.getParameterTypes()) {
-				if (!first) {
-					parameterStr += ", ";
-				}
-				int idx = parType.lastIndexOf('.');
-				if (idx >= 0) {
-					parameterStr += parType.substring(idx + 1);
-				} else {
-					parameterStr += parType;
-				}
 
-				first = false;
-			}
-			String mainText = signature.getClassName() + "." + signature.getMethodName() + "(" + parameterStr + ")";
-			styledString.append(mainText);
-			styledString.append(" - " + signature.getPackageName(), StyledString.QUALIFIER_STYLER);
-		} else if (causeType.isAssignableFrom(DatabaseInvocation.class)) {
-			AggregatedDatabaseInvocation dbInvocationData = (AggregatedDatabaseInvocation) problemInstanceElement.getProblemInstance().getCauseData();
-			String sql = dbInvocationData.getSQLStatement();
-			int prevLength = sql.length();
-			sql = sql.substring(0, Math.min(100, prevLength));
-			if (prevLength > sql.length()) {
-				sql += "...";
-			}
-			styledString.append("SQL");
-			styledString.append(" - " + sql, StyledString.QUALIFIER_STYLER);
-		} else if (causeType.isAssignableFrom(HTTPRequestProcessing.class)) {
-			AggregatedHTTPRequestProcessing httpInvocationData = (AggregatedHTTPRequestProcessing) problemInstanceElement.getProblemInstance().getCauseData();
-			String uri = httpInvocationData.getUri();
-			int prevLength = uri.length();
-			uri = uri.substring(uri.length() - Math.min(100, uri.length()), uri.length());
-			if (prevLength < uri.length()) {
-				uri = "..." + uri;
-			}
-			styledString.append("HTTP" + httpInvocationData.getRequestMethod().toString());
-			styledString.append(" - " + uri, StyledString.QUALIFIER_STYLER);
-		} else {
-			styledString.append(problemInstanceElement.getResultElementType() + ":  ", StyledString.QUALIFIER_STYLER);
-			styledString.append(problemInstanceElement.getColumnContent(DITOverviewColumn.PROBLEM_OVERVIEW));
-		}
-		
-		return styledString;
-	}
 
 	private class ColorStyler extends StyledString.Styler {
 

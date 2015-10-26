@@ -3,6 +3,7 @@ package info.novatec.inspectit.rcp.diagnoseit.details;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.SectionPart;
+import org.eclipse.ui.forms.events.IHyperlinkListener;
 import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledFormText;
@@ -16,7 +17,7 @@ public class FormTextSection extends SectionPart {
 
 	private ScrolledFormText scrolledFormText;
 
-	public FormTextSection(Composite parent, FormToolkit toolkit, String title, int maxHeight) {
+	public FormTextSection(Composite parent, FormToolkit toolkit, String title, int maxHeight, IHyperlinkListener hyperLinkListener) {
 		super(parent, toolkit, Section.TITLE_BAR | Section.TWISTIE | Section.EXPANDED);
 		getSection().setText(title);
 
@@ -44,11 +45,14 @@ public class FormTextSection extends SectionPart {
 
 		FormText formText = toolkit.createFormText(scrolledFormText, false);
 		formText.setLayoutData(formTextLayoutData);
+		if (hyperLinkListener != null) {
+			formText.addHyperlinkListener(hyperLinkListener);
+		}
 		scrolledFormText.setFormText(formText);
 	}
 
-	public FormTextSection(Composite parent, FormToolkit toolkit, String title) {
-		this(parent, toolkit, title, DFLT_MAX_HEIGHT);
+	public FormTextSection(Composite parent, FormToolkit toolkit, String title, IHyperlinkListener hyperLinkListener) {
+		this(parent, toolkit, title, DFLT_MAX_HEIGHT, hyperLinkListener);
 	}
 
 	public void addImage(String key, Image image) {
@@ -59,8 +63,8 @@ public class FormTextSection extends SectionPart {
 	public void setText(String text) {
 		scrolledFormText.getFormText().setText(text, true, true);
 	}
-	
-	public void expand(boolean expanded){
+
+	public void expand(boolean expanded) {
 		getSection().setExpanded(expanded);
 	}
 

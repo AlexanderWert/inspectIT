@@ -171,7 +171,6 @@ public class DITResultsAccessService implements IDITResultsAccessService {
 							continue;
 						}
 						Trace trace = new IITTraceImpl((InvocationSequenceData) invocation, pIdent);
-						trace.toString();
 						traces.add(trace);
 					}
 				}
@@ -197,13 +196,10 @@ public class DITResultsAccessService implements IDITResultsAccessService {
 	}
 
 	private List<ProblemInstance> analyzeTraces(Collection<Trace> traces) {
-		List<ProblemInstance> results = new ArrayList<ProblemInstance>();
-		for (Trace trace : traces) {
-			Collection<ProblemInstance> pInstances = DiagnoseIT.getInstance().analyzeInteractively(trace);
-			results.addAll(pInstances);
-		}
 
-		return results;
+		Collection<ProblemInstance> pInstances = DiagnoseIT.getInstance().analyzeInteractively(traces);
+
+		return new ArrayList<ProblemInstance>(pInstances);
 	}
 
 	/**

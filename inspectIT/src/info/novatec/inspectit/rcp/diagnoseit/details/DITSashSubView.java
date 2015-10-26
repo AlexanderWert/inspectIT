@@ -34,7 +34,7 @@ public class DITSashSubView extends SashCompositeSubView {
 
 		tabbedProblemInstanceDetailsSubView = new TabbedCompositeSubView();
 		DITProblemInstanceDetailsSubView generalProblemDesriptionSubView = new DITProblemInstanceDetailsSubView();
-		DITAntiPatternDetailsSubView antiPatternDetailsSubView = new DITAntiPatternDetailsSubView();
+		DITAntiPatternsSubView antiPatternDetailsSubView = new DITAntiPatternsSubView();
 
 		tabbedProblemInstanceDetailsSubView.addSubView(generalProblemDesriptionSubView, "General Details", InspectIT.getDefault().getImage(InspectITImages.IMG_DIAGNOSEIT));
 		tabbedProblemInstanceDetailsSubView.addSubView(antiPatternDetailsSubView, "Anti-Patterns", InspectIT.getDefault().getImage(InspectITImages.IMG_DIAGNOSEIT));
@@ -53,34 +53,12 @@ public class DITSashSubView extends SashCompositeSubView {
 		super.createPartControl(parent, toolkit);
 		tabbedProblemInstanceDetailsSubView.getControl().setVisible(false);
 		problemInstanceOverviewSubView.getControl().setVisible(false);
-//		problemInstanceOverviewSubView.getControl().addFocusListener(new FocusAdapter() {
-//			/**
-//			 * {@inheritDoc}
-//			 */
-//			@Override
-//			public void focusGained(FocusEvent e) {
-//				getRootEditor().setActiveSubView(problemInstanceOverviewSubView);
-//			}
-//		});
-//		if (null != problemInstanceOverviewSubView.getSelectionProvider()) {
-//			
-//			ISelectionProvider prov = problemInstanceOverviewSubView.getSelectionProvider();
-//			prov.addSelectionChangedListener(new ISelectionChangedListener() {
-//				@Override
-//				public void selectionChanged(SelectionChangedEvent event) {
-//					getRootEditor().setSelection(event.getSelection());
-//				}
-//			});
-//			prov.addSelectionChangedListener(getRootEditor().getSelectionChangedListener());
-//			if (prov instanceof IPostSelectionProvider) {
-//				((IPostSelectionProvider) prov).addPostSelectionChangedListener(getRootEditor().getPostSelectionChangedListener());
-//			}
-//		}
+
 	}
 
 	@Override
-	public void setDataInput(List<? extends DefaultData> data) {
-
+	public void setDataInput(final List<? extends DefaultData> data) {
+		super.setDataInput(data);
 		if (data.size() == 1 && (data.get(0) instanceof DITResultProblemInstance)) {
 			tabbedProblemInstanceDetailsSubView.getControl().setVisible(true);
 			problemInstanceOverviewSubView.getControl().setVisible(false);
@@ -91,7 +69,8 @@ public class DITSashSubView extends SashCompositeSubView {
 			tabbedProblemInstanceDetailsSubView.getControl().setVisible(false);
 			problemInstanceOverviewSubView.getControl().setVisible(false);
 		}
+		
 
-		super.setDataInput(data);
+		((Composite)this.getControl()).layout(true);
 	}
 }

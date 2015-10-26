@@ -81,6 +81,7 @@ import org.diagnoseit.spike.result.ProblemInstanceID;
 import org.diagnoseit.spike.result.ProblemOccurrence;
 import org.diagnoseit.spike.result.antipatterns.Nplus1AntipatternInstance;
 import org.diagnoseit.spike.traceservices.aggregation.AbstractAggregatedTimedCallable;
+import org.diagnoseit.spike.traceservices.aggregation.AggregatedBusinessTransaction;
 import org.diagnoseit.spike.traceservices.aggregation.AggregatedDatabaseInvocation;
 import org.diagnoseit.spike.traceservices.aggregation.AggregatedHTTPRequestProcessing;
 import org.diagnoseit.spike.traceservices.aggregation.AggregatedMethodInvocation;
@@ -331,7 +332,9 @@ public class SerializationManager implements ISerializer, IKryoProvider, Initial
 		kryo.register(AggregatedMethodInvocation.class, new FieldSerializer<AggregatedMethodInvocation>(kryo, AggregatedMethodInvocation.class));
 		kryo.register(Signature.class, new FieldSerializer<Signature>(kryo, Signature.class));
 		kryo.register(AggregatedRemoteInvocation.class, new FieldSerializer<AggregatedRemoteInvocation>(kryo, AggregatedRemoteInvocation.class));
-
+		kryo.register(AggregatedBusinessTransaction.class, new FieldSerializer<AggregatedBusinessTransaction>(kryo, AggregatedBusinessTransaction.class));
+		
+		
 		kryo.register(NumericStatistics.class, new FieldSerializer<NumericStatistics<? extends Number>>(kryo, NumericStatistics.class));
 		kryo.register(CauseExecutionType.class, new EnumSerializer(CauseExecutionType.class));
 		kryo.register(HTTPMethod.class, new EnumSerializer(HTTPMethod.class));

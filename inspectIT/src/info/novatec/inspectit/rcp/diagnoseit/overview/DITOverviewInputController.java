@@ -1,6 +1,8 @@
 package info.novatec.inspectit.rcp.diagnoseit.overview;
 
 import info.novatec.inspectit.cmr.service.IDITResultsAccessService;
+import info.novatec.inspectit.rcp.editor.composite.SashCompositeSubView;
+import info.novatec.inspectit.rcp.editor.composite.TabbedCompositeSubView;
 import info.novatec.inspectit.rcp.editor.inputdefinition.extra.InputDefinitionExtrasMarkerFactory;
 import info.novatec.inspectit.rcp.editor.preferences.PreferenceEventCallback.PreferenceEvent;
 import info.novatec.inspectit.rcp.editor.preferences.PreferenceId;
@@ -174,8 +176,16 @@ public class DITOverviewInputController extends AbstractTreeInputController {
 							}
 						});
 						monitor.done();
+
 					}
 				});
+				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+				IWorkbenchPage page = window.getActivePage();
+				IRootEditor rootEditor = (IRootEditor) page.getActiveEditor();
+				if (rootEditor.getSubView() instanceof SashCompositeSubView) {
+					((SashCompositeSubView) rootEditor.getSubView()).getSubView(TabbedCompositeSubView.class).doRefresh();
+				}
+
 			} catch (InvocationTargetException e) {
 				MessageDialog.openError(Display.getDefault().getActiveShell().getShell(), "Error", e.getCause().toString());
 			} catch (InterruptedException e) {

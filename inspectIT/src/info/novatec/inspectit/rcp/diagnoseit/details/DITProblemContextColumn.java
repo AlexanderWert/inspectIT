@@ -51,11 +51,11 @@ public enum DITProblemContextColumn {
 	 *            The ordinal.
 	 * @return The appropriate column.
 	 */
-	public static DITOverviewColumn fromOrd(int i) {
-		if (i < 0 || i >= DITOverviewColumn.values().length) {
+	public static DITProblemContextColumn fromOrd(int i) {
+		if (i < 0 || i >= DITProblemContextColumn.values().length) {
 			throw new IndexOutOfBoundsException("Invalid ordinal");
 		}
-		return DITOverviewColumn.values()[i];
+		return DITProblemContextColumn.values()[i];
 	}
 
 	/**

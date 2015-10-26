@@ -4,7 +4,6 @@ import info.novatec.inspectit.communication.DefaultData;
 import info.novatec.inspectit.rcp.InspectIT;
 import info.novatec.inspectit.rcp.InspectITImages;
 import info.novatec.inspectit.rcp.diagnoseit.overview.DITResultProblemInstance;
-import info.novatec.inspectit.rcp.diagnoseit.overview.NameUtils;
 import info.novatec.inspectit.rcp.editor.AbstractSubView;
 import info.novatec.inspectit.rcp.editor.preferences.PreferenceEventCallback.PreferenceEvent;
 import info.novatec.inspectit.rcp.editor.preferences.PreferenceId;
@@ -19,23 +18,18 @@ import java.util.Set;
 import org.diagnoseit.spike.result.GenericProblemDescriptionText;
 import org.diagnoseit.spike.result.ProblemInstance;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.TouchEvent;
-import org.eclipse.swt.events.TouchListener;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.forms.ManagedForm;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.events.IHyperlinkListener;
+import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -54,9 +48,10 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 	private FormTextSection affectedNodesSection;
 	private TableSection problemContextSection;
 	private ManagedForm managedForm;
-	private Composite rootComposite;
-	private ProblemInstance problemInstance;
+	private Form rootForm;
+
 	private DITResultProblemInstance ditResultProblemInstance;
+
 	@Override
 	public void init() {
 
@@ -64,62 +59,61 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 
 	@Override
 	public void createPartControl(Composite parent, FormToolkit toolkit) {
+		rootForm = toolkit.createForm(parent);
+		rootForm.getBody().setLayout(new FillLayout());
+		rootForm.setLayout(new FillLayout());
+		toolkit.decorateFormHeading(rootForm);
 
-		rootComposite = toolkit.createComposite(parent);
-		rootComposite.setLayout(new FillLayout());
+		rootForm.setText("General Problem Instance Details");
+		toolkit.decorateFormHeading(rootForm);
+		Composite header = createHeadComposite(rootForm, toolkit);
+		rootForm.setHeadClient(header);
 
-		managedForm = new ManagedForm(rootComposite);
-		toolkit = managedForm.getToolkit();
-		ScrolledForm mainForm = managedForm.getForm();
-		managedForm.getToolkit().decorateFormHeading(mainForm.getForm());
-		mainForm.setText("General Problem Instance Details");
-//		toolkit.decorateFormHeading(mainForm.getForm());
-//		Composite header = createHeadComposite(mainForm.getForm().getHead(), toolkit);
-//		mainForm.getForm().setHeadClient(header);
-		mainForm.setLayout(new FillLayout());
-		mainForm.getBody().setLayout(new TableWrapLayout());
+		managedForm = new ManagedForm(rootForm.getBody());
 
-		createLegend(toolkit, mainForm.getBody());
+		ScrolledForm contentForm = managedForm.getForm();
 
-		createProblemContextSection(toolkit, mainForm.getBody());
+		contentForm.setLayout(new FillLayout());
+		contentForm.getBody().setLayout(new TableWrapLayout());
 
-		createProblemDescriptionSection(toolkit, mainForm.getBody());
-		
-		
+		createLegend(toolkit, contentForm.getBody());
+
+		createProblemContextSection(toolkit, contentForm.getBody());
+
+		createProblemDescriptionSection(toolkit, contentForm.getBody());
+
 		TableWrapData layoutData = new TableWrapData();
 		layoutData.grabHorizontal = true;
 		layoutData.grabVertical = true;
 		layoutData.align = TableWrapData.FILL;
 		layoutData.valign = TableWrapData.FILL;
-		
+
 		TableWrapLayout layout = new TableWrapLayout();
 		layout.numColumns = 1;
-		
-		SashForm sashForm = new SashForm(mainForm.getBody(), SWT.HORIZONTAL);
+
+		SashForm sashForm = new SashForm(contentForm.getBody(), SWT.HORIZONTAL);
 		sashForm.setLayout(layout);
 		sashForm.setLayoutData(layoutData);
-		
-		
+
 		createAffectedNodesSection(toolkit, sashForm);
-		
+
 		createFullNamesSection(toolkit, sashForm);
-		
-		int [] weights = {1,1};
+
+		int[] weights = { 1, 1 };
 		sashForm.setWeights(weights);
-		
+
 	}
-	
-	private Composite createHeadComposite(Composite parent, FormToolkit toolkit){
-		Composite header = toolkit.createComposite(parent);
+
+	private Composite createHeadComposite(Form form, FormToolkit toolkit) {
+
+		Composite header = toolkit.createComposite(form.getHead());
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.marginHeight = 0;
 		gridLayout.marginWidth = 0;
 		header.setLayout(gridLayout);
-		
-		ToolBar toolbar = new ToolBar(header, SWT.FLAT);
-		toolbar.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
-		ToolBarManager toolBarManager = new ToolBarManager(toolbar);
-		
+
+		IToolBarManager toolBarManager = form.getToolBarManager();
+
 		final AbstractRootEditor rootEditor = this.getRootEditor();
 		Action action = new Action("Show Affected Invocation Sequences", InspectIT.getDefault().getImageDescriptor(InspectITImages.IMG_DIAGNOSEIT_SEQUENCE)) {
 			@Override
@@ -129,6 +123,7 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 			}
 		};
 		toolBarManager.add(action);
+		toolBarManager.update(true);
 		return header;
 	}
 
@@ -155,21 +150,39 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 		tableWrapData.align = TableWrapData.FILL;
 		tableWrapData.maxHeight = 20;
 		legend.setLayoutData(tableWrapData);
-		
-		
+
 	}
 
 	private void createProblemContextSection(FormToolkit toolkit, Composite parent) {
-		problemContextSection = new TableSection(parent, toolkit, "Context Information");
+		problemContextSection = new TableSection(parent, toolkit, "Context Information", getRootEditor());
 		managedForm.addPart(problemContextSection);
-
-		for (DITProblemContextColumn column : DITProblemContextColumn.values()) {
-			problemContextSection.addColumn(column.getName(), column.getWidth(), column.getImage(), new ProblemContextLabelProvider(column));
-		}
 	}
 
 	private void createProblemDescriptionSection(FormToolkit toolkit, Composite parent) {
-		problemDescriptionSection = new FormTextSection(parent, toolkit, "Problem Description");
+		final AbstractRootEditor rootEditor = this.getRootEditor();
+		IHyperlinkListener listener = new IHyperlinkListener() {
+
+			@Override
+			public void linkExited(HyperlinkEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void linkEntered(HyperlinkEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void linkActivated(HyperlinkEvent event) {
+				if ("affectedTraces".equals(event.getHref().toString())) {
+					RepositoryDefinition repositoryDefinition = rootEditor.getInputDefinition().getRepositoryDefinition();
+					ShowAffectedInvocationSequencesHandler.openInvocationSequences(repositoryDefinition, ditResultProblemInstance);
+				}
+			}
+		};
+		problemDescriptionSection = new FormTextSection(parent, toolkit, "Problem Description", listener);
 		problemDescriptionSection.addImage(IMAGE_BT_KEY, InspectIT.getDefault().getImage(InspectITImages.IMG_DIAGNOSEIT_BT));
 		problemDescriptionSection.addImage(IMAGE_EP_KEY, InspectIT.getDefault().getImage(InspectITImages.IMG_DIAGNOSEIT_EP));
 		problemDescriptionSection.addImage(IMAGE_PC_KEY, InspectIT.getDefault().getImage(InspectITImages.IMG_DIAGNOSEIT_PC));
@@ -178,14 +191,14 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 	}
 
 	private void createAffectedNodesSection(FormToolkit toolkit, Composite parent) {
-		affectedNodesSection = new FormTextSection(parent, toolkit, "Affected Nodes");
+		affectedNodesSection = new FormTextSection(parent, toolkit, "Affected Nodes", null);
 		affectedNodesSection.expand(false);
-	
+
 		managedForm.addPart(affectedNodesSection);
 	}
-	
+
 	private void createFullNamesSection(FormToolkit toolkit, Composite parent) {
-		fullInformationSection = new FormTextSection(parent, toolkit, "Full Names");
+		fullInformationSection = new FormTextSection(parent, toolkit, "Full Names", null);
 		fullInformationSection.expand(false);
 		fullInformationSection.addImage(IMAGE_BT_KEY, InspectIT.getDefault().getImage(InspectITImages.IMG_DIAGNOSEIT_BT));
 		fullInformationSection.addImage(IMAGE_EP_KEY, InspectIT.getDefault().getImage(InspectITImages.IMG_DIAGNOSEIT_EP));
@@ -201,8 +214,10 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 
 	@Override
 	public void doRefresh() {
-		// TODO Auto-generated method stub
-
+		problemContextSection.refresh();
+		problemDescriptionSection.refresh();
+		managedForm.refresh();
+		managedForm.getForm().reflow(true);
 	}
 
 	@Override
@@ -216,41 +231,29 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 		if (data.size() == 1 && (data.get(0) instanceof DITResultProblemInstance)) {
 			ditResultProblemInstance = (DITResultProblemInstance) data.get(0);
 			updateContent(ditResultProblemInstance.getProblemInstance());
-		} 
+		}
 
 	}
 
 	private void updateContent(ProblemInstance problemInstance) {
-		this.problemInstance = problemInstance;
 
-		ContextInformationInputElement[] input = new ContextInformationInputElement[4];
-		input[0] = new ContextInformationInputElement(problemInstance.getBusinessTransaction(), "business transaction", InspectITImages.IMG_DIAGNOSEIT_BT,
-				problemInstance.getBusinessTransactionData(), null, null, null);
-		input[1] = new ContextInformationInputElement(NameUtils.getStringRepresentationFromElementData(problemInstance.getEntryPointData()), "entry point", InspectITImages.IMG_DIAGNOSEIT_EP,
-				problemInstance.getEntryPointData(), null, null, null);
-		input[2] = new ContextInformationInputElement(NameUtils.getStringRepresentationFromElementData(problemInstance.getProblemContextData()), "problem context", InspectITImages.IMG_DIAGNOSEIT_PC,
-				problemInstance.getProblemContextData(), null, null, null);
-		input[3] = new ContextInformationInputElement(NameUtils.getStringRepresentationFromElementData(problemInstance.getCauseData()), "cause", InspectITImages.IMG_DIAGNOSEIT_C,
-				problemInstance.getCauseData(), problemInstance.getCauseEclusiveTimeSumStats(), problemInstance.getCauseCPUEclusiveTimeSumStats(), problemInstance.getCauseCountStats());
-		problemContextSection.setInput(input);
+		problemContextSection.setProblemInstance(problemInstance);
 
 		problemDescriptionSection.setText(buildDescriptionText(problemInstance));
 
 		affectedNodesSection.setText(buildAffectedNodesText(problemInstance));
-		
+
 		fullInformationSection.setText(buildFullNamesText(problemInstance));
-		
-		managedForm.refresh();
-		managedForm.getForm().reflow(true);
+		doRefresh();
 
 	}
 
 	private String buildAffectedNodesText(ProblemInstance problemInstance) {
 		String text = "<form>";
-		for(String affNode : problemInstance.getAffectedNodes()){
-			text += "<li>"+problemInstance.getNodeType() +": "+affNode+"</li>";
+		for (String affNode : problemInstance.getAffectedNodes()) {
+			text += "<li>" + problemInstance.getNodeType() + ": " + affNode + "</li>";
 		}
-		
+
 		text += "</form>";
 		return text;
 	}
@@ -280,6 +283,9 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 		StringBuilder strBuilder = new StringBuilder();
 		strBuilder.append("<form>");
 		strBuilder.append("<p>");
+		strBuilder.append(genericDescriptionText.createOccurrencesText());
+		strBuilder.append("</p>");
+		strBuilder.append("<p>");
 		strBuilder.append(genericDescriptionText.createCauseExecutionAmountText());
 		strBuilder.append("</p>");
 		strBuilder.append("<p>");
@@ -295,7 +301,7 @@ public class DITProblemInstanceDetailsSubView extends AbstractSubView {
 
 	@Override
 	public Control getControl() {
-		return rootComposite;
+		return rootForm;
 	}
 
 	@Override
