@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -21,6 +22,9 @@ import rocks.inspectit.shared.cs.ci.business.valuesource.StringValueSource;
  *
  */
 public class NameExtractionExpressionTest extends TestBase {
+	@InjectMocks
+	NameExtractionExpression expression;
+
 	@Mock
 	StringValueSource stringValueSource;
 
@@ -39,7 +43,6 @@ public class NameExtractionExpressionTest extends TestBase {
 
 		@Test
 		public void matchFirstString() {
-			NameExtractionExpression expression = new NameExtractionExpression();
 			expression.setRegularExpression("/a/([^/]*)/string");
 			expression.setTargetNamePattern("Name:(1)");
 
@@ -50,7 +53,6 @@ public class NameExtractionExpressionTest extends TestBase {
 
 		@Test
 		public void matchSecondString() {
-			NameExtractionExpression expression = new NameExtractionExpression();
 			expression.setRegularExpression("/my/([^/]*)/string.*");
 			expression.setTargetNamePattern("Name:(1)");
 
@@ -61,7 +63,6 @@ public class NameExtractionExpressionTest extends TestBase {
 
 		@Test
 		public void matchMultipleGroups() {
-			NameExtractionExpression expression = new NameExtractionExpression();
 			expression.setRegularExpression("/my/([^/]*)/string/for/(.*)");
 			expression.setTargetNamePattern("Name:(1)-(2)");
 
@@ -72,7 +73,6 @@ public class NameExtractionExpressionTest extends TestBase {
 
 		@Test
 		public void noMatch() {
-			NameExtractionExpression expression = new NameExtractionExpression();
 			expression.setRegularExpression("/my/([^/]*)/xy/for/(.*)");
 			expression.setTargetNamePattern("Name:(1)-(2)");
 

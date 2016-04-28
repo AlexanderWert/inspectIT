@@ -86,7 +86,6 @@ public class ConfigurationInterfaceManagerTest {
 	@BeforeMethod
 	public void init() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		MockitoAnnotations.initMocks(this);
-
 		final ConfigurationInterfacePathResolver resolverHelper = new ConfigurationInterfacePathResolver();
 		resolverHelper.init();
 		when(pathResolver.getDefaultCiPath()).thenReturn(Paths.get(TEST_FOLDER));

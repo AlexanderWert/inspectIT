@@ -3,7 +3,6 @@ package rocks.inspectit.server.ci;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.annotation.PostConstruct;
 
@@ -52,7 +51,7 @@ public class ConfigurationInterfacePathResolver {
 	 * File to save the agent mappings.
 	 */
 	private static final String AGENT_MAPPING_FILE = "agent-mappings.xml";
-	
+
 	/**
 	 * File name where default configuration is stored.
 	 */
@@ -62,7 +61,7 @@ public class ConfigurationInterfacePathResolver {
 	 * Used with {@link ResourcesPathResolver} to get the file of the ci dir.
 	 */
 	private File ciDirFile;
-	
+
 	/**
 	 * Initializes {@link #configDirFile}.
 	 */
@@ -150,6 +149,6 @@ public class ConfigurationInterfacePathResolver {
 	 * @return Path to the file.
 	 */
 	public Path getBusinessContextFilePath() {
-		return Paths.get(DEFAULT_CI_FOLDER, BUSINESS_CONTEXT_CONFIG_FILE);
+		return getDefaultCiPath().resolve(BUSINESS_CONTEXT_CONFIG_FILE);
 	}
 }

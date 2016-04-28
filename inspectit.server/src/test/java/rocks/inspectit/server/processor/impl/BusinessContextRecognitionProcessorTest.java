@@ -10,6 +10,7 @@ import java.util.Collections;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -49,7 +50,7 @@ public class BusinessContextRecognitionProcessorTest extends TestBase {
 		@Mock
 		CachedDataService cachedDataService;
 
-		@Mock
+		@Spy
 		BusinessContextManagementService businessContextManagementService;
 
 		@Mock

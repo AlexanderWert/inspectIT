@@ -1,6 +1,3 @@
-/**
- *
- */
 package rocks.inspectit.server.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<business-context xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" revision="2" xsi:noNamespaceSchemaLocation="schema\ciSchema.xsd">
-    <applications>
-        <applicaction id="-2089726971" name="Test" revision="1">
-            <boolean boolean-value="false" id="2421795579150025301" advanced="false"/>
-            <business-transactions/>
-        </applicaction>
-    </applications>
-</business-context>
