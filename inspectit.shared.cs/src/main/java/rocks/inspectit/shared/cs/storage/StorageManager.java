@@ -98,14 +98,14 @@ public abstract class StorageManager {
 	 * This applies to both hard drive space or max hard drive occupancy.
 	 */
 	@Value("${storage.warnHardDriveByteLeft}")
-	private long warnBytesLeft = 1073741824;
+	private final long warnBytesLeft = 1073741824;
 
 	/**
 	 * Amount of bytes when writing any more data is suspended because of the hard drive space left.
 	 * This applies to both hard drive space or max hard drive occupancy.
 	 */
 	@Value("${storage.stopWriteHardDriveBytesLeft}")
-	private long stopWriteBytesLeft = 104857600;
+	private final long stopWriteBytesLeft = 104857600;
 
 	/**
 	 * Amount of space left for write in bytes. This value is either {@link #maxHardDriveOccupancy}
@@ -469,6 +469,58 @@ public abstract class StorageManager {
 
 		// try with resources
 		try (final ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE))) {
+			Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					String fileName = directory.relativize(file).toString();
+					ZipEntry zipEntry = new ZipEntry(fileName);
+					zos.putNextEntry(zipEntry);
+					Files.copy(file, zos);
+					zos.closeEntry();
+					return FileVisitResult.CONTINUE;
+				}
+			});
+
+		}
+	}
+
+	/**
+	 * Compresses the content of the storage data folder to the file. File name is provided via
+	 * given path. If the file already exists, it will be deleted first.
+	 *
+	 * @param storageData
+	 *            {@link StorageData} to zip.
+	 * @param outputStream
+	 *            Output stream to write the zipped bytes to.
+	 * @throws IOException
+	 *             If {@link IOException} occurs during compressing.
+	 */
+	public void zipStorageData(IStorageData storageData, final OutputStream outputStream) throws IOException {
+		final Path storageDir = getStoragePath(storageData);
+		this.zipFiles(storageDir, outputStream);
+	}
+
+	/**
+	 * Zips all files in the given directory to the provided output stream.
+	 *
+	 * @param directory
+	 *            Directory where files to be zipped are placed.
+	 * @param outputStream
+	 *            Output stream to write the zipped bytes to.
+	 * @throws IOException
+	 *             If {@link IOException} occurs.
+	 */
+	protected void zipFiles(final Path directory, OutputStream outputStream) throws IOException {
+		// check the given directory where the files are
+		if (Files.notExists(directory)) {
+			throw new IOException("Can not create zip file. The directory " + directory.toString() + " does not exist.");
+		}
+		if (!Files.isDirectory(directory)) {
+			throw new IOException("Can not create zip file. Given path " + directory.toString() + " is not the directory.");
+		}
+
+		// try with resources
+		try (final ZipOutputStream zos = new ZipOutputStream(outputStream)) {
 			Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {

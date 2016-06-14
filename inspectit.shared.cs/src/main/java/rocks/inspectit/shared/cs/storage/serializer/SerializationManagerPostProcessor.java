@@ -53,6 +53,7 @@ import rocks.inspectit.shared.cs.cmr.property.configuration.GroupedProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.PropertySection;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.BooleanProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.ByteProperty;
+import rocks.inspectit.shared.cs.cmr.property.configuration.impl.DoubleProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.LongProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.PercentageProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.StringProperty;
@@ -71,6 +72,7 @@ import rocks.inspectit.shared.cs.cmr.property.configuration.validator.impl.Posit
 import rocks.inspectit.shared.cs.cmr.property.update.configuration.ConfigurationUpdate;
 import rocks.inspectit.shared.cs.cmr.property.update.impl.BooleanPropertyUpdate;
 import rocks.inspectit.shared.cs.cmr.property.update.impl.BytePropertyUpdate;
+import rocks.inspectit.shared.cs.cmr.property.update.impl.DoublePropertyUpdate;
 import rocks.inspectit.shared.cs.cmr.property.update.impl.LongPropertyUpdate;
 import rocks.inspectit.shared.cs.cmr.property.update.impl.PercentagePropertyUpdate;
 import rocks.inspectit.shared.cs.cmr.property.update.impl.RestoreDefaultPropertyUpdate;
@@ -331,6 +333,11 @@ public class SerializationManagerPostProcessor implements BeanPostProcessor {
 
 		// INSPECTIT-2101
 		kryo.register(ChartingMethodSensorAssignment.class, new FieldSerializer<ChartingMethodSensorAssignment>(kryo, ChartingMethodSensorAssignment.class), nextRegistrationId++);
+		
+		// INSPECTIT-2112 CoScale Integration
+		kryo.register(DoubleProperty.class, new FieldSerializer<DoubleProperty>(kryo, DoubleProperty.class), nextRegistrationId++);
+		kryo.register(DoublePropertyUpdate.class, new FieldSerializer<DoublePropertyUpdate>(kryo, DoublePropertyUpdate.class), nextRegistrationId++);
+
 	}
 
 }

@@ -4,3 +4,5 @@ version.log
 .metadata/
 .gradle/
 build/
+inspectit.server/src/main/external-resources/ci/businessContext.xml
+bin/

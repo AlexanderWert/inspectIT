@@ -161,7 +161,8 @@ public interface IStorageService {
 	 *             If storage is not opened, or the storage is currently used for recording. If
 	 *             write fails.
 	 */
-	void writeToStorage(StorageData storageData, Collection<DefaultData> defaultDataCollection, Collection<AbstractDataProcessor> dataProcessors, boolean synchronously) throws BusinessException;
+	void writeToStorage(StorageData storageData, Collection<? extends DefaultData> defaultDataCollection, Collection<AbstractDataProcessor> dataProcessors, boolean synchronously)
+			throws BusinessException;
 
 	/**
 	 * Copies the complete content of the buffer to the provided storage. The storage does not have
@@ -278,6 +279,7 @@ public interface IStorageService {
 	Map<String, Long> getAgentFilesLocations(StorageData storageData) throws BusinessException;
 
 	/**
+	 * 
 	 * Adds one label to the {@link StorageData}. Note that if overwrite is true, the label of the
 	 * same type will be overwritten if the type is only one per storage data.
 	 *

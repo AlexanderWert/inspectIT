@@ -253,7 +253,7 @@ public class StorageService implements IStorageService {
 	 */
 	@Override
 	@MethodLog
-	public void writeToStorage(StorageData storageData, Collection<DefaultData> defaultDataCollection, Collection<AbstractDataProcessor> dataProcessors, boolean synchronously)
+	public void writeToStorage(StorageData storageData, Collection<? extends DefaultData> defaultDataCollection, Collection<AbstractDataProcessor> dataProcessors, boolean synchronously)
 			throws BusinessException {
 		if (!storageManager.isStorageOpen(storageData)) {
 			throw new BusinessException("Write to the storage " + storageData + ".", StorageErrorCodeEnum.STORAGE_IS_NOT_OPENED);
@@ -366,6 +366,7 @@ public class StorageService implements IStorageService {
 	@Override
 	@Transactional
 	@MethodLog
+	@Override
 	public StorageData addLabelToStorage(StorageData storageData, AbstractStorageLabel<?> storageLabel, boolean doOverwrite) throws BusinessException {
 		try {
 			storageManager.addLabelToStorage(storageData, storageLabel, doOverwrite);

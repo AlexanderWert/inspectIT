@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Label;
 import rocks.inspectit.shared.cs.cmr.property.configuration.SingleProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.BooleanProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.ByteProperty;
+import rocks.inspectit.shared.cs.cmr.property.configuration.impl.DoubleProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.LongProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.PercentageProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.StringProperty;
@@ -28,6 +29,7 @@ import rocks.inspectit.ui.rcp.InspectITImages;
 import rocks.inspectit.ui.rcp.property.IPropertyUpdateListener;
 import rocks.inspectit.ui.rcp.property.control.impl.BooleanPropertyControl;
 import rocks.inspectit.ui.rcp.property.control.impl.BytePropertyControl;
+import rocks.inspectit.ui.rcp.property.control.impl.DoublePropertyControl;
 import rocks.inspectit.ui.rcp.property.control.impl.LongPropertyControl;
 import rocks.inspectit.ui.rcp.property.control.impl.PercentagePropertyControl;
 import rocks.inspectit.ui.rcp.property.control.impl.StringPropertyControl;
@@ -77,7 +79,7 @@ public abstract class AbstractPropertyControl<E extends SingleProperty<V>, V> {
 	/**
 	 * All controls, needed for hiding in case of advanced properties.
 	 */
-	private List<Control> allControls = new ArrayList<>();
+	private final List<Control> allControls = new ArrayList<>();
 
 	/**
 	 * Default constructor.
@@ -261,6 +263,8 @@ public abstract class AbstractPropertyControl<E extends SingleProperty<V>, V> {
 			return new LongPropertyControl((LongProperty) property, propertyUpdateListener);
 		} else if (property instanceof ByteProperty) {
 			return new BytePropertyControl((ByteProperty) property, propertyUpdateListener);
+		} else if (property instanceof DoubleProperty) {
+			return new DoublePropertyControl((DoubleProperty) property, propertyUpdateListener);
 		}
 		return null;
 	}

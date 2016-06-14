@@ -16,6 +16,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.BooleanProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.ByteProperty;
+import rocks.inspectit.shared.cs.cmr.property.configuration.impl.DoubleProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.LongProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.PercentageProperty;
 import rocks.inspectit.shared.cs.cmr.property.configuration.impl.StringProperty;
@@ -44,7 +45,7 @@ import rocks.inspectit.shared.cs.cmr.property.update.impl.RestoreDefaultProperty
  *            Type of the value property is defining.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSeeAlso({ StringProperty.class, LongProperty.class, BooleanProperty.class, PercentageProperty.class, ByteProperty.class })
+@XmlSeeAlso({ StringProperty.class, LongProperty.class, BooleanProperty.class, PercentageProperty.class, ByteProperty.class, DoubleProperty.class })
 public abstract class SingleProperty<T> extends AbstractProperty {
 
 	/**
