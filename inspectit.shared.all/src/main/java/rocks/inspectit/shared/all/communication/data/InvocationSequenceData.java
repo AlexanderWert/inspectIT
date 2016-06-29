@@ -91,6 +91,16 @@ public class InvocationSequenceData extends MethodSensorData {
 	private Boolean nestedExceptions;
 
 	/**
+	 * Identifier of the application this invocation sequence belongs to.
+	 */
+	private int applicationId = 0;
+
+	/**
+	 * Identifier of the business transaction this invocation sequence belongs to.
+	 */
+	private int businessTransactionId = 0;
+
+	/**
 	 * Default no-args constructor.
 	 */
 	public InvocationSequenceData() {
@@ -356,6 +366,44 @@ public class InvocationSequenceData extends MethodSensorData {
 	}
 
 	/**
+	 * Gets {@link #applicationId}.
+	 *
+	 * @return {@link #applicationId}
+	 */
+	public int getApplicationId() {
+		return applicationId;
+	}
+
+	/**
+	 * Sets {@link #applicationId}.
+	 *
+	 * @param applicationId
+	 *            New value for {@link #applicationId}
+	 */
+	public void setApplicationId(int applicationId) {
+		this.applicationId = applicationId;
+	}
+
+	/**
+	 * Gets {@link #businessTransactionId}.
+	 *
+	 * @return {@link #businessTransactionId}
+	 */
+	public int getBusinessTransactionId() {
+		return businessTransactionId;
+	}
+
+	/**
+	 * Sets {@link #businessTransactionId}.
+	 *
+	 * @param businessTransactionId
+	 *            New value for {@link #businessTransactionId}
+	 */
+	public void setBusinessTransactionId(int businessTransactionId) {
+		this.businessTransactionId = businessTransactionId;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -366,6 +414,8 @@ public class InvocationSequenceData extends MethodSensorData {
 		result = (prime * result) + ((sqlStatementData == null) ? 0 : sqlStatementData.hashCode());
 		result = (prime * result) + ((timerData == null) ? 0 : timerData.hashCode());
 		result = (prime * result) + ((loggingData == null) ? 0 : loggingData.hashCode());
+		result = prime * result + applicationId;
+		result = prime * result + businessTransactionId;
 		return result;
 	}
 
@@ -412,6 +462,13 @@ public class InvocationSequenceData extends MethodSensorData {
 		} else if (!loggingData.equals(other.loggingData)) {
 			return false;
 		}
+
+		if (applicationId != other.applicationId) {
+			return false;
+		}
+		if (businessTransactionId != other.businessTransactionId) {
+			return false;
+		}
 		return true;
 	}
 
@@ -421,7 +478,7 @@ public class InvocationSequenceData extends MethodSensorData {
 	@Override
 	public long getObjectSize(IObjectSizes objectSizes, boolean doAlign) {
 		long size = super.getObjectSize(objectSizes, doAlign);
-		size += objectSizes.getPrimitiveTypesSize(8, 0, 0, 0, 2, 3);
+		size += objectSizes.getPrimitiveTypesSize(8, 0, 2, 0, 2, 3);
 		size += objectSizes.getSizeOf(timerData);
 		size += objectSizes.getSizeOf(loggingData);
 		size += objectSizes.getSizeOf(sqlStatementData);
@@ -473,6 +530,8 @@ public class InvocationSequenceData extends MethodSensorData {
 		clone.setNestedSqlStatements(this.isNestedSqlStatements());
 		clone.setNestedExceptions(this.isNestedExceptions());
 		clone.setLoggingData(this.getLoggingData());
+		clone.setApplicationId(this.getApplicationId());
+		clone.setBusinessTransactionId(this.getBusinessTransactionId());
 		return clone;
 	}
 

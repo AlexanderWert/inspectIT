@@ -24,6 +24,8 @@ import javax.validation.constraints.NotNull;
 
 import rocks.inspectit.shared.all.jpa.ListStringConverter;
 
+import org.apache.commons.collections.CollectionUtils;
+
 /**
  * The Method Ident class is used to store the information of the Agent(s) about an instrumented
  * method into the database.
@@ -334,6 +336,32 @@ public class MethodIdent implements Serializable {
 	 */
 	public String getFQN() {
 		return packageName + '.' + className;
+	}
+
+	/**
+	 * Returns the fully qualified signature of the method the class {@link MethodIdent} is holding
+	 * information for. Format: package.Class.method(pack.ParamA,pack.ParamB)
+	 *
+	 * @return Returns the fully qualified signature of the method.
+	 */
+	public String getFullyQualifiedMethodSignature() {
+		StringBuilder signature = new StringBuilder();
+		signature.append(getFQN());
+		signature.append('.');
+		signature.append(getMethodName());
+		if (CollectionUtils.isEmpty(parameters)) {
+			signature.append("()");
+		} else {
+			signature.append('(');
+			int maxIndex = parameters.size() - 1;
+			for (int i = 0; i < maxIndex; i++) {
+				signature.append(parameters.get(i));
+				signature.append(',');
+			}
+			signature.append(parameters.get(maxIndex));
+			signature.append(')');
+		}
+		return signature.toString();
 	}
 
 	/**

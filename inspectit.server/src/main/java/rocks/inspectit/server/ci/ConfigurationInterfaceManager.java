@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
 import rocks.inspectit.server.ci.event.AgentMappingsUpdateEvent;
+import rocks.inspectit.server.ci.event.BusinessContextDefinitionUpdateEvent;
 import rocks.inspectit.server.ci.event.EnvironmentUpdateEvent;
 import rocks.inspectit.server.ci.event.ProfileUpdateEvent;
 import rocks.inspectit.server.jaxb.JAXBTransformator;
@@ -40,6 +41,7 @@ import rocks.inspectit.shared.all.exception.enumeration.ConfigurationInterfaceEr
 import rocks.inspectit.shared.all.spring.logger.Log;
 import rocks.inspectit.shared.cs.ci.AgentMapping;
 import rocks.inspectit.shared.cs.ci.AgentMappings;
+import rocks.inspectit.shared.cs.ci.BusinessContextDefinition;
 import rocks.inspectit.shared.cs.ci.Environment;
 import rocks.inspectit.shared.cs.ci.Profile;
 
@@ -89,6 +91,11 @@ public class ConfigurationInterfaceManager {
 	 * Currently used agent mapping.
 	 */
 	private final AtomicReference<AgentMappings> agentMappingsReference = new AtomicReference<>();
+
+	/**
+	 * Business context definition.
+	 */
+	private BusinessContextDefinition businessContextDefinition;
 
 	/**
 	 * Returns all existing profiles.
@@ -376,6 +383,35 @@ public class ConfigurationInterfaceManager {
 		return agentMappings;
 	}
 
+	public BusinessContextDefinition getBusinessconContextDefinition() {
+		return businessContextDefinition;
+	}
+
+	/**
+	 * Updates and stores new definition of the business context.
+	 *
+	 * @param businessContextDefinition
+	 *            New {@link IBusinessContextDefinition} to use.
+	 * @return the updated {@link BusinessContextDefinition} instance.
+	 * @throws BusinessException
+	 *             If updating business context fails.
+	 * @throws IOException
+	 *             If {@link IOException} occurs during update.
+	 * @throws JAXBException
+	 *             If {@link JAXBException} occurs during update.
+	 */
+	public synchronized BusinessContextDefinition updateBusinessContextDefinition(BusinessContextDefinition businessContextDefinition) throws BusinessException, JAXBException, IOException {
+		businessContextDefinition.setRevision(businessContextDefinition.getRevision() + 1);
+		if (this.businessContextDefinition != businessContextDefinition && this.businessContextDefinition.getRevision() + 1 != businessContextDefinition.getRevision()) { // NOPMD
+			throw new BusinessException("Update of the business context.", ConfigurationInterfaceErrorCodeEnum.REVISION_CHECK_FAILED);
+		}
+		saveBusinessContext(businessContextDefinition);
+
+		eventPublisher.publishEvent(new BusinessContextDefinitionUpdateEvent(this, businessContextDefinition));
+
+		return businessContextDefinition;
+	}
+
 	/**
 	 * Internal process of updating the profile.
 	 *
@@ -570,6 +606,21 @@ public class ConfigurationInterfaceManager {
 	}
 
 	/**
+	 * Saves the passed {@link IBusinessContextDefinition}.
+	 *
+	 * @param businessContextDefinition
+	 *            {@link IBusinessContextDefinition} to save
+	 * @throws IOException
+	 *             If {@link IOException} occurs.
+	 * @throws JAXBException
+	 *             If {@link JAXBException} occurs. If saving fails.
+	 */
+	private void saveBusinessContext(BusinessContextDefinition businessContextDefinition) throws JAXBException, IOException {
+		this.businessContextDefinition = businessContextDefinition;
+		transformator.marshall(pathResolver.getBusinessContextFilePath(), businessContextDefinition, getRelativeToSchemaPath(pathResolver.getDefaultCiPath()).toString());
+	}
+
+	/**
 	 * Returns given path relative to schema part.
 	 *
 	 * @param path
@@ -590,6 +641,7 @@ public class ConfigurationInterfaceManager {
 		loadExistingProfiles();
 		loadExistingEnvironments();
 		loadAgentMappings();
+		loadBusinessContextDefinition();
 	}
 
 	/**
@@ -729,6 +781,31 @@ public class ConfigurationInterfaceManager {
 				log.error("Error save Configuration interface agent mappings file. File path: " + path.toString() + ".", e);
 			}
 		}
+	}
+
+	/**
+	 * Loads the business context definition if it is not already loaded. If successfully loaded
+	 * definition will be placed in the {@link #businessContextDefinition} field.
+	 */
+	private void loadBusinessContextDefinition() {
+		log.info("|-Loading the business context definition");
+		Path path = pathResolver.getBusinessContextFilePath();
+		if (Files.exists(path)) {
+			try {
+				businessContextDefinition = transformator.unmarshall(path, pathResolver.getSchemaPath(), BusinessContextDefinition.class);
+			} catch (JAXBException | IOException | SAXException e) {
+				log.error("Error loading Configuration interface business context file. File path: " + path.toString() + ".", e);
+			}
+		}
+		if (null == businessContextDefinition) {
+			businessContextDefinition = new BusinessContextDefinition();
+			try {
+				saveBusinessContext(businessContextDefinition);
+			} catch (JAXBException | IOException e) {
+				log.error("Error saving Configuration interface business context file. File path: " + path.toString() + ".", e);
+			}
+		}
+
 	}
 
 	/**

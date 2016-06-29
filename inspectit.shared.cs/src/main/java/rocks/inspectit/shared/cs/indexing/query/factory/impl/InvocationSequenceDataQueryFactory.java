@@ -38,7 +38,7 @@ public class InvocationSequenceDataQueryFactory<E extends IIndexQuery> extends A
 	 *
 	 * @return Returns the query for invocation sequence overview.
 	 */
-	public E getInvocationSequenceOverview(long platformId, long methodId, int limit, Date fromDate, Date toDate) {
+	public E getInvocationSequences(long platformId, long methodId, int limit, Date fromDate, Date toDate) {
 		E query = getIndexQueryProvider().getIndexQuery();
 		query.setPlatformIdent(platformId);
 		query.setMethodIdent(methodId);
@@ -67,7 +67,7 @@ public class InvocationSequenceDataQueryFactory<E extends IIndexQuery> extends A
 	 *
 	 * @return Returns the query for invocation sequence overview.
 	 */
-	public E getInvocationSequenceOverview(long platformId, Collection<Long> invocationIdCollection, int limit) {
+	public E getInvocationSequences(long platformId, Collection<Long> invocationIdCollection, int limit) {
 		E query = getIndexQueryProvider().getIndexQuery();
 		query.setPlatformIdent(platformId);
 		ArrayList<Class<?>> searchedClasses = new ArrayList<>();

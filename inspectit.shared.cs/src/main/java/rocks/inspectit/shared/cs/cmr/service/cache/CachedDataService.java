@@ -15,7 +15,11 @@ import rocks.inspectit.shared.all.cmr.model.PlatformIdent;
 import rocks.inspectit.shared.all.cmr.model.SensorTypeIdent;
 import rocks.inspectit.shared.all.cmr.service.ICachedDataService;
 import rocks.inspectit.shared.all.communication.data.cmr.AgentStatusData;
+import rocks.inspectit.shared.all.communication.data.cmr.ApplicationData;
+import rocks.inspectit.shared.all.communication.data.cmr.BusinessTransactionData;
 import rocks.inspectit.shared.all.exception.BusinessException;
+import rocks.inspectit.shared.all.util.Pair;
+import rocks.inspectit.shared.cs.cmr.service.IBusinessContextManagementService;
 import rocks.inspectit.shared.cs.cmr.service.IGlobalDataAccessService;
 
 /**
@@ -45,29 +49,48 @@ public class CachedDataService implements InitializingBean, ICachedDataService {
 	private IGlobalDataAccessService globalDataAccessService;
 
 	/**
+	 * Delegate business context service.
+	 */
+	@Autowired
+	private IBusinessContextManagementService businessContextService;
+
+	/**
 	 * This map is needed to store the mapping between the ID's and the {@link PlatformIdent}
 	 * objects. Some views / editors need this information because they can only access the ID.
 	 */
-	private Map<Long, PlatformIdent> platformMap = new ConcurrentHashMap<>();
+	private final Map<Long, PlatformIdent> platformMap = new ConcurrentHashMap<Long, PlatformIdent>();
 
 	/**
 	 * This map is needed to store the mapping between the ID's and the {@link SensorTypeIdent}
 	 * objects. Some views / editors need this information because they can only access the ID.
 	 */
-	private Map<Long, SensorTypeIdent> sensorTypeMap = new ConcurrentHashMap<>();
+	private final Map<Long, SensorTypeIdent> sensorTypeMap = new ConcurrentHashMap<Long, SensorTypeIdent>();
 
 	/**
 	 * This map is needed to store the mapping between the ID's and the {@link MethodIdent} objects.
 	 * Some views / editors need this information because they can only access the ID.
 	 */
-	private Map<Long, MethodIdent> methodMap = new ConcurrentHashMap<>();
+	private final Map<Long, MethodIdent> methodMap = new ConcurrentHashMap<Long, MethodIdent>();
 
 	/**
 	 * This map is needed to store the mapping between the ID's and the
 	 * {@link JmxDefinitionDataIdent} objects. Some views / editors need this information because
 	 * they can only access the ID.
 	 */
-	private Map<Long, JmxDefinitionDataIdent> jmxDefinitionDataMap = new ConcurrentHashMap<>();
+	private final Map<Long, JmxDefinitionDataIdent> jmxDefinitionDataMap = new ConcurrentHashMap<Long, JmxDefinitionDataIdent>();
+
+	/**
+	 * This map is needed to store the mapping between the ID's and the {@link ApplicationData}
+	 * objects. Some views / editors need this information because they can only access the ID.
+	 */
+	private final Map<Integer, ApplicationData> applicationMap = new ConcurrentHashMap<Integer, ApplicationData>();
+
+	/**
+	 * This map is needed to store the mapping between the ID's and the
+	 * {@link BusinessTransactionData} objects. Some views / editors need this information because
+	 * they can only access the ID.
+	 */
+	private final Map<Pair<Integer, Integer>, BusinessTransactionData> businessTransactionsMap = new ConcurrentHashMap<Pair<Integer, Integer>, BusinessTransactionData>();
 
 	/**
 	 * No-args constructor.
@@ -78,9 +101,12 @@ public class CachedDataService implements InitializingBean, ICachedDataService {
 	/**
 	 * @param globalDataAccessService
 	 *            Delegated service.
+	 * @param businessContextService
+	 *            Delegated {@link IBusinessContextManagementService}
 	 */
-	public CachedDataService(IGlobalDataAccessService globalDataAccessService) {
+	public CachedDataService(IGlobalDataAccessService globalDataAccessService, IBusinessContextManagementService businessContextService) {
 		this.globalDataAccessService = globalDataAccessService;
+		this.businessContextService = businessContextService;
 	}
 
 	/**
@@ -185,6 +211,30 @@ public class CachedDataService implements InitializingBean, ICachedDataService {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ApplicationData getApplicationForId(int id) {
+		if (!applicationMap.containsKey(id)) {
+			refreshBusinessContext();
+		}
+		return applicationMap.get(id);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public BusinessTransactionData getBusinessTransactionForId(int appId, int businessTxId) {
+		Pair<Integer, Integer> keyPair = new Pair<Integer, Integer>(appId, businessTxId);
+		if (!businessTransactionsMap.containsKey(keyPair)) {
+			refreshBusinessContext();
+		}
+		BusinessTransactionData businessTxData = businessTransactionsMap.get(keyPair);
+		return businessTxData;
+	}
+
+	/**
 	 * Internal refresh of the idents. Currently everything is loaded again.
 	 */
 	protected void refreshIdents() {
@@ -219,11 +269,25 @@ public class CachedDataService implements InitializingBean, ICachedDataService {
 	}
 
 	/**
+	 * Reloads the business context data.
+	 */
+	private void refreshBusinessContext() {
+		applicationMap.clear();
+		businessTransactionsMap.clear();
+		for (BusinessTransactionData businessTx : businessContextService.getBusinessTransactions()) {
+			businessTransactionsMap.put(new Pair<Integer, Integer>(businessTx.getApplication().getId(), businessTx.getId()), businessTx);
+		}
+		for (ApplicationData application : businessContextService.getApplications()) {
+			applicationMap.put(application.getId(), application);
+		}
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		refreshIdents();
+		refreshBusinessContext();
 	}
-
 }

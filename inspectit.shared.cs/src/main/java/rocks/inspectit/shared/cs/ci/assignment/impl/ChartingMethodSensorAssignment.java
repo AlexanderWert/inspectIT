@@ -29,8 +29,8 @@ public class ChartingMethodSensorAssignment extends MethodSensorAssignment {
 	/**
 	 * If it is charting.
 	 */
-	@XmlAttribute(name = "charting")
-	private boolean charting;
+	@XmlAttribute(name = "charting", required = false)
+	private Boolean charting = false;
 
 	/**
 	 * No arg-constructor.
@@ -77,7 +77,7 @@ public class ChartingMethodSensorAssignment extends MethodSensorAssignment {
 	 * @return {@link #charting}
 	 */
 	public boolean isCharting() {
-		return charting;
+		return charting != null ? charting : false;
 	}
 
 	/**

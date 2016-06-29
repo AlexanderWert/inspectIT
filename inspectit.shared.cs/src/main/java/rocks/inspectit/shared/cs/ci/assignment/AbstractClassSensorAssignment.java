@@ -33,14 +33,14 @@ public abstract class AbstractClassSensorAssignment<T extends ISensorConfig> imp
 	/**
 	 * If superclass marker is set.
 	 */
-	@XmlAttribute(name = "superclass", required = true)
-	private boolean superclass;
+	@XmlAttribute(name = "superclass")
+	private Boolean superclass = Boolean.FALSE;
 
 	/**
 	 * If interface marker is set.
 	 */
-	@XmlAttribute(name = "interface", required = true)
-	private boolean interf;
+	@XmlAttribute(name = "interface")
+	private Boolean interf = Boolean.FALSE;
 
 	/**
 	 * Annotation class.
@@ -80,7 +80,7 @@ public abstract class AbstractClassSensorAssignment<T extends ISensorConfig> imp
 	 * @return {@link #superclass}
 	 */
 	public boolean isSuperclass() {
-		return superclass;
+		return null != superclass ? superclass : false;
 	}
 
 	/**
@@ -99,7 +99,7 @@ public abstract class AbstractClassSensorAssignment<T extends ISensorConfig> imp
 	 * @return {@link #interf}
 	 */
 	public boolean isInterf() {
-		return interf;
+		return null != interf ? interf : false;
 	}
 
 	/**
@@ -148,8 +148,8 @@ public abstract class AbstractClassSensorAssignment<T extends ISensorConfig> imp
 		int result = 1;
 		result = (prime * result) + ((annotation == null) ? 0 : annotation.hashCode());
 		result = (prime * result) + ((className == null) ? 0 : className.hashCode());
-		result = (prime * result) + (interf ? 1231 : 1237);
-		result = (prime * result) + (superclass ? 1231 : 1237);
+		result = prime * result + (isInterf() ? 1231 : 1237);
+		result = prime * result + (isSuperclass() ? 1231 : 1237);
 		return result;
 	}
 
@@ -182,10 +182,10 @@ public abstract class AbstractClassSensorAssignment<T extends ISensorConfig> imp
 		} else if (!className.equals(other.className)) {
 			return false;
 		}
-		if (interf != other.interf) {
+		if (isInterf() != other.isInterf()) {
 			return false;
 		}
-		if (superclass != other.superclass) {
+		if (isSuperclass() != other.isSuperclass()) {
 			return false;
 		}
 		return true;

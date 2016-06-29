@@ -54,26 +54,26 @@ public class Profile {
 	 * Is it the "common" profile.
 	 */
 	@XmlAttribute(name = "common")
-	private boolean commonProfile;
+	private Boolean commonProfile = Boolean.FALSE;
 
 	/**
 	 * If profile is active. Deactivating profiles means they are not used even when they are
 	 * assigned to the Environments.
 	 */
 	@XmlAttribute(name = "active")
-	private boolean active = true;
+	private Boolean active = true;
 
 	/**
 	 * If the profile should be included in the Environment by default.
 	 */
 	@XmlAttribute(name = "default")
-	private boolean defaultProfile;
+	private Boolean defaultProfile = Boolean.FALSE;
 
 	/**
 	 * Revision. Server for version control and updating control.
 	 */
 	@XmlAttribute(name = "revision")
-	private int revision = 1;
+	private Integer revision = 1;
 
 	/**
 	 * Type of profile data this profile is holding.
@@ -108,7 +108,7 @@ public class Profile {
 	 * @return {@link #name}
 	 */
 	public String getName() {
-		if (commonProfile) {
+		if (isCommonProfile()) {
 			return "[Common] " + name;
 		} else {
 			return name;
@@ -188,7 +188,17 @@ public class Profile {
 	 * @return {@link #commonProfile}
 	 */
 	public boolean isCommonProfile() {
-		return commonProfile;
+		return null != commonProfile ? commonProfile : false;
+	}
+
+	/**
+	 * Sets {@link #commonProfile}.
+	 *
+	 * @param commonProfile
+	 *            New value for {@link #commonProfile}
+	 */
+	public void setCommonProfile(boolean commonProfile) {
+		this.commonProfile = commonProfile;
 	}
 
 	/**
@@ -197,7 +207,7 @@ public class Profile {
 	 * @return {@link #active}
 	 */
 	public boolean isActive() {
-		return active;
+		return null != active ? active : true;
 	}
 
 	/**
@@ -216,7 +226,7 @@ public class Profile {
 	 * @return {@link #defaultProfile}
 	 */
 	public boolean isDefaultProfile() {
-		return defaultProfile;
+		return null != defaultProfile ? defaultProfile : false;
 	}
 
 	/**
@@ -235,7 +245,7 @@ public class Profile {
 	 * @return {@link #revision}
 	 */
 	public int getRevision() {
-		return revision;
+		return null != revision ? revision : 1;
 	}
 
 	/**
@@ -275,7 +285,7 @@ public class Profile {
 		final int prime = 31;
 		int result = 1;
 		result = (prime * result) + (active ? 1231 : 1237);
-		result = (prime * result) + (commonProfile ? 1231 : 1237);
+		result = prime * result + (isCommonProfile() ? 1231 : 1237);
 		result = (prime * result) + ((createdDate == null) ? 0 : createdDate.hashCode());
 		result = (prime * result) + (defaultProfile ? 1231 : 1237);
 		result = (prime * result) + ((description == null) ? 0 : description.hashCode());
@@ -302,7 +312,7 @@ public class Profile {
 			return false;
 		}
 		Profile other = (Profile) obj;
-		if (active != other.active) {
+		if (isActive() != other.isActive()) {
 			return false;
 		}
 		if (commonProfile != other.commonProfile) {
@@ -346,7 +356,7 @@ public class Profile {
 		} else if (!profileData.equals(other.profileData)) {
 			return false;
 		}
-		if (revision != other.revision) {
+		if (getRevision() != other.getRevision()) {
 			return false;
 		}
 		if (updatedDate == null) {

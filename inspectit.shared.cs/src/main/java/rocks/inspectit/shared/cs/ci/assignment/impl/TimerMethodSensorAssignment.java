@@ -34,13 +34,13 @@ public class TimerMethodSensorAssignment extends ChartingMethodSensorAssignment 
 	 * If it starts an invocation.
 	 */
 	@XmlAttribute(name = "starts-invocation")
-	private boolean startsInvocation;
+	private Boolean startsInvocation = false;
 
 	/**
 	 * Invocation min duration.
 	 */
 	@XmlAttribute(name = "min-invocation-duration")
-	private long minInvocationDuration;
+	private Long minInvocationDuration = 0L;
 
 	/**
 	 * List of context captures.
@@ -80,7 +80,7 @@ public class TimerMethodSensorAssignment extends ChartingMethodSensorAssignment 
 	 * @return {@link #startsInvocation}
 	 */
 	public boolean isStartsInvocation() {
-		return startsInvocation;
+		return null != startsInvocation ? startsInvocation : false;
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class TimerMethodSensorAssignment extends ChartingMethodSensorAssignment 
 	 * @return {@link #minInvocationDuration}
 	 */
 	public long getMinInvocationDuration() {
-		return minInvocationDuration;
+		return null != minInvocationDuration ? minInvocationDuration : 0L;
 	}
 
 	/**
@@ -139,8 +139,8 @@ public class TimerMethodSensorAssignment extends ChartingMethodSensorAssignment 
 		final int prime = 31;
 		int result = super.hashCode();
 		result = (prime * result) + ((contextCaptures == null) ? 0 : contextCaptures.hashCode());
-		result = (prime * result) + (int) (minInvocationDuration ^ (minInvocationDuration >>> 32));
-		result = (prime * result) + (startsInvocation ? 1231 : 1237);
+		result = prime * result + (int) (getMinInvocationDuration() ^ (getMinInvocationDuration() >>> 32));
+		result = prime * result + (isStartsInvocation() ? 1231 : 1237);
 		return result;
 	}
 
@@ -166,10 +166,10 @@ public class TimerMethodSensorAssignment extends ChartingMethodSensorAssignment 
 		} else if (!contextCaptures.equals(other.contextCaptures)) {
 			return false;
 		}
-		if (minInvocationDuration != other.minInvocationDuration) {
+		if (getMinInvocationDuration() != other.getMinInvocationDuration()) {
 			return false;
 		}
-		if (startsInvocation != other.startsInvocation) {
+		if (isStartsInvocation() != other.isStartsInvocation()) {
 			return false;
 		}
 		return true;
