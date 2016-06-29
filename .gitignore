@@ -6,3 +6,4 @@ version.log
 build/
 inspectit.server/src/main/external-resources/ci/businessContext.xml
 bin/
+inspectit.server/src/main/external-resources/ci/businessContext.xml

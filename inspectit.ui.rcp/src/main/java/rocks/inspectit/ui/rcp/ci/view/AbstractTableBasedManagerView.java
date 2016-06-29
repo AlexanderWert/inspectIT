@@ -278,9 +278,6 @@ public abstract class AbstractTableBasedManagerView implements CmrRepositoryChan
 			workbenchPartSite.setSelectionProvider(getSelectionProviderAdapter());
 		}
 		getSelectionProviderAdapter().setSelection(new StructuredSelection(displayedCmrRepositoryDefinition));
-		environmentSelection.addSelectionListener(listener);
-		profileSelection.addSelectionListener(listener);
-
 	}
 
 	/**
@@ -698,7 +695,7 @@ public abstract class AbstractTableBasedManagerView implements CmrRepositoryChan
 	/**
 	 *
 	 *
-
+	 * 
 	 * Action to select CMR from the form menu.
 	 *
 	 * @author Ivan Senic

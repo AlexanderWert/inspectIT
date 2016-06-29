@@ -182,7 +182,7 @@ public class KryoNetIntegrationTest extends AbstractTransactionalTestNGLogSuppor
 			client.sendTCP(toSend);
 
 			// sleep as the receiving is done in another thread
-			verify(listener, timeout(500)).received(Mockito.<Connection> anyObject(), eq(toSend));
+			verify(listener, timeout(500)).received(Matchers.<Connection> anyObject(), eq(toSend));
 			verify(listener).received(Matchers.<Connection> anyObject(), eq(toSend));
 		}
 

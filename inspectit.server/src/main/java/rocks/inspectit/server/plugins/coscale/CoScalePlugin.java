@@ -1,7 +1,6 @@
 package rocks.inspectit.server.plugins.coscale;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,6 +35,7 @@ import com.coscale.sdk.client.requests.RequestsApi;
 import com.coscale.sdk.client.servers.ServersApi;
 
 import rocks.inspectit.server.plugins.AbstractPlugin;
+import rocks.inspectit.server.plugins.coscale.util.BTMetrics;
 import rocks.inspectit.server.storage.CmrStorageManager;
 import rocks.inspectit.shared.all.cmr.property.spring.PropertyUpdate;
 import rocks.inspectit.shared.all.communication.DefaultData;
@@ -106,6 +106,7 @@ public class CoScalePlugin extends AbstractPlugin {
 	@Value(value = "${cmr.data.extensions.coscale.writeTimings}")
 	private boolean writeTimingsToCoScale;
 
+
 	/**
 	 * Log-in state.
 	 */
@@ -167,28 +168,44 @@ public class CoScalePlugin extends AbstractPlugin {
 	 * @param invocations
 	 *            invocation sequences to send.
 	 */
-	public void sendInvocationSequencesAsStorage(String businessTxName, Collection<InvocationSequenceData> invocations) {
+	public void sendInvocationSequencesAsStorage(String businessTxName, Collection<InvocationSequenceData> invocations, int durationSeconds) {
 		if (isActive()) {
 			if (!loggedIn) {
 				throw new IllegalStateException("CoScale cplugin is not connected! Check Application Id and Access token in the CoScale settings!");
 			}
+			// TestCode:
+			// EventInsert newEvent = new EventInsert(name, description, attributeDescriptions,
+			// type, icon);
 			try {
-				// create storage name
-				StorageData storageData = createStorage(businessTxName, invocations);
+				Builder queryBuilder = new Builder();
+				queryBuilder.selectBy("name", "inspectIT Anomaly");
 
-				// send storage to CoScale
-				// TODO: connect OutputStream to the REST call to CoScale SDK
-				OutputStream outputStream = null;
-				storageManager.zipStorageData(storageData, outputStream);
-				outputStream.flush();
-				outputStream.close();
-			} catch (BusinessException | IOException e) {
-				throw new RuntimeException(e);
+				List<Event> events = eventsApi.all(queryBuilder.build());
+				Event event = events.get(0);
+
+				EventDataInsert eventData = new EventDataInsert("Anomaly - " + businessTxName, -1l * durationSeconds, 0l, "{\"businessTransaction\":\"" + businessTxName + "\"}", "a");
+				eventsApi.insertData(event.id, eventData);
+			} catch (Exception e) {
+				System.out.println("error");
 			}
+
+			// try {
+			// // create storage name
+			// StorageData storageData = createStorage(businessTxName, invocations);
+			//
+			// // send storage to CoScale
+			// // TODO: connect OutputStream to the REST call to CoScale SDK
+			// OutputStream outputStream = null;
+			// storageManager.zipStorageData(storageData, outputStream);
+			// outputStream.flush();
+			// outputStream.close();
+			// } catch (BusinessException | IOException e) {
+			// throw new RuntimeException(e);
+			// }
 		}
 	}
 
-	public long createBusinessTransactionMetric(String businessTxName) {
+	public BTMetrics getBusinessTransactionMetrics(String businessTxName) {
 		if (isActive() && isConnected()) {
 			try {
 				Builder queryBuilder = new Builder();
@@ -202,26 +219,34 @@ public class CoScalePlugin extends AbstractPlugin {
 				} else {
 					group = metricGroups.get(0);
 				}
+				BTMetrics metrics = new BTMetrics();
 
-				queryBuilder = new Builder();
-				queryBuilder.selectBy("name", businessTxName);
-
-				List<Metric> metrics = metricsApi.all(queryBuilder.build());
-				Metric metric;
-				if (metrics.isEmpty()) {
-					MetricInsert metricInsert = new MetricInsert(businessTxName, "Response Time of business transaction " + businessTxName, DataType.DOUBLE, SubjectType.APPLICATION, "ms",
-							(int) timeInterval * 60);
-					metric = metricsApi.insert(metricInsert);
-					metricsApi.addMetricToGroup(metric.id, group.id);
-				} else {
-					metric = metrics.get(0);
-				}
-				return metric.id;
+				long responseTimeMetricId = createMetric("RT - " + businessTxName, "Response Time of business transaction " + businessTxName, group.id);
+				long thresholdMetricId = createMetric("T - " + businessTxName, "Threshold for business transaction " + businessTxName, group.id);
+				metrics.setResponseTimeMetricId(responseTimeMetricId);
+				metrics.setRtThresholdMetricId(thresholdMetricId);
+				return metrics;
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
-		return -1;
+		return null;
+	}
+
+	private long createMetric(String metricName, String description, long groupId) throws IOException {
+		Builder queryBuilder = new Builder();
+		queryBuilder.selectBy("name", metricName);
+
+		List<Metric> metrics = metricsApi.all(queryBuilder.build());
+		Metric metric;
+		if (metrics.isEmpty()) {
+			MetricInsert metricInsert = new MetricInsert(metricName, description, DataType.DOUBLE, SubjectType.APPLICATION, "ms", (int) timeInterval * 60);
+			metric = metricsApi.insert(metricInsert);
+			metricsApi.addMetricToGroup(metric.id, groupId);
+		} else {
+			metric = metrics.get(0);
+		}
+		return metric.id;
 	}
 
 	public void writeMetricData(DataInsert dataInsert) {
@@ -255,7 +280,7 @@ public class CoScalePlugin extends AbstractPlugin {
 	 * @return Returns an {@link ExecutorService} instance.
 	 */
 	public ScheduledExecutorService getExecutorService() {
-		if (null == executorService || executorService.isShutdown()) {
+		if ((null == executorService) || executorService.isShutdown()) {
 			executorService = Executors.newScheduledThreadPool(1);
 		}
 		return executorService;
@@ -473,22 +498,6 @@ public class CoScalePlugin extends AbstractPlugin {
 	public void init() {
 		if (pluginActive) {
 			activatePlugin();
-
-			// TestCode:
-			// EventInsert newEvent = new EventInsert(name, description, attributeDescriptions,
-			// type, icon);
-			try {
-				Builder queryBuilder = new Builder();
-				queryBuilder.selectBy("name", "inspectIT Anomaly");
-
-				List<Event> events = eventsApi.all(queryBuilder.build());
-				Event event = events.get(0);
-
-				EventDataInsert eventData = new EventDataInsert("A Test EventData", -1l, 0l, "{\"businessTransaction\":\"Hallo\"}", "a");
-				eventsApi.insertData(event.id, eventData);
-			} catch (Exception e) {
-				System.out.println("error");
-			}
 		} else {
 			deactivatePlugin();
 		}

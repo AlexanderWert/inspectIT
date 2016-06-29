@@ -1,0 +1,756 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <xs:element name="agent-mapping" type="agentMapping"/>
+
+  <xs:element name="agent-mappings" type="agentMappings"/>
+
+  <xs:element name="and" type="andExpression"/>
+
+  <xs:element name="applicaction" type="applicationDefinition"/>
+
+  <xs:element name="boolean" type="booleanExpression"/>
+
+  <xs:element name="business-context" type="businessContextDefinition"/>
+
+  <xs:element name="business-transaction" type="businessTransactionDefinition"/>
+
+  <xs:element name="charting-method-sensor-assignment" type="chartingMethodSensorAssignment"/>
+
+  <xs:element name="class-loading-sensor-config" type="classLoadingSensorConfig"/>
+
+  <xs:element name="compilation-sensor-config" type="compilationSensorConfig"/>
+
+  <xs:element name="connection-sensor-config" type="connectionSensorConfig"/>
+
+  <xs:element name="cpu-sensor-config" type="cpuSensorConfig"/>
+
+  <xs:element name="environment" type="environment"/>
+
+  <xs:element name="exception-sensor-assignment" type="exceptionSensorAssignment"/>
+
+  <xs:element name="exception-sensor-config" type="exceptionSensorConfig"/>
+
+  <xs:element name="exclude-rule" type="excludeRule"/>
+
+  <xs:element name="exclude-rules-profile-data" type="excludeRulesProfileData"/>
+
+  <xs:element name="field-capture" type="fieldContextCapture"/>
+
+  <xs:element name="host" type="hostValueSource"/>
+
+  <xs:element name="http-parameter-value" type="httpParameterValueSource"/>
+
+  <xs:element name="http-sensor-config" type="httpSensorConfig"/>
+
+  <xs:element name="http-uri" type="httpUriValueSource"/>
+
+  <xs:element name="invocation-sequence-sensor-config" type="invocationSequenceSensorConfig"/>
+
+  <xs:element name="jmx-bean-assignment" type="jmxBeanSensorAssignment"/>
+
+  <xs:element name="jmx-definition-profile-data" type="jmxDefinitionProfileData"/>
+
+  <xs:element name="jmx-loading-sensor-config" type="jmxSensorConfig"/>
+
+  <xs:element name="list-sending-strategy-config" type="listSendingStrategyConfig"/>
+
+  <xs:element name="log4j-logging-sensor-config" type="log4JLoggingSensorConfig"/>
+
+  <xs:element name="memory-sensor-config" type="memorySensorConfig"/>
+
+  <xs:element name="method-parameter" type="methodParameterValueSource"/>
+
+  <xs:element name="method-sensor-assignment" type="methodSensorAssignment"/>
+
+  <xs:element name="method-signature" type="methodSignatureValueSource"/>
+
+  <xs:element name="name-extraction" type="nameExtractionExpression"/>
+
+  <xs:element name="not" type="notExpression"/>
+
+  <xs:element name="or" type="orExpression"/>
+
+  <xs:element name="parameter-capture" type="parameterContextCapture"/>
+
+  <xs:element name="prepared-statement-parameter-sensor-config" type="preparedStatementParameterSensorConfig"/>
+
+  <xs:element name="prepared-statement-sensor-config" type="preparedStatementSensorConfig"/>
+
+  <xs:element name="profile" type="profile"/>
+
+  <xs:element name="return-capture" type="returnContextCapture"/>
+
+  <xs:element name="runtime-sensor-config" type="runtimeSensorConfig"/>
+
+  <xs:element name="sensor-assignment-profile-data" type="sensorAssignmentProfileData"/>
+
+  <xs:element name="simple-buffer-strategy-config" type="simpleBufferStrategyConfig"/>
+
+  <xs:element name="size-buffer-strategy-config" type="sizeBufferStrategyConfig"/>
+
+  <xs:element name="statement-sensor-config" type="statementSensorConfig"/>
+
+  <xs:element name="string-matching" type="stringMatchingExpression"/>
+
+  <xs:element name="system-sensor-config" type="systemSensorConfig"/>
+
+  <xs:element name="thread-sensor-config" type="threadSensorConfig"/>
+
+  <xs:element name="time-sending-strategy-config" type="timeSendingStrategyConfig"/>
+
+  <xs:element name="timer-method-sensor-assignment" type="timerMethodSensorAssignment"/>
+
+  <xs:element name="timer-sensor-config" type="timerSensorConfig"/>
+
+  <xs:complexType name="agentMapping">
+    <xs:sequence/>
+    <xs:attribute name="active" type="xs:boolean" use="required"/>
+    <xs:attribute name="agent-name" type="xs:string" use="required"/>
+    <xs:attribute name="ip-address" type="xs:string" use="required"/>
+    <xs:attribute name="description" type="xs:string"/>
+    <xs:attribute name="environment-id" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="agentMappings">
+    <xs:sequence>
+      <xs:element ref="agent-mapping" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="revision" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="businessContextDefinition">
+    <xs:sequence>
+      <xs:element name="applications" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="applicaction" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="revision" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="applicationDefinition">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element ref="and"/>
+        <xs:element ref="or"/>
+        <xs:element ref="not"/>
+        <xs:element ref="string-matching"/>
+        <xs:element ref="boolean"/>
+      </xs:choice>
+      <xs:element name="business-transactions" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="business-transaction" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:int" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="description" type="xs:string"/>
+    <xs:attribute name="revision" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="abstractExpression" abstract="true">
+    <xs:sequence/>
+    <xs:attribute name="id" type="xs:long" use="required"/>
+    <xs:attribute name="advanced" type="xs:boolean" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="andExpression">
+    <xs:complexContent>
+      <xs:extension base="abstractExpression">
+        <xs:sequence>
+          <xs:element name="operands" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                  <xs:element ref="and"/>
+                  <xs:element ref="or"/>
+                  <xs:element ref="not"/>
+                  <xs:element ref="string-matching"/>
+                  <xs:element ref="boolean"/>
+                </xs:choice>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="orExpression">
+    <xs:complexContent>
+      <xs:extension base="abstractExpression">
+        <xs:sequence>
+          <xs:element name="operands" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                  <xs:element ref="and"/>
+                  <xs:element ref="or"/>
+                  <xs:element ref="not"/>
+                  <xs:element ref="string-matching"/>
+                  <xs:element ref="boolean"/>
+                </xs:choice>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="notExpression">
+    <xs:complexContent>
+      <xs:extension base="abstractExpression">
+        <xs:choice>
+          <xs:element ref="and"/>
+          <xs:element ref="or"/>
+          <xs:element ref="not"/>
+          <xs:element ref="string-matching"/>
+          <xs:element ref="boolean"/>
+        </xs:choice>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="stringMatchingExpression">
+    <xs:complexContent>
+      <xs:extension base="abstractExpression">
+        <xs:choice>
+          <xs:element ref="http-uri"/>
+          <xs:element ref="http-parameter-value"/>
+          <xs:element ref="method-signature"/>
+          <xs:element ref="method-parameter"/>
+          <xs:element ref="host"/>
+        </xs:choice>
+        <xs:attribute name="matching-type" type="patternMatchingType" use="required"/>
+        <xs:attribute name="snippet" type="xs:string" use="required"/>
+        <xs:attribute name="search-in-trace" type="xs:boolean"/>
+        <xs:attribute name="max-search-depth" type="xs:int"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="stringValueSource" abstract="true">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="httpUriValueSource">
+    <xs:complexContent>
+      <xs:extension base="stringValueSource">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="httpParameterValueSource">
+    <xs:complexContent>
+      <xs:extension base="stringValueSource">
+        <xs:sequence/>
+        <xs:attribute name="parameter-name" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="methodSignatureValueSource">
+    <xs:complexContent>
+      <xs:extension base="stringValueSource">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="methodParameterValueSource">
+    <xs:complexContent>
+      <xs:extension base="stringValueSource">
+        <xs:sequence/>
+        <xs:attribute name="parameter-index" type="xs:int" use="required"/>
+        <xs:attribute name="methodSignature" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="hostValueSource">
+    <xs:complexContent>
+      <xs:extension base="stringValueSource">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="booleanExpression">
+    <xs:complexContent>
+      <xs:extension base="abstractExpression">
+        <xs:sequence/>
+        <xs:attribute name="boolean-value" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="businessTransactionDefinition">
+    <xs:sequence>
+      <xs:element ref="name-extraction" minOccurs="0"/>
+      <xs:choice>
+        <xs:element ref="and"/>
+        <xs:element ref="or"/>
+        <xs:element ref="not"/>
+        <xs:element ref="string-matching"/>
+        <xs:element ref="boolean"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:int" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="description" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="nameExtractionExpression">
+    <xs:choice>
+      <xs:element ref="http-uri"/>
+      <xs:element ref="http-parameter-value"/>
+      <xs:element ref="method-signature"/>
+      <xs:element ref="method-parameter"/>
+      <xs:element ref="host"/>
+    </xs:choice>
+    <xs:attribute name="id" type="xs:long" use="required"/>
+    <xs:attribute name="regularExpression" type="xs:string" use="required"/>
+    <xs:attribute name="targetNamePattern" type="xs:string" use="required"/>
+    <xs:attribute name="max-search-depth" type="xs:int"/>
+    <xs:attribute name="search-in-trace" type="xs:boolean"/>
+  </xs:complexType>
+
+  <xs:complexType name="environment">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element ref="time-sending-strategy-config"/>
+        <xs:element ref="list-sending-strategy-config"/>
+      </xs:choice>
+      <xs:choice>
+        <xs:element ref="simple-buffer-strategy-config"/>
+        <xs:element ref="size-buffer-strategy-config"/>
+      </xs:choice>
+      <xs:element name="platform-sensor-configs" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element ref="class-loading-sensor-config"/>
+              <xs:element ref="compilation-sensor-config"/>
+              <xs:element ref="cpu-sensor-config"/>
+              <xs:element ref="memory-sensor-config"/>
+              <xs:element ref="runtime-sensor-config"/>
+              <xs:element ref="system-sensor-config"/>
+              <xs:element ref="thread-sensor-config"/>
+            </xs:choice>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="method-sensor-configs" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element ref="connection-sensor-config"/>
+              <xs:element ref="http-sensor-config"/>
+              <xs:element ref="invocation-sequence-sensor-config"/>
+              <xs:element ref="prepared-statement-parameter-sensor-config"/>
+              <xs:element ref="prepared-statement-sensor-config"/>
+              <xs:element ref="statement-sensor-config"/>
+              <xs:element ref="timer-sensor-config"/>
+              <xs:element ref="log4j-logging-sensor-config"/>
+            </xs:choice>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element ref="exception-sensor-config"/>
+      <xs:element name="profile-ids" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="profile-id" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="classLoadingDelegation" type="xs:boolean"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="description" type="xs:string"/>
+    <xs:attribute name="revision" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="timeSendingStrategyConfig">
+    <xs:sequence/>
+    <xs:attribute name="time" type="xs:long" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="listSendingStrategyConfig">
+    <xs:sequence/>
+    <xs:attribute name="list-size" type="xs:int" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="simpleBufferStrategyConfig">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="sizeBufferStrategyConfig">
+    <xs:sequence/>
+    <xs:attribute name="size" type="xs:int" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="classLoadingSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="abstractPlatformSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="abstractPlatformSensorConfig" abstract="true">
+    <xs:sequence/>
+    <xs:attribute name="active" type="xs:boolean" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="compilationSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="abstractPlatformSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="cpuSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="abstractPlatformSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="memorySensorConfig">
+    <xs:complexContent>
+      <xs:extension base="abstractPlatformSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="runtimeSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="abstractPlatformSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="systemSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="abstractPlatformSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="threadSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="abstractPlatformSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="connectionSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="abstractMethodSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="abstractMethodSensorConfig" abstract="true">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="httpSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="stringConstraintSensorConfig">
+        <xs:sequence/>
+        <xs:attribute name="sessionCapture" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="stringConstraintSensorConfig" abstract="true">
+    <xs:sequence/>
+    <xs:attribute name="string-length" type="xs:int" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="exceptionSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="stringConstraintSensorConfig">
+        <xs:sequence/>
+        <xs:attribute name="enhanced" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="invocationSequenceSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="stringConstraintSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="preparedStatementParameterSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="abstractMethodSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="preparedStatementSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="stringConstraintSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="statementSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="stringConstraintSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="timerSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="stringConstraintSensorConfig">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="log4JLoggingSensorConfig">
+    <xs:complexContent>
+      <xs:extension base="abstractMethodSensorConfig">
+        <xs:sequence/>
+        <xs:attribute name="minLevel" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="profile">
+    <xs:choice>
+      <xs:element ref="sensor-assignment-profile-data"/>
+      <xs:element ref="exclude-rules-profile-data"/>
+      <xs:element ref="jmx-definition-profile-data"/>
+    </xs:choice>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="description" type="xs:string"/>
+    <xs:attribute name="created-on" type="xs:dateTime" use="required"/>
+    <xs:attribute name="updated-on" type="xs:dateTime"/>
+    <xs:attribute name="common" type="xs:boolean"/>
+    <xs:attribute name="active" type="xs:boolean"/>
+    <xs:attribute name="default" type="xs:boolean"/>
+    <xs:attribute name="revision" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="abstractProfileData" abstract="true">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="sensorAssignmentProfileData">
+    <xs:complexContent>
+      <xs:extension base="abstractProfileData">
+        <xs:sequence>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="method-sensor-assignment"/>
+            <xs:element ref="timer-method-sensor-assignment"/>
+            <xs:element ref="charting-method-sensor-assignment"/>
+          </xs:choice>
+          <xs:element ref="exception-sensor-assignment" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="methodSensorAssignment">
+    <xs:complexContent>
+      <xs:extension base="abstractClassSensorAssignment">
+        <xs:sequence/>
+        <xs:attribute name="sensor-config-class" type="xs:string" use="required"/>
+        <xs:attribute name="method-name" type="xs:string"/>
+        <xs:attribute name="parameters">
+          <xs:simpleType>
+            <xs:list itemType="xs:string"/>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="constructor" type="xs:boolean"/>
+        <xs:attribute name="public-mod" type="xs:boolean"/>
+        <xs:attribute name="protected-mod" type="xs:boolean"/>
+        <xs:attribute name="private-mod" type="xs:boolean"/>
+        <xs:attribute name="default-mod" type="xs:boolean"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="abstractClassSensorAssignment" abstract="true">
+    <xs:sequence/>
+    <xs:attribute name="class-name" type="xs:string" use="required"/>
+    <xs:attribute name="superclass" type="xs:boolean"/>
+    <xs:attribute name="interface" type="xs:boolean"/>
+    <xs:attribute name="annotation" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="exceptionSensorAssignment">
+    <xs:complexContent>
+      <xs:extension base="abstractClassSensorAssignment">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="timerMethodSensorAssignment">
+    <xs:complexContent>
+      <xs:extension base="chartingMethodSensorAssignment">
+        <xs:sequence>
+          <xs:element name="context-captures" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                  <xs:element ref="return-capture"/>
+                  <xs:element ref="parameter-capture"/>
+                  <xs:element ref="field-capture"/>
+                </xs:choice>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+        <xs:attribute name="starts-invocation" type="xs:boolean"/>
+        <xs:attribute name="min-invocation-duration" type="xs:long"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="chartingMethodSensorAssignment">
+    <xs:complexContent>
+      <xs:extension base="methodSensorAssignment">
+        <xs:sequence/>
+        <xs:attribute name="charting" type="xs:boolean"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="returnContextCapture">
+    <xs:complexContent>
+      <xs:extension base="abstractContextCapture">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="abstractContextCapture" abstract="true">
+    <xs:sequence>
+      <xs:element name="paths" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="path" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="display-name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="parameterContextCapture">
+    <xs:complexContent>
+      <xs:extension base="abstractContextCapture">
+        <xs:sequence/>
+        <xs:attribute name="index" type="xs:int" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="fieldContextCapture">
+    <xs:complexContent>
+      <xs:extension base="abstractContextCapture">
+        <xs:sequence/>
+        <xs:attribute name="field-name" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="excludeRulesProfileData">
+    <xs:complexContent>
+      <xs:extension base="abstractProfileData">
+        <xs:sequence>
+          <xs:element ref="exclude-rule" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="excludeRule">
+    <xs:sequence/>
+    <xs:attribute name="class-name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="jmxDefinitionProfileData">
+    <xs:complexContent>
+      <xs:extension base="abstractProfileData">
+        <xs:sequence>
+          <xs:element ref="jmx-bean-assignment" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="jmxBeanSensorAssignment">
+    <xs:sequence>
+      <xs:element name="object-name-parameters">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="key" minOccurs="0" type="xs:string"/>
+                  <xs:element name="value" minOccurs="0" type="xs:string"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="attributes">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="attributes" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="domain" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="jmxSensorConfig">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:simpleType name="patternMatchingType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="regex"/>
+      <xs:enumeration value="ends-with"/>
+      <xs:enumeration value="equals"/>
+      <xs:enumeration value="contains"/>
+      <xs:enumeration value="starts-with"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

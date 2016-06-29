@@ -3,10 +3,11 @@ package rocks.inspectit.server.plugins.coscale;
 import java.util.Comparator;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import com.coscale.sdk.client.data.DataInsert;
 import com.coscale.sdk.client.data.DataInsertBuilder;
 
+import rocks.inspectit.server.plugins.coscale.util.BTMetrics;
 import rocks.inspectit.server.plugins.coscale.util.LimitedSortedList;
 import rocks.inspectit.shared.all.communication.data.InvocationSequenceData;
 import rocks.inspectit.shared.all.communication.data.InvocationSequenceDataHelper;
@@ -20,11 +21,12 @@ public class CoScaleBusinessTransactionHandler implements Runnable {
 
 	private double currentResponseTimeSum = 0.0;
 	private int currentResponseTimeCount = 0;
-	private boolean anomaly = false;
+	private final AtomicInteger anomaly = new AtomicInteger(0);
 	private final ScheduledExecutorService executorService;
 	private final DoubleExponentialSmoothing exponentialSmooting;
 	private final CoScalePlugin plugin;
-	private long metricId = -1;
+	private BTMetrics btMetrics;
+	private int initializationCounter = 5;
 
 	/**
 	 * @param businessTxId
@@ -59,7 +61,7 @@ public class CoScaleBusinessTransactionHandler implements Runnable {
 	}
 
 	public void updateBusinessTransactionMetric() {
-		metricId = plugin.createBusinessTransactionMetric(businessTxName);
+		btMetrics = plugin.getBusinessTransactionMetrics(businessTxName);
 	}
 
 	public synchronized void processData(InvocationSequenceData invocation) {
@@ -83,23 +85,37 @@ public class CoScaleBusinessTransactionHandler implements Runnable {
 				meanResponseTime = currentResponseTimeSum / currentResponseTimeCount;
 				currentResponseTimeSum = 0.0;
 				currentResponseTimeCount = 0;
+
+			}
+
+			if (initializationCounter <= 0) {
+				if (meanResponseTime > exponentialSmooting.getBaselineThreshold()) {
+					anomaly.incrementAndGet();
+				} else {
+					if (anomaly.get() > 0) {
+						plugin.sendInvocationSequencesAsStorage(businessTxName, slowestInvocationSequences, anomaly.get());
+						anomaly.set(0);
+					}
+					slowestInvocationSequences.clear();
+				}
+			}
+
+			if (plugin.isWriteTimingsToCoScale() && (null != btMetrics)) {
+				DataInsertBuilder builder = new DataInsertBuilder();
+				builder.addDoubleData(btMetrics.getResponseTimeMetricId(), 0, meanResponseTime);
+				if (initializationCounter <= 0) {
+					builder.addDoubleData(btMetrics.getRtThresholdMetricId(), 0, exponentialSmooting.getBaselineThreshold());
+				}
+
+				plugin.writeMetricData(builder.build());
+			}
+
+			if (initializationCounter > 0) {
+				initializationCounter--;
 				slowestInvocationSequences.clear();
 			}
 
-			if (meanResponseTime > exponentialSmooting.getBaselineThreshold()) {
-				anomaly = true;
-			} else if (anomaly) {
-				anomaly = false;
-				plugin.sendInvocationSequencesAsStorage(businessTxName, slowestInvocationSequences);
-			}
-
 			exponentialSmooting.push(meanResponseTime);
-			if (plugin.isWriteTimingsToCoScale() && metricId != -1) {
-				DataInsertBuilder builder = new DataInsertBuilder();
-				builder.addDoubleData(metricId, 0, meanResponseTime);
-				DataInsert dataInsert = builder.build();
-				plugin.writeMetricData(dataInsert);
-			}
 		} else {
 			synchronized (this) {
 				currentResponseTimeSum = 0.0;

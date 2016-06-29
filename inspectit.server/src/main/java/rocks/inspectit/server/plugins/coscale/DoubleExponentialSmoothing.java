@@ -54,6 +54,8 @@ public class DoubleExponentialSmoothing {
 	 */
 	private final LinkedBlockingQueue<Double> rawValues;
 
+	private double minValue = Double.MAX_VALUE;
+
 	/**
 	 * Constructor.
 	 *
@@ -95,13 +97,14 @@ public class DoubleExponentialSmoothing {
 			currentTrend = value - currentValue;
 			currentValue = value;
 		} else {
-			double nextValue = smoothingFactor * value + (1 - smoothingFactor) * (currentValue + currentTrend);
-			currentTrend = trendSmoothingFactor * (nextValue - currentValue) + (1 - trendSmoothingFactor) * currentTrend;
+			double nextValue = (smoothingFactor * value) + ((1 - smoothingFactor) * (currentValue + currentTrend));
+			currentTrend = (trendSmoothingFactor * (nextValue - currentValue)) + ((1 - trendSmoothingFactor) * currentTrend);
 			currentValue = nextValue;
 		}
 
 		pushCount++;
 		currentBaselineThreshold = Double.NaN;
+		minValue = value < minValue ? value : minValue;
 	}
 
 	/**
@@ -110,7 +113,7 @@ public class DoubleExponentialSmoothing {
 	 * @return Returns current baseline value.
 	 */
 	public double getValue() {
-		return currentValue;
+		return Math.max(minValue, currentValue);
 	}
 
 	/**
@@ -133,7 +136,7 @@ public class DoubleExponentialSmoothing {
 				StandardDeviation sd = new StandardDeviation();
 				double standardDev = sd.evaluate(toDoubleArray(getRawValues()));
 				double mean = getValue();
-				currentBaselineThreshold = mean + 3 * standardDev;
+				currentBaselineThreshold = mean + (3 * standardDev);
 			} else {
 				currentBaselineThreshold = Double.MAX_VALUE;
 			}

@@ -402,7 +402,7 @@ public class ConfigurationInterfaceManager {
 	 */
 	public synchronized BusinessContextDefinition updateBusinessContextDefinition(BusinessContextDefinition businessContextDefinition) throws BusinessException, JAXBException, IOException {
 		businessContextDefinition.setRevision(businessContextDefinition.getRevision() + 1);
-		if (this.businessContextDefinition != businessContextDefinition && this.businessContextDefinition.getRevision() + 1 != businessContextDefinition.getRevision()) { // NOPMD
+		if ((this.businessContextDefinition != businessContextDefinition) && ((this.businessContextDefinition.getRevision() + 1) != businessContextDefinition.getRevision())) { // NOPMD
 			throw new BusinessException("Update of the business context.", ConfigurationInterfaceErrorCodeEnum.REVISION_CHECK_FAILED);
 		}
 		saveBusinessContext(businessContextDefinition);
@@ -805,7 +805,6 @@ public class ConfigurationInterfaceManager {
 				log.error("Error saving Configuration interface business context file. File path: " + path.toString() + ".", e);
 			}
 		}
-
 	}
 
 	/**
