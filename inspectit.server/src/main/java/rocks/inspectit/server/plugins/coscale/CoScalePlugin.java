@@ -31,6 +31,7 @@ import com.coscale.sdk.client.metrics.MetricGroupInsert;
 import com.coscale.sdk.client.metrics.MetricInsert;
 import com.coscale.sdk.client.metrics.MetricsApi;
 import com.coscale.sdk.client.metrics.SubjectType;
+import com.coscale.sdk.client.requests.Request;
 import com.coscale.sdk.client.requests.RequestsApi;
 import com.coscale.sdk.client.servers.ServersApi;
 
@@ -41,6 +42,11 @@ import rocks.inspectit.shared.all.cmr.property.spring.PropertyUpdate;
 import rocks.inspectit.shared.all.communication.DefaultData;
 import rocks.inspectit.shared.all.communication.data.InvocationSequenceData;
 import rocks.inspectit.shared.all.exception.BusinessException;
+import rocks.inspectit.shared.cs.ci.business.expression.impl.StringMatchingExpression;
+import rocks.inspectit.shared.cs.ci.business.impl.ApplicationDefinition;
+import rocks.inspectit.shared.cs.ci.business.impl.BusinessTransactionDefinition;
+import rocks.inspectit.shared.cs.ci.business.valuesource.PatternMatchingType;
+import rocks.inspectit.shared.cs.ci.business.valuesource.impl.HttpUriValueSource;
 import rocks.inspectit.shared.cs.cmr.service.IConfigurationInterfaceService;
 import rocks.inspectit.shared.cs.cmr.service.IStorageService;
 import rocks.inspectit.shared.cs.storage.StorageData;
@@ -391,40 +397,82 @@ public class CoScalePlugin extends AbstractPlugin {
 			mapCoScaleRequestsToBusinessTransactionDefinitions();
 			loggedIn = true;
 			notifyActivated();
-		} catch (IOException e) {
+		} catch (IOException | BusinessException e) {
 			loggedIn = false;
 		}
 	}
 
-	private void mapCoScaleRequestsToBusinessTransactionDefinitions() throws IOException {
-		// TODO: @Mario: Implement here the mapping of business transaction
+	private PatternMatchingType extractMatchExpression(String value) {
+		PatternMatchingType matchingExpressing;
+		switch (value.substring(0, 1)) {
+		case "S":
+			matchingExpressing = PatternMatchingType.ENDS_WITH;
+			break;
+		case "C":
+			matchingExpressing = PatternMatchingType.CONTAINS;
+			break;
+		case "P":
+			matchingExpressing = PatternMatchingType.STARTS_WITH;
+			break;
+		case "E":
+			matchingExpressing = PatternMatchingType.EQUALS;
+			break;
+		case "R":
+			matchingExpressing = PatternMatchingType.REGEX;
+			break;
+		default:
+			throw new IllegalArgumentException("No existing matching rule");
+		}
+
+		return matchingExpressing;
+	}
+
+	private void mapCoScaleRequestsToBusinessTransactionDefinitions() throws IOException, BusinessException {
+		Credentials credentials = Credentials.Token(coScaleToken);
+		ApiFactory apiFactory = new ApiFactory(appId, credentials);
 
 		// 1. Check if corresponding business transaction definitions already exist
-		// 2. If they do not exist yet, do the mapping from CoScale to the BT definitions
+		ApplicationDefinition app = null;
+		for (ApplicationDefinition application : ciService.getApplicationDefinitions()) {
+			// check application...???
+			if (application.getApplicationName().equals("Application")) {
+				app = application;
+				break;
+			}
+		}
 
-		// dummy code from our last call
-		// Credentials credentials = Credentials.Token(coScaleToken);
-		// ApiFactory apiFactory = new ApiFactory(appId, credentials);
-		// Request req = requestsApi.all().get(1);
-		//
-		// // Check if app and BT already exists
-		// ciService.getApplicationDefinitions();
-		//
-		// ApplicationDefinition appDef = new ApplicationDefinition();
-		// BusinessTransactionDefinition btDef = new BusinessTransactionDefinition("Name");
-		// try {
-		// StringMatchingExpression stringExpr = new
-		// StringMatchingExpression(PatternMatchingType.EQUALS, "wert");
-		// HttpUriValueSource valueSource = new HttpUriValueSource();
-		// stringExpr.setStringValueSource(valueSource);
-		// btDef.setMatchingRuleExpression(stringExpr);
-		//
-		// appDef.addBusinessTransactionDefinition(btDef);
-		// ciService.addApplicationDefinition(appDef);
-		// } catch (BusinessException e) {
-		// // TODO Auto-generated catch block
-		// }
+		if (app == null) {
+			app = new ApplicationDefinition();
+			app.setApplicationName("Application");
+			// MatchingRule
+		}
+		// check business transactions
+		boolean btDefinitionChanged = false;
+		for (Request request : apiFactory.getRequestsApi().all()) {
+			BusinessTransactionDefinition businessTransaction = null;
+			for (BusinessTransactionDefinition existingBTDef : app.getBusinessTransactionDefinitions()) {
+				if (request.name.equals(existingBTDef.getBusinessTransactionDefinitionName())) {
+					businessTransaction = existingBTDef;
+					break;
+				}
+			}
+			if (businessTransaction == null) {
+				// add new BTDefinition
+				businessTransaction = new BusinessTransactionDefinition(request.name);
+				StringMatchingExpression stringExpr = new StringMatchingExpression(extractMatchExpression(request.classifierConfig), request.classifierConfig.substring(1));
+				HttpUriValueSource valueSource = new HttpUriValueSource();
+				stringExpr.setStringValueSource(valueSource);
+				businessTransaction.setMatchingRuleExpression(stringExpr);
+				app.addBusinessTransactionDefinition(businessTransaction);
+				btDefinitionChanged = true;
+			}
+		}
 
+		if (ciService.getApplicationDefinition(app.getId()) == null) {
+			ciService.addApplicationDefinition(app);
+		} else if (btDefinitionChanged) {
+			ciService.updateApplicationDefinition(app);
+		}
 	}
 
 	/**
