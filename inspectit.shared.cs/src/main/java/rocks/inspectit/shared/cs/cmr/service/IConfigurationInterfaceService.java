@@ -9,6 +9,7 @@ import rocks.inspectit.shared.all.exception.BusinessException;
 import rocks.inspectit.shared.cs.ci.AgentMappings;
 import rocks.inspectit.shared.cs.ci.Environment;
 import rocks.inspectit.shared.cs.ci.Profile;
+import rocks.inspectit.shared.cs.ci.ThresholdDefinition;
 import rocks.inspectit.shared.cs.ci.business.impl.ApplicationDefinition;
 import rocks.inspectit.shared.cs.ci.export.ConfigurationInterfaceImportData;
 
@@ -281,4 +282,10 @@ public interface IConfigurationInterfaceService {
 	 */
 	ApplicationDefinition updateApplicationDefinition(ApplicationDefinition appDefinition) throws BusinessException;
 
+	/**
+	 * Returns all existing threshold definitions.
+	 *
+	 * @return {@link List} containing all {@link ThresholdDefinition}s.
+	 */
+	List<ThresholdDefinition> getAllThresholdDefinitions();
 }

@@ -13,6 +13,16 @@ import rocks.inspectit.shared.all.exception.IErrorCode;
 public enum ConfigurationInterfaceErrorCodeEnum implements IErrorCode {
 
 	/**
+	 * Threshold definition tag is null.
+	 */
+	TAG_IS_NULL("The given tag which should be added to the threshold definition must not be null.", null, null),
+
+	/**
+	 * Threshold definition tag is empty.
+	 */
+	TAG_IS_EMPTY("The given tag which should be added to the threshold definition must not be empty.", null, null),
+
+	/**
 	 * Profile does not have profile data.
 	 */
 	PROFILE_DOES_NOT_HAVE_CORRECT_PROFILE_DATA("The profile to execute the selected does not have correct profile data set.", null, null),

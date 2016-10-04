@@ -488,6 +488,14 @@
     </xs:complexContent>
   </xs:complexType>
 
+   <xs:complexType name="thresholdDefinition">
+    <xs:complexContent>
+      <xs:extension base="abstractCiData">
+        <xs:attribute name="threshold" type="xs:double"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
   <xs:complexType name="connectionSensorConfig">
     <xs:complexContent>
       <xs:extension base="abstractMethodSensorConfig">

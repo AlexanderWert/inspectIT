@@ -43,6 +43,7 @@ import rocks.inspectit.shared.cs.ci.AgentMappings;
 import rocks.inspectit.shared.cs.ci.BusinessContextDefinition;
 import rocks.inspectit.shared.cs.ci.Environment;
 import rocks.inspectit.shared.cs.ci.Profile;
+import rocks.inspectit.shared.cs.ci.ThresholdDefinition;
 import rocks.inspectit.shared.cs.ci.export.ConfigurationInterfaceImportData;
 import rocks.inspectit.shared.cs.jaxb.JAXBTransformator;
 
@@ -87,6 +88,11 @@ public class ConfigurationInterfaceManager {
 	 * Existing environments in the system mapped by the id.
 	 */
 	private ConcurrentHashMap<String, Environment> existingEnvironments;
+
+	/**
+	 * Existing environments in the system mapped by the id.
+	 */
+	private ConcurrentHashMap<String, ThresholdDefinition> existingThresholdDefinitions;
 
 	/**
 	 * Currently used agent mapping.
@@ -485,6 +491,15 @@ public class ConfigurationInterfaceManager {
 	}
 
 	/**
+	 * Returns all existing threshold definitions.
+	 *
+	 * @return {@link List} containing all {@link ThresholdDefinition}s.
+	 */
+	public List<ThresholdDefinition> getAllThresholdDefinitions() {
+		return new ArrayList<>(existingThresholdDefinitions.values());
+	}
+
+	/**
 	 * Returns the bytes for the given import data consisted out of given environments and profiles.
 	 * These bytes can be saved directly to export file.
 	 *
@@ -775,6 +790,7 @@ public class ConfigurationInterfaceManager {
 		loadExistingEnvironments();
 		loadAgentMappings();
 		loadBusinessContextDefinition();
+		loadExistingThresholdDefinitions();
 	}
 
 	/**
@@ -940,6 +956,44 @@ public class ConfigurationInterfaceManager {
 			}
 		}
 		businessContextDefinitionReference.set(businessContextDefinition);
+	}
+
+	/**
+	 * Loads all existing alert thresholds.
+	 */
+	private void loadExistingThresholdDefinitions() {
+		log.info("|-Loading the existing threshold definitions..");
+		existingThresholdDefinitions = new ConcurrentHashMap<>(16, 0.75f, 2);
+
+		Path path = pathResolver.getThresholdDefinitionsPath();
+
+		if (Files.notExists(path)) {
+			log.info("Default threshold definitions path does not exists. No thresholds are loaded.");
+			return;
+		}
+
+		try {
+			Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					if (isXmlFile(file)) {
+						try {
+							ThresholdDefinition threshold = transformator.unmarshall(file, pathResolver.getSchemaPath(), ThresholdDefinition.class);
+							existingThresholdDefinitions.put(threshold.getId(), threshold);
+						} catch (JAXBException | SAXException e) {
+							log.error("Error reading existing threshold definition file. File path: " + file.toString() + ".", e);
+						}
+					}
+					return FileVisitResult.CONTINUE;
+				}
+			});
+		} catch (IOException e) {
+			log.error("Error exploring threshold definitions directory. Directory path: " + path.toString() + ".", e);
+		}
+
+		if (MapUtils.isEmpty(existingThresholdDefinitions)) {
+			log.info("No alert thresholds are in the default path.");
+		}
 	}
 
 	/**

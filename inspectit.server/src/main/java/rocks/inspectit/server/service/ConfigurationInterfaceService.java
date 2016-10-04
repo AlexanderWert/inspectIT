@@ -21,6 +21,7 @@ import rocks.inspectit.shared.cs.ci.AgentMappings;
 import rocks.inspectit.shared.cs.ci.BusinessContextDefinition;
 import rocks.inspectit.shared.cs.ci.Environment;
 import rocks.inspectit.shared.cs.ci.Profile;
+import rocks.inspectit.shared.cs.ci.ThresholdDefinition;
 import rocks.inspectit.shared.cs.ci.business.impl.ApplicationDefinition;
 import rocks.inspectit.shared.cs.ci.export.ConfigurationInterfaceImportData;
 import rocks.inspectit.shared.cs.cmr.service.ICmrManagementService;
@@ -339,6 +340,14 @@ public class ConfigurationInterfaceService implements IConfigurationInterfaceSer
 		} catch (IOException e) {
 			throw new TechnicalException("Update the application definition '" + appDefinition.getApplicationName() + "'.", ConfigurationInterfaceErrorCodeEnum.INPUT_OUTPUT_OPERATION_FAILED, e);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<ThresholdDefinition> getAllThresholdDefinitions() {
+		return ciManager.getAllThresholdDefinitions();
 	}
 
 	/**

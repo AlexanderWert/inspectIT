@@ -58,6 +58,11 @@ public class ConfigurationInterfacePathResolver {
 	private static final String BUSINESS_CONTEXT_CONFIG_FILE = "businessContext.xml";
 
 	/**
+	 * Sub-folder for saving alert thresholds.
+	 */
+	private static final String THRESHOLD_DEFINITIONS_FOLDER = "threshold-definitions";
+
+	/**
 	 * Used with {@link ResourcesPathResolver} to get the file of the ci dir.
 	 */
 	private File ciDirFile;
@@ -150,5 +155,14 @@ public class ConfigurationInterfacePathResolver {
 	 */
 	public Path getBusinessContextFilePath() {
 		return getDefaultCiPath().resolve(BUSINESS_CONTEXT_CONFIG_FILE);
+	}
+
+	/**
+	 * Returns the directory where alert thresholds are saved.
+	 *
+	 * @return Path to the folder of the alert thresholds.
+	 */
+	public Path getThresholdDefinitionsPath() {
+		return getDefaultCiPath().resolve(THRESHOLD_DEFINITIONS_FOLDER);
 	}
 }
