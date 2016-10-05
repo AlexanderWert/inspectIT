@@ -5,11 +5,19 @@ package rocks.inspectit.shared.cs.ci;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isIn;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import org.mockito.InjectMocks;
 import org.testng.annotations.Test;
+
+import com.google.common.collect.ImmutableMap;
 
 import rocks.inspectit.shared.all.exception.BusinessException;
 import rocks.inspectit.shared.all.testbase.TestBase;
@@ -22,6 +30,12 @@ public class AlertingDefinitionTest extends TestBase {
 
 	@InjectMocks
 	AlertingDefinition alertingDefinition;
+
+	final Map<String, String> tagMap = ImmutableMap.of("key1", "val1", "key2", "val2", "key3", "val3");
+
+	List<String> emailList = Arrays.asList("test@example.com", "test2@example.com", "test3@example.com");
+
+	List<String> emailListBroken = Arrays.asList("test@example.com", null, "test3@example.com", "not_an_email@");
 
 	/**
 	 * Test the {@link AlertingDefinition#putTag(String, String)},
@@ -97,6 +111,22 @@ public class AlertingDefinitionTest extends TestBase {
 			assertThat(alertingDefinition.getTags().size(), equalTo(1));
 			alertingDefinition.removeTag("unknownKey");
 		}
+
+		@Test
+		public void replaceTags() throws BusinessException {
+			assertThat(alertingDefinition.getTags().size(), equalTo(0));
+			alertingDefinition.putTag("tagKey", "tagValue");
+			assertThat(alertingDefinition.getTags().size(), equalTo(1));
+			alertingDefinition.replaceTags(tagMap);
+			assertThat(alertingDefinition.getTags().size(), equalTo(3));
+
+			assertThat(alertingDefinition.getTags().entrySet(), everyItem(isIn(tagMap.entrySet())));
+		}
+
+		@Test(expectedExceptions = { BusinessException.class })
+		public void replaceNullTags() throws BusinessException {
+			alertingDefinition.replaceTags(null);
+		}
 	}
 
 	/**
@@ -170,6 +200,26 @@ public class AlertingDefinitionTest extends TestBase {
 			boolean result = alertingDefinition.removeNotificationEmailAddress("other@example.com");
 
 			assertThat(result, is(false));
+		}
+
+		@Test
+		public void replaceEmails() throws BusinessException {
+			assertThat(alertingDefinition.getNotificationEmailAddresses(), hasSize(0));
+			alertingDefinition.addNotificationEmailAddress("test@example.com");
+			assertThat(alertingDefinition.getNotificationEmailAddresses(), hasSize(1));
+			alertingDefinition.replaceNotificationEmailAddresses(emailList);
+			assertThat(alertingDefinition.getNotificationEmailAddresses(), hasSize(3));
+
+			assertThat(alertingDefinition.getNotificationEmailAddresses(), everyItem(isIn(emailList)));
+		}
+
+		@Test
+		public void replaceBrokenEmails() throws BusinessException {
+			assertThat(alertingDefinition.getNotificationEmailAddresses(), hasSize(0));
+			alertingDefinition.addNotificationEmailAddress("test@example.com");
+			assertThat(alertingDefinition.getNotificationEmailAddresses(), hasSize(1));
+			alertingDefinition.replaceNotificationEmailAddresses(emailListBroken);
+			assertThat(alertingDefinition.getNotificationEmailAddresses(), hasSize(2));
 		}
 	}
 }
