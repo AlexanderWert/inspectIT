@@ -10,6 +10,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.stereotype.Component;
 
 import rocks.inspectit.shared.all.util.ResourcesPathResolver;
+import rocks.inspectit.shared.cs.ci.AlertingDefinition;
 import rocks.inspectit.shared.cs.ci.Environment;
 import rocks.inspectit.shared.cs.ci.Profile;
 
@@ -60,7 +61,7 @@ public class ConfigurationInterfacePathResolver {
 	/**
 	 * Sub-folder for saving alert thresholds.
 	 */
-	private static final String THRESHOLD_DEFINITIONS_FOLDER = "threshold-definitions";
+	private static final String ALERTING_DEFINITIONS_FOLDER = "alerting-definitions";
 
 	/**
 	 * Used with {@link ResourcesPathResolver} to get the file of the ci dir.
@@ -162,7 +163,20 @@ public class ConfigurationInterfacePathResolver {
 	 *
 	 * @return Path to the folder of the alert thresholds.
 	 */
-	public Path getThresholdDefinitionsPath() {
-		return getDefaultCiPath().resolve(THRESHOLD_DEFINITIONS_FOLDER);
+	public Path getAlertingDefinitionsPath() {
+		return getDefaultCiPath().resolve(ALERTING_DEFINITIONS_FOLDER);
+	}
+
+	/**
+	 * Returns path pointing to the alerting definition file.
+	 *
+	 * @param alertingDefinition
+	 *            {@link AlertingDefinition}
+	 * @return Path to the file.
+	 */
+	public Path getAlertingDefinitionFilePath(AlertingDefinition alertingDefinition) {
+		String cleanedAlertingDefinitionName = alertingDefinition.getName().replaceAll("[^a-zA-Z0-9.-]", "_");
+		String fileName = alertingDefinition.getId() + "-" + cleanedAlertingDefinitionName + ".xml";
+		return getAlertingDefinitionsPath().resolve(fileName);
 	}
 }

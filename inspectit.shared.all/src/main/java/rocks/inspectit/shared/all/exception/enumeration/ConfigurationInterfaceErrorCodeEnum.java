@@ -13,16 +13,6 @@ import rocks.inspectit.shared.all.exception.IErrorCode;
 public enum ConfigurationInterfaceErrorCodeEnum implements IErrorCode {
 
 	/**
-	 * Threshold definition tag is null.
-	 */
-	TAG_IS_NULL("The given tag which should be added to the threshold definition must not be null.", null, null),
-
-	/**
-	 * Threshold definition tag is empty.
-	 */
-	TAG_IS_EMPTY("The given tag which should be added to the threshold definition must not be empty.", null, null),
-
-	/**
 	 * Profile does not have profile data.
 	 */
 	PROFILE_DOES_NOT_HAVE_CORRECT_PROFILE_DATA("The profile to execute the selected does not have correct profile data set.", null, null),
@@ -46,7 +36,7 @@ public enum ConfigurationInterfaceErrorCodeEnum implements IErrorCode {
 	 * Environment not existing on the CMR.
 	 */
 	ENVIRONMENT_DOES_NOT_EXIST("The environment to execute the selected operation on does not exist.", "The environment might be deleted.", null),
-	
+
 	/**
 	 * Import not valid.
 	 */
@@ -119,6 +109,7 @@ public enum ConfigurationInterfaceErrorCodeEnum implements IErrorCode {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getComponent() {
 		return COMPONENT_NAME;
 	}
@@ -126,6 +117,7 @@ public enum ConfigurationInterfaceErrorCodeEnum implements IErrorCode {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getName() {
 		return WordUtils.capitalizeFully(this.toString().replace("_", " ").toLowerCase());
 	}
@@ -135,6 +127,7 @@ public enum ConfigurationInterfaceErrorCodeEnum implements IErrorCode {
 	 *
 	 * @return {@link #description}
 	 */
+	@Override
 	public String getDescription() {
 		return description;
 	}
@@ -144,6 +137,7 @@ public enum ConfigurationInterfaceErrorCodeEnum implements IErrorCode {
 	 *
 	 * @return {@link #possibleCause}
 	 */
+	@Override
 	public String getPossibleCause() {
 		return possibleCause;
 	}
@@ -153,6 +147,7 @@ public enum ConfigurationInterfaceErrorCodeEnum implements IErrorCode {
 	 *
 	 * @return {@link #possibleSolution}
 	 */
+	@Override
 	public String getPossibleSolution() {
 		return possibleSolution;
 	}

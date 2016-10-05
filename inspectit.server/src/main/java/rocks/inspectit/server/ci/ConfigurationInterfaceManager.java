@@ -31,19 +31,22 @@ import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
 import rocks.inspectit.server.ci.event.AgentMappingsUpdateEvent;
+import rocks.inspectit.server.ci.event.AlertingDefinitionDeletedEvent;
+import rocks.inspectit.server.ci.event.AlertingDefinitionUpdateEvent;
 import rocks.inspectit.server.ci.event.BusinessContextDefinitionUpdateEvent;
 import rocks.inspectit.server.ci.event.EnvironmentUpdateEvent;
 import rocks.inspectit.server.ci.event.ProfileUpdateEvent;
 import rocks.inspectit.server.util.CollectionSubtractUtils;
 import rocks.inspectit.shared.all.exception.BusinessException;
+import rocks.inspectit.shared.all.exception.enumeration.AlertingDefinitionErrorCodeEnum;
 import rocks.inspectit.shared.all.exception.enumeration.ConfigurationInterfaceErrorCodeEnum;
 import rocks.inspectit.shared.all.spring.logger.Log;
 import rocks.inspectit.shared.cs.ci.AgentMapping;
 import rocks.inspectit.shared.cs.ci.AgentMappings;
+import rocks.inspectit.shared.cs.ci.AlertingDefinition;
 import rocks.inspectit.shared.cs.ci.BusinessContextDefinition;
 import rocks.inspectit.shared.cs.ci.Environment;
 import rocks.inspectit.shared.cs.ci.Profile;
-import rocks.inspectit.shared.cs.ci.ThresholdDefinition;
 import rocks.inspectit.shared.cs.ci.export.ConfigurationInterfaceImportData;
 import rocks.inspectit.shared.cs.jaxb.JAXBTransformator;
 
@@ -92,7 +95,7 @@ public class ConfigurationInterfaceManager {
 	/**
 	 * Existing environments in the system mapped by the id.
 	 */
-	private ConcurrentHashMap<String, ThresholdDefinition> existingThresholdDefinitions;
+	private ConcurrentHashMap<String, AlertingDefinition> existingAlertingDefinitions;
 
 	/**
 	 * Currently used agent mapping.
@@ -491,12 +494,108 @@ public class ConfigurationInterfaceManager {
 	}
 
 	/**
-	 * Returns all existing threshold definitions.
+	 * Returns all existing alerting definitions.
 	 *
-	 * @return {@link List} containing all {@link ThresholdDefinition}s.
+	 * @return {@link List} containing all {@link AlertingDefinition}s.
 	 */
-	public List<ThresholdDefinition> getAllThresholdDefinitions() {
-		return new ArrayList<>(existingThresholdDefinitions.values());
+	public List<AlertingDefinition> getAlertingDefinitions() {
+		return new ArrayList<>(existingAlertingDefinitions.values());
+	}
+
+	/**
+	 * Returns the {@link AlertingDefinition} for the given id.
+	 *
+	 * @param id
+	 *            the identifier of the {@link AlertingDefinition}
+	 * @return {@link AlertingDefinition} of the given id
+	 * @throws BusinessException
+	 *             if no {@link AlertingDefinition} exists for the given id
+	 */
+	public AlertingDefinition getAlertingDefinition(String id) throws BusinessException {
+		AlertingDefinition alertingDefinition = existingAlertingDefinitions.get(id);
+		if (null == alertingDefinition) {
+			throw new BusinessException("Load alerting definition with the id=" + id + ".", AlertingDefinitionErrorCodeEnum.ALERTING_DEFINITION_DOES_NOT_EXIST);
+		}
+		return alertingDefinition;
+	}
+
+	/**
+	 * Creates a new {@link AlertingDefinition}.
+	 *
+	 * @param alertingDefinition
+	 *            {@link AlertingDefinition} template
+	 * @return the created {@link AlertingDefinition}
+	 * @throws IOException
+	 *             if {@link IOException} occurs during create
+	 * @throws JAXBException
+	 *             if {@link JAXBException} occurs during create
+	 */
+	public AlertingDefinition createAlertingDefinition(AlertingDefinition alertingDefinition) throws JAXBException, IOException {
+		// TODO check?
+
+		alertingDefinition.setId(getRandomUUIDString());
+		alertingDefinition.setCreatedDate(new Date());
+
+		existingAlertingDefinitions.put(alertingDefinition.getId(), alertingDefinition);
+		saveAlertingDefinition(alertingDefinition);
+
+		eventPublisher.publishEvent(new AlertingDefinitionUpdateEvent(this, alertingDefinition));
+
+		return alertingDefinition;
+	}
+
+	/**
+	 * Updates the given {@link AlertingDefinition}.
+	 *
+	 * @param alertingDefinition
+	 *            {@link AlertingDefinition} to update
+	 * @return the updated {@link AlertingDefinition}
+	 * @throws BusinessException
+	 *             if {@link BusinessException} occurs during create
+	 * @throws JAXBException
+	 *             if {@link JAXBException} occurs during create
+	 * @throws IOException
+	 *             if {@link IOException} occurs during create
+	 */
+	public synchronized AlertingDefinition updateAlertingDefinition(AlertingDefinition alertingDefinition) throws BusinessException, JAXBException, IOException {
+		String id = alertingDefinition.getId();
+		alertingDefinition.setRevision(alertingDefinition.getRevision() + 1);
+
+		AlertingDefinition local = existingAlertingDefinitions.replace(id, alertingDefinition);
+		if (null == local) {
+			existingAlertingDefinitions.remove(id);
+			throw new BusinessException("Update of the alerting definition '" + alertingDefinition.getName() + ".", AlertingDefinitionErrorCodeEnum.ALERTING_DEFINITION_DOES_NOT_EXIST);
+		} else if ((local != alertingDefinition) && ((local.getRevision() + 1) != alertingDefinition.getRevision())) {
+			existingAlertingDefinitions.replace(id, local);
+			BusinessException e = new BusinessException("Update of the alerting definition '" + alertingDefinition.getName() + ".", AlertingDefinitionErrorCodeEnum.REVISION_CHECK_FAILED);
+			alertingDefinition.setRevision(alertingDefinition.getRevision() - 1);
+			throw e;
+		}
+		alertingDefinition.setUpdatedDate(new Date());
+
+		saveAlertingDefinition(alertingDefinition);
+
+		eventPublisher.publishEvent(new AlertingDefinitionUpdateEvent(this, alertingDefinition));
+
+		return alertingDefinition;
+	}
+
+	/**
+	 * Deletes the alerting definition.
+	 *
+	 * @param alertingDefinition
+	 *            AlertingDefinition to delete.
+	 * @throws IOException
+	 *             If {@link IOException} occurs during delete.
+	 */
+	public void deleteAlertingDefinition(AlertingDefinition alertingDefinition) throws IOException {
+		String id = alertingDefinition.getId();
+		AlertingDefinition local = existingAlertingDefinitions.remove(id);
+		if (local != null) {
+			Files.deleteIfExists(pathResolver.getAlertingDefinitionFilePath(local));
+
+			eventPublisher.publishEvent(new AlertingDefinitionDeletedEvent(this, local));
+		}
 	}
 
 	/**
@@ -769,6 +868,20 @@ public class ConfigurationInterfaceManager {
 	}
 
 	/**
+	 * Save the given {@link AlertingDefinition}.
+	 *
+	 * @param alertingDefinition
+	 *            the {@link AlertingDefinition} to save
+	 * @throws IOException
+	 *             if {@link IOException} occurs
+	 * @throws JAXBException
+	 *             if {@link JAXBException} occurs. If saving fails
+	 */
+	private void saveAlertingDefinition(AlertingDefinition alertingDefinition) throws JAXBException, IOException {
+		transformator.marshall(pathResolver.getAlertingDefinitionFilePath(alertingDefinition), alertingDefinition, getRelativeToSchemaPath(pathResolver.getDefaultCiPath()).toString());
+	}
+
+	/**
 	 * Returns given path relative to schema part.
 	 *
 	 * @param path
@@ -790,7 +903,7 @@ public class ConfigurationInterfaceManager {
 		loadExistingEnvironments();
 		loadAgentMappings();
 		loadBusinessContextDefinition();
-		loadExistingThresholdDefinitions();
+		loadExistingAlertingDefinitions();
 	}
 
 	/**
@@ -959,16 +1072,16 @@ public class ConfigurationInterfaceManager {
 	}
 
 	/**
-	 * Loads all existing alert thresholds.
+	 * Loads all existing alerting definitions.
 	 */
-	private void loadExistingThresholdDefinitions() {
-		log.info("|-Loading the existing threshold definitions..");
-		existingThresholdDefinitions = new ConcurrentHashMap<>(16, 0.75f, 2);
+	private void loadExistingAlertingDefinitions() {
+		log.info("|-Loading the existing alerting definitions..");
+		existingAlertingDefinitions = new ConcurrentHashMap<>(16, 0.75f, 2);
 
-		Path path = pathResolver.getThresholdDefinitionsPath();
+		Path path = pathResolver.getAlertingDefinitionsPath();
 
 		if (Files.notExists(path)) {
-			log.info("Default threshold definitions path does not exists. No thresholds are loaded.");
+			log.info("Default alerting definitions path does not exists. No alerting definitions are loaded.");
 			return;
 		}
 
@@ -978,21 +1091,21 @@ public class ConfigurationInterfaceManager {
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 					if (isXmlFile(file)) {
 						try {
-							ThresholdDefinition threshold = transformator.unmarshall(file, pathResolver.getSchemaPath(), ThresholdDefinition.class);
-							existingThresholdDefinitions.put(threshold.getId(), threshold);
+							AlertingDefinition alertingDefinition = transformator.unmarshall(file, pathResolver.getSchemaPath(), AlertingDefinition.class);
+							existingAlertingDefinitions.put(alertingDefinition.getId(), alertingDefinition);
 						} catch (JAXBException | SAXException e) {
-							log.error("Error reading existing threshold definition file. File path: " + file.toString() + ".", e);
+							log.error("Error reading existing alerting definition file. File path: " + file.toString() + ".", e);
 						}
 					}
 					return FileVisitResult.CONTINUE;
 				}
 			});
 		} catch (IOException e) {
-			log.error("Error exploring threshold definitions directory. Directory path: " + path.toString() + ".", e);
+			log.error("Error exploring alerting definitions directory. Directory path: " + path.toString() + ".", e);
 		}
 
-		if (MapUtils.isEmpty(existingThresholdDefinitions)) {
-			log.info("No alert thresholds are in the default path.");
+		if (MapUtils.isEmpty(existingAlertingDefinitions)) {
+			log.info("No alerting definitions are in the default path.");
 		}
 	}
 
