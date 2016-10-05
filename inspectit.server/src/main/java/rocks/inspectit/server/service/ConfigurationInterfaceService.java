@@ -362,6 +362,20 @@ public class ConfigurationInterfaceService implements IConfigurationInterfaceSer
 	 * {@inheritDoc}
 	 */
 	@Override
+	public AlertingDefinition createAlertingDefinition(AlertingDefinition alertingDefinition) throws BusinessException {
+		try {
+			return ciManager.createAlertingDefinition(alertingDefinition);
+		} catch (JAXBException e) {
+			throw new TechnicalException("Update the alerting definition.", ConfigurationInterfaceErrorCodeEnum.JAXB_MARSHALLING_OR_DEMARSHALLING_FAILED, e);
+		} catch (IOException e) {
+			throw new TechnicalException("Update the alerting definition.", ConfigurationInterfaceErrorCodeEnum.INPUT_OUTPUT_OPERATION_FAILED, e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public AlertingDefinition updateAlertingDefinition(AlertingDefinition alertingDefinition) throws BusinessException {
 		try {
 			return ciManager.updateAlertingDefinition(alertingDefinition);

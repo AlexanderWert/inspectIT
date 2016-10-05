@@ -301,6 +301,17 @@ public interface IConfigurationInterfaceService {
 	AlertingDefinition getAlertingDefinition(String id) throws BusinessException;
 
 	/**
+	 * Creates a new {@link AlertingDefinition} based on the given template.
+	 *
+	 * @param alertingDefinition
+	 *            {@link AlertingDefinition} template
+	 * @return the new {@link AlertingDefinition}
+	 * @throws BusinessException
+	 *             if the creation fails
+	 */
+	AlertingDefinition createAlertingDefinition(AlertingDefinition alertingDefinition) throws BusinessException;
+
+	/**
 	 * Removes the given {@link AlertingDefinition}.
 	 *
 	 * @param alertingDefinition

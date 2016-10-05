@@ -68,7 +68,12 @@ public enum AlertingDefinitionErrorCodeEnum implements IErrorCode {
 	/**
 	 * The email address is not valid.
 	 */
-	EMAIL_IS_NOT_VALID("The e-mail address is not in a valid pattern.", null, null);
+	EMAIL_IS_NOT_VALID("The e-mail address is not in a valid pattern.", null, null),
+
+	/**
+	 * Replacing notification e-mails with null.
+	 */
+	REPLACING_WITH_NULL("Replacing the current object with 'null'.", null, null);
 
 	/**
 	 * Name of the component.

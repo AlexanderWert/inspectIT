@@ -134,7 +134,6 @@ dependencies {
 	sharedCsProd (
 		'commons-pool:commons-pool:1.6',
 		'commons-collections:commons-collections:3.2.2',
-		'commons-validator:commons-validator:1.5.1',
 		'org.hamcrest:hamcrest-all:1.3'
 	)
 

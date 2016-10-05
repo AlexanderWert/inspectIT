@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -17,7 +18,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.validator.routines.EmailValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import rocks.inspectit.shared.all.exception.BusinessException;
 import rocks.inspectit.shared.all.exception.enumeration.AlertingDefinitionErrorCodeEnum;
@@ -31,6 +33,8 @@ import rocks.inspectit.shared.all.exception.enumeration.AlertingDefinitionErrorC
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "alerting-definition")
 public class AlertingDefinition extends AbstractCiData {
+
+	private static final Logger LOG = LoggerFactory.getLogger(AlertingDefinition.class);
 
 	/**
 	 * Threshold types.
@@ -182,6 +186,22 @@ public class AlertingDefinition extends AbstractCiData {
 		}
 	}
 
+	public synchronized void replaceTags(Map<String, String> newTags) throws BusinessException {
+		if (newTags == null) {
+			throw new BusinessException("Replacing the current tags with a null map.", AlertingDefinitionErrorCodeEnum.REPLACING_WITH_NULL);
+		}
+
+		tags.clear();
+
+		for (Entry<String, String> tag : newTags.entrySet()) {
+			try {
+				putTag(tag.getKey(), tag.getValue());
+			} catch (BusinessException e) {
+				LOG.info(e.getActionPerformed());
+			}
+		}
+	}
+
 	/**
 	 * Removes the tag with the given key from the alerting definition.
 	 *
@@ -244,7 +264,7 @@ public class AlertingDefinition extends AbstractCiData {
 			throw new BusinessException("Adding email adress 'null'.", AlertingDefinitionErrorCodeEnum.EMAIL_IS_NULL);
 		} else if (email.isEmpty()) {
 			throw new BusinessException("Adding empty email address.", AlertingDefinitionErrorCodeEnum.EMAIL_IS_EMPTY);
-		} else if (!EmailValidator.getInstance().isValid(email)) {
+		} else if (false) { // TODO use validator
 			throw new BusinessException("Adding invalid email address '" + email + "'.", AlertingDefinitionErrorCodeEnum.EMAIL_IS_NOT_VALID);
 		} else {
 			return notificationEmailAddresses.add(email);
@@ -267,6 +287,30 @@ public class AlertingDefinition extends AbstractCiData {
 			throw new BusinessException("Adding empty email address.", AlertingDefinitionErrorCodeEnum.EMAIL_IS_EMPTY);
 		} else {
 			return notificationEmailAddresses.remove(email);
+		}
+	}
+
+	/**
+	 * Replaces the current notification email addresses with the ones of the given list.
+	 *
+	 * @param newNotificationEmailAddresses
+	 *            new email addresses
+	 * @throws BusinessException
+	 *             if the given list is null
+	 */
+	public synchronized void replaceNotificationEmailAddresses(List<String> newNotificationEmailAddresses) throws BusinessException {
+		if (newNotificationEmailAddresses == null) {
+			throw new BusinessException("Replacing notification email list with 'null'.", AlertingDefinitionErrorCodeEnum.REPLACING_WITH_NULL);
+		}
+
+		notificationEmailAddresses.clear();
+
+		for (String emailAddress : newNotificationEmailAddresses) {
+			try {
+				addNotificationEmailAddress(emailAddress);
+			} catch (BusinessException e) {
+				LOG.info(e.getActionPerformed());
+			}
 		}
 	}
 }

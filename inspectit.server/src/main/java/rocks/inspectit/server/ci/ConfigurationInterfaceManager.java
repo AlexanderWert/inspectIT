@@ -54,6 +54,7 @@ import rocks.inspectit.shared.cs.jaxb.JAXBTransformator;
  * Manages all configuration interface operations.
  *
  * @author Ivan Senic
+ * @author Marius Oehler
  *
  */
 @Component
