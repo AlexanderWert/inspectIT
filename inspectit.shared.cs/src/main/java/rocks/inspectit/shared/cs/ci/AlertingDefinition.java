@@ -34,6 +34,9 @@ import rocks.inspectit.shared.all.exception.enumeration.AlertingDefinitionErrorC
 @XmlRootElement(name = "alerting-definition")
 public class AlertingDefinition extends AbstractCiData {
 
+	/**
+	 * The logger of this class.
+	 */
 	private static final Logger LOG = LoggerFactory.getLogger(AlertingDefinition.class);
 
 	/**
@@ -186,6 +189,14 @@ public class AlertingDefinition extends AbstractCiData {
 		}
 	}
 
+	/**
+	 * Replacing the current tags with the tags contained on the given map.
+	 *
+	 * @param newTags
+	 *            map contains the new tags
+	 * @throws BusinessException
+	 *             the the given map is null
+	 */
 	public synchronized void replaceTags(Map<String, String> newTags) throws BusinessException {
 		if (newTags == null) {
 			throw new BusinessException("Replacing the current tags with a null map.", AlertingDefinitionErrorCodeEnum.REPLACING_WITH_NULL);
