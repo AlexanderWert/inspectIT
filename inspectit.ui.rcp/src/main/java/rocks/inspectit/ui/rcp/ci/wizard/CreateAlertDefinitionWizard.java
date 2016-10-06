@@ -88,11 +88,12 @@ public class CreateAlertDefinitionWizard extends Wizard implements INewWizard {
 				// name!
 				existingNames.remove(initialAlertDefinition.getName());
 
-				alertSourcePage = new AlertSourceDefinitionWizardPage(existingNames, initialAlertDefinition.getName(), initialAlertDefinition.getMeasurement(), initialAlertDefinition.getTags());
+				alertSourcePage = new AlertSourceDefinitionWizardPage(cmrRepositoryDefinition.getInfluxDBService(), existingNames, initialAlertDefinition.getName(),
+						initialAlertDefinition.getMeasurement(), initialAlertDefinition.getTags());
 				alertdetailsPage = new AlertDetailsWizardPage(initialAlertDefinition.getThreshold(), initialAlertDefinition.getThresholdType().equals(ThresholdType.LOWER_THRESHOLD),
 						initialAlertDefinition.getTimerange(), initialAlertDefinition.getNotificationEmailAddresses());
 			} else {
-				alertSourcePage = new AlertSourceDefinitionWizardPage(existingNames);
+				alertSourcePage = new AlertSourceDefinitionWizardPage(cmrRepositoryDefinition.getInfluxDBService(), existingNames);
 				alertdetailsPage = new AlertDetailsWizardPage();
 			}
 

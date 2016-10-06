@@ -24,6 +24,7 @@ import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormText;
 
+import rocks.inspectit.shared.cs.cmr.service.IInfluxDBService;
 import rocks.inspectit.ui.rcp.InspectIT;
 import rocks.inspectit.ui.rcp.InspectITImages;
 
@@ -60,20 +61,23 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 
 	private Listener pageCompletionListener;
 
+	private IInfluxDBService influxService;
+
 	/**
 	 * Constructor.
 	 */
-	public AlertSourceDefinitionWizardPage(Collection<String> existingNames) {
-		this(existingNames, null, null, null);
+	public AlertSourceDefinitionWizardPage(IInfluxDBService influxService, Collection<String> existingNames) {
+		this(influxService, existingNames, null, null, null);
 	}
 
 	/**
 	 * Constructor.
 	 */
-	public AlertSourceDefinitionWizardPage(Collection<String> existingNames, String name, String measurement, Map<String, String> tags) {
+	public AlertSourceDefinitionWizardPage(IInfluxDBService influxService, Collection<String> existingNames, String name, String measurement, Map<String, String> tags) {
 		super(TITLE);
 		setTitle(TITLE);
 		setMessage(DEFAULT_MESSAGE);
+		this.influxService = influxService;
 		if (null != existingNames) {
 			existingItems = existingNames;
 		} else {
@@ -115,16 +119,16 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 		measurementBox = new Combo(main, SWT.BORDER | SWT.DROP_DOWN);
 		measurementBox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, NUM_LAYOUT_COLUMNS - 1, 1));
 
-		// TODO: retrieve available measurements from influx service
-		String[] measurements = { "a", "b", "c" };
-		measurementBox.setItems(measurements);
+		List<String> measurements = influxService.getMeasurements();
+		if (null != measurements) {
+			measurementBox.setItems(measurements.toArray(new String[0]));
+		}
 
 		Listener measurementChangedListener = new Listener() {
 			@Override
 			public void handleEvent(Event event) {
 				for (TagKeyValueUIComponent tagComponent : tagComponents) {
 					tagComponent.updateAvailableTagKeys();
-					tagComponent.updateAvailableTagValues();
 				}
 			}
 		};
@@ -135,7 +139,7 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 
 		FormText headingText = new FormText(main, SWT.NONE);
 		headingText.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, NUM_LAYOUT_COLUMNS, 1));
-		// headingText.setColor("header", toolkit.getColors().getColor(IFormColors.TITLE));
+
 		headingText.setFont("header", JFaceResources.getBannerFont());
 		headingText.setText("<form><p><span color=\"header\" font=\"header\">Tag Specifications</span></p></form>", true, false);
 
@@ -350,18 +354,24 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 		}
 
 		public void updateAvailableTagKeys() {
-			// TODO: retrieve available tag keys from influx service
 			String currentText = keyBox.getText();
-			String[] tagKeys = { "a", "b", "c" };
-			keyBox.setItems(tagKeys);
+
+			List<String> tagKeys = influxService.getTags(measurementBox.getText());
+			if (null != tagKeys) {
+				keyBox.setItems(tagKeys.toArray(new String[0]));
+			}
+
 			keyBox.setText(currentText);
 		}
 
 		public void updateAvailableTagValues() {
-			// TODO: retrieve available tag values from influx service
 			String currentText = valueBox.getText();
-			String[] tagValues = { "1", "2", "3" };
-			valueBox.setItems(tagValues);
+
+			List<String> tagValues = influxService.getTagValues(measurementBox.getText(), keyBox.getText());
+			if (null != tagValues) {
+				valueBox.setItems(tagValues.toArray(new String[0]));
+			}
+
 			valueBox.setText(currentText);
 		}
 	}
