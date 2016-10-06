@@ -24,22 +24,52 @@ import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormText;
 
+import rocks.inspectit.shared.cs.ci.AlertingDefinition;
 import rocks.inspectit.shared.cs.cmr.service.IInfluxDBService;
 import rocks.inspectit.ui.rcp.InspectIT;
 import rocks.inspectit.ui.rcp.InspectITImages;
 
+/**
+ * Wizard Page for the definition of the data source for alerting processing.
+ *
+ * @author Alexander Wert
+ *
+ */
 public class AlertSourceDefinitionWizardPage extends WizardPage {
 
+	/**
+	 * Title of the wizard page.
+	 */
 	private static final String TITLE = "Alert Definition Source";
 
+	/**
+	 * Default message of the wizard page.
+	 */
 	private static final String DEFAULT_MESSAGE = "Define the name and source for the new alert definition.";
 
+	/**
+	 * Number of layout columns in the main composite of this page.
+	 */
 	private static final int NUM_LAYOUT_COLUMNS = 5;
 
+	/**
+	 * Initial name of the alerting definition (used for editing mode).
+	 */
 	private String initialName;
 
+	/**
+	 * Initial measurement name (used for editing mode).
+	 */
 	private String initialMeasurement;
 
+	/**
+	 * Initial field name (used for editing mode).
+	 */
+	private String initialField;
+
+	/**
+	 * Initial key-value pairs for the tags (used for editing mode).
+	 */
 	private Map<String, String> initialTags;
 
 	/**
@@ -53,27 +83,62 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 	private Combo measurementBox;
 
 	/**
-	 * List of existing items defining which names are taken.
+	 * Field box.
+	 */
+	private Combo fieldBox;
+
+	/**
+	 * List of existing items defining which names are already taken.
 	 */
 	private final Collection<String> existingItems;
 
+	/**
+	 * A list of tag UI components currently created.
+	 */
 	private final List<TagKeyValueUIComponent> tagComponents = new ArrayList<>();
 
+	/**
+	 * Listener that checks whether page can be completed.
+	 */
 	private Listener pageCompletionListener;
 
+	/**
+	 * {@link IInfluxDBService} instance used to retrieve values for different source fields
+	 * (measurement, field, tag keys and tag values).
+	 */
 	private IInfluxDBService influxService;
 
 	/**
 	 * Constructor.
+	 *
+	 * @param influxService
+	 *            {@link IInfluxDBService} instance used to retrieve values for different source
+	 *            fields (measurement, field, tag keys and tag values).
+	 * @param existingNames
+	 *            List of existing items defining which names are already taken.
 	 */
 	public AlertSourceDefinitionWizardPage(IInfluxDBService influxService, Collection<String> existingNames) {
-		this(influxService, existingNames, null, null, null);
+		this(influxService, existingNames, null, null, null, null);
 	}
 
 	/**
 	 * Constructor.
+	 *
+	 * @param influxService
+	 *            {@link IInfluxDBService} instance used to retrieve values for different source
+	 *            fields (measurement, field, tag keys and tag values).
+	 * @param existingNames
+	 *            List of existing items defining which names are already taken.
+	 * @param name
+	 *            Initial name of the alerting definition (used for editing mode).
+	 * @param measurement
+	 *            Initial measurement name (used for editing mode).
+	 * @param field
+	 *            Initial field name (used for editing mode).
+	 * @param tags
+	 *            Initial key-value pairs for the tags (used for editing mode).
 	 */
-	public AlertSourceDefinitionWizardPage(IInfluxDBService influxService, Collection<String> existingNames, String name, String measurement, Map<String, String> tags) {
+	public AlertSourceDefinitionWizardPage(IInfluxDBService influxService, Collection<String> existingNames, String name, String measurement, String field, Map<String, String> tags) {
 		super(TITLE);
 		setTitle(TITLE);
 		setMessage(DEFAULT_MESSAGE);
@@ -85,15 +150,8 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 		}
 		this.initialName = name;
 		this.initialMeasurement = measurement;
+		this.initialField = field;
 		this.initialTags = tags;
-
-		pageCompletionListener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				setPageComplete(isPageComplete());
-				setPageMessage();
-			}
-		};
 	}
 
 	/**
@@ -101,50 +159,47 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
+		// create main composite
 		final ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
 		scrolledComposite.setExpandHorizontal(true);
 		scrolledComposite.setExpandVertical(true);
 		final Composite main = new Composite(scrolledComposite, SWT.NONE);
-
 		main.setLayout(new GridLayout(NUM_LAYOUT_COLUMNS, false));
 
+		// create name controls
 		Label nameLabel = new Label(main, SWT.LEFT);
 		nameLabel.setText("Name:");
 		nameBox = new Text(main, SWT.BORDER);
 		nameBox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, NUM_LAYOUT_COLUMNS - 1, 1));
 
+		// create measurement controls
 		Label measurementLabel = new Label(main, SWT.LEFT);
 		measurementLabel.setText("Measurement:");
 		measurementLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		measurementBox = new Combo(main, SWT.BORDER | SWT.DROP_DOWN);
-		measurementBox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, NUM_LAYOUT_COLUMNS - 1, 1));
-
+		measurementBox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, NUM_LAYOUT_COLUMNS - 3, 1));
 		List<String> measurements = influxService.getMeasurements();
 		if (null != measurements) {
-			measurementBox.setItems(measurements.toArray(new String[0]));
+			measurementBox.setItems(measurements.toArray(new String[measurements.size()]));
 		}
 
-		Listener measurementChangedListener = new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				for (TagKeyValueUIComponent tagComponent : tagComponents) {
-					tagComponent.updateAvailableTagKeys();
-				}
-			}
-		};
+		// create field controls
+		Label fieldLabel = new Label(main, SWT.LEFT);
+		fieldLabel.setText("Field:");
+		fieldLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+		fieldBox = new Combo(main, SWT.BORDER | SWT.DROP_DOWN);
+		fieldBox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		nameBox.addListener(SWT.Modify, pageCompletionListener);
-		measurementBox.addListener(SWT.Modify, pageCompletionListener);
-		measurementBox.addListener(SWT.Modify, measurementChangedListener);
-
+		// create heading for tags section
 		FormText headingText = new FormText(main, SWT.NONE);
 		headingText.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, NUM_LAYOUT_COLUMNS, 1));
-
 		headingText.setFont("header", JFaceResources.getBannerFont());
 		headingText.setText("<form><p><span color=\"header\" font=\"header\">Tag Specifications</span></p></form>", true, false);
 
+		setupListeners();
 		initContents(main);
 
+		// create add button for new tag rows
 		final FormText addText = new FormText(main, SWT.NONE);
 		addText.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, NUM_LAYOUT_COLUMNS, 1));
 		addText.setText("<form><p>Add tag specification ... <a href=\"delete\"><img href=\"addImg\" /></a></p></form>", true, false);
@@ -161,15 +216,15 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 			}
 		});
 
+		// redraw and finalize main composite setup
 		main.layout();
 		scrolledComposite.setMinSize(main.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-
 		setControl(scrolledComposite);
 		scrolledComposite.setContent(main);
 	}
 
 	/**
-	 * Sets the message based on the page selections.
+	 * Sets the message based on the page content.
 	 */
 	protected void setPageMessage() {
 		if (nameBox.getText().isEmpty()) {
@@ -183,7 +238,12 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 		}
 
 		if (measurementBox.getText().isEmpty()) {
-			setMessage("No value for the measurement entered!", ERROR);
+			setMessage("Measurement must not be empty!", ERROR);
+			return;
+		}
+
+		if (fieldBox.getText().isEmpty()) {
+			setMessage("Field must not be empty!", ERROR);
 			return;
 		}
 
@@ -213,6 +273,10 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 			return false;
 		}
 
+		if (fieldBox.getText().isEmpty()) {
+			return false;
+		}
+
 		for (TagKeyValueUIComponent tagComponent : tagComponents) {
 			if (tagComponent.getTagKey().isEmpty() || tagComponent.getTagValue().isEmpty()) {
 				return false;
@@ -222,21 +286,72 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 		return true;
 	}
 
-	@Override
-	public String getName() {
+	/**
+	 * Returns the specified name for the {@link AlertingDefinition}.
+	 *
+	 * @return Returns the specified name for the {@link AlertingDefinition}.
+	 */
+	public String getAlertingDefinitionName() {
 		return nameBox.getText();
 	}
 
+	/**
+	 * Returns the name of the target influxDB measurement.
+	 *
+	 * @return Returns the name of the target influxDB measurement.
+	 */
 	public String getMeasurement() {
 		return measurementBox.getText();
 	}
 
+	/**
+	 * Returns the name of the target influxDB field.
+	 *
+	 * @return Returns the name of the target influxDB field.
+	 */
+	public String getField() {
+		return fieldBox.getText();
+	}
+
+	/**
+	 * Returns the key-value pairs for the specification of the target time series.
+	 *
+	 * @return Returns the key-value pairs for the specification of the target time series.
+	 */
 	public Map<String, String> getTags() {
 		Map<String, String> map = new HashMap<>();
 		for (TagKeyValueUIComponent tagComponent : tagComponents) {
 			map.put(tagComponent.getTagKey(), tagComponent.getTagValue());
 		}
 		return map;
+	}
+
+	/**
+	 * Sets up control listeners.
+	 */
+	private void setupListeners() {
+		pageCompletionListener = new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				setPageComplete(isPageComplete());
+				setPageMessage();
+			}
+		};
+
+		Listener measurementChangedListener = new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				updateFieldOptions();
+				for (TagKeyValueUIComponent tagComponent : tagComponents) {
+					tagComponent.updateTagKeyOptions();
+				}
+			}
+		};
+
+		nameBox.addListener(SWT.Modify, pageCompletionListener);
+		measurementBox.addListener(SWT.Modify, pageCompletionListener);
+		fieldBox.addListener(SWT.Modify, pageCompletionListener);
+		measurementBox.addListener(SWT.Modify, measurementChangedListener);
 	}
 
 	/**
@@ -255,6 +370,24 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 		return false;
 	}
 
+	/**
+	 * Updates the selection options of the Field drop-down box.
+	 */
+	private void updateFieldOptions() {
+		String currentText = fieldBox.getText();
+		List<String> fields = influxService.getFields(measurementBox.getText());
+		if (null != fields) {
+			fieldBox.setItems(fields.toArray(new String[fields.size()]));
+		}
+		fieldBox.setText(currentText);
+	}
+
+	/**
+	 * Initializes the contents of all fields if there are initial values.
+	 *
+	 * @param main
+	 *            The main composite where to attach tag UI components to.
+	 */
 	private void initContents(Composite main) {
 		if (null != initialName) {
 			nameBox.setText(initialName);
@@ -262,6 +395,10 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 
 		if (null != initialMeasurement) {
 			measurementBox.setText(initialMeasurement);
+		}
+
+		if (null != initialField) {
+			fieldBox.setText(initialField);
 		}
 
 		if (null != initialTags) {
@@ -272,6 +409,12 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 		}
 	}
 
+	/**
+	 * This class encapsulates the UI elements required to specify a single tag.
+	 *
+	 * @author Alexander Wert
+	 *
+	 */
 	private class TagKeyValueUIComponent {
 		/**
 		 * Key box.
@@ -283,17 +426,61 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 		 */
 		private Combo valueBox;
 
+		/**
+		 * Label for the key.
+		 */
 		private Label keyLabel;
 
+		/**
+		 * Label for the value.
+		 */
 		private Label valueLabel;
 
+		/**
+		 * FormText for the delete button.
+		 */
 		private FormText deleteText;
 
-		public TagKeyValueUIComponent(Composite parent) {
+		/**
+		 * Constructor.
+		 *
+		 * To be used in creation mode.
+		 *
+		 * @param parent
+		 *            The parent composite.
+		 */
+		TagKeyValueUIComponent(Composite parent) {
 			this(parent, null, null);
 		}
 
-		public TagKeyValueUIComponent(final Composite parent, String initialKey, String initialValue) {
+		/**
+		 * Constructor.
+		 *
+		 * To be used in editing mode.
+		 *
+		 * @param parent
+		 *            The parent composite.
+		 * @param initialKey
+		 *            The initial key of the tag to be edited.
+		 * @param initialValue
+		 *            The initial value of the tag to be edited.
+		 */
+		TagKeyValueUIComponent(final Composite parent, String initialKey, String initialValue) {
+			createControls(parent, initialKey, initialValue);
+		}
+
+		/**
+		 * Creates the controls for this UI component.
+		 *
+		 * @param parent
+		 *            The parent composite.
+		 * @param initialKey
+		 *            The initial key of the tag to be edited.
+		 * @param initialValue
+		 *            The initial value of the tag to be edited.
+		 */
+		private void createControls(final Composite parent, String initialKey, String initialValue) {
+			// create controls for tag key
 			keyLabel = new Label(parent, SWT.LEFT);
 			keyLabel.setText("Key:");
 			keyLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
@@ -302,17 +489,8 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 			if (null != initialKey) {
 				keyBox.setText(initialKey);
 			}
-			updateAvailableTagKeys();
 
-			Listener tagKeyChangedListener = new Listener() {
-				@Override
-				public void handleEvent(Event event) {
-					updateAvailableTagValues();
-				}
-			};
-			keyBox.addListener(SWT.Modify, pageCompletionListener);
-			keyBox.addListener(SWT.Modify, tagKeyChangedListener);
-
+			// create controls for tag value
 			valueLabel = new Label(parent, SWT.LEFT);
 			valueLabel.setText("Value:");
 			valueLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
@@ -322,10 +500,7 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 				valueBox.setText(initialValue);
 			}
 
-			updateAvailableTagValues();
-
-			valueBox.addListener(SWT.Modify, pageCompletionListener);
-
+			// create controls for the delete button
 			deleteText = new FormText(parent, SWT.NONE);
 			deleteText.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
 			deleteText.setText("<form><p><a href=\"delete\"><img href=\"deleteImg\" /></a></p></form>", true, false);
@@ -343,35 +518,67 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 					pageCompletionListener.handleEvent(null);
 				}
 			});
+
+			setupListeners();
+			updateTagKeyOptions();
 		}
 
+		/**
+		 * Sets up control listeners.
+		 */
+		private void setupListeners() {
+			Listener tagKeyChangedListener = new Listener() {
+				@Override
+				public void handleEvent(Event event) {
+					updateAvailableTagValues();
+				}
+			};
+			keyBox.addListener(SWT.Modify, pageCompletionListener);
+			keyBox.addListener(SWT.Modify, tagKeyChangedListener);
+			valueBox.addListener(SWT.Modify, pageCompletionListener);
+		}
+
+		/**
+		 * Returns the specified key of the tag.
+		 *
+		 * @return Returns the specified key of the tag.
+		 */
 		public String getTagKey() {
 			return keyBox.getText();
 		}
 
+		/**
+		 * Returns the specified value of the tag.
+		 *
+		 * @return Returns the specified value of the tag.
+		 */
 		public String getTagValue() {
 			return valueBox.getText();
 		}
 
-		public void updateAvailableTagKeys() {
+		/**
+		 * Updates the selection options for the key drop-down box depending on the selection in the
+		 * measurement box.
+		 */
+		public void updateTagKeyOptions() {
 			String currentText = keyBox.getText();
-
 			List<String> tagKeys = influxService.getTags(measurementBox.getText());
 			if (null != tagKeys) {
-				keyBox.setItems(tagKeys.toArray(new String[0]));
+				keyBox.setItems(tagKeys.toArray(new String[tagKeys.size()]));
 			}
-
 			keyBox.setText(currentText);
 		}
 
+		/**
+		 * Updates the selection options for the value drop-down box depending on the selection in
+		 * the measurement box and the tag key box.
+		 */
 		public void updateAvailableTagValues() {
 			String currentText = valueBox.getText();
-
 			List<String> tagValues = influxService.getTagValues(measurementBox.getText(), keyBox.getText());
 			if (null != tagValues) {
-				valueBox.setItems(tagValues.toArray(new String[0]));
+				valueBox.setItems(tagValues.toArray(new String[tagValues.size()]));
 			}
-
 			valueBox.setText(currentText);
 		}
 	}

@@ -6,7 +6,6 @@ import org.eclipse.core.runtime.Assert;
 import com.google.common.base.Objects;
 
 import rocks.inspectit.shared.cs.ci.AlertingDefinition;
-import rocks.inspectit.shared.cs.ci.Profile;
 import rocks.inspectit.ui.rcp.model.Leaf;
 import rocks.inspectit.ui.rcp.provider.IAlertDefinitionProvider;
 import rocks.inspectit.ui.rcp.repository.CmrRepositoryDefinition;
@@ -19,7 +18,7 @@ import rocks.inspectit.ui.rcp.repository.CmrRepositoryDefinition;
  */
 public class AlertDefinitionLeaf extends Leaf implements IAlertDefinitionProvider {
 	/**
-	 * {@link Profile}.
+	 * {@link AlertingDefinition}.
 	 */
 	private AlertingDefinition alertDefinition;
 

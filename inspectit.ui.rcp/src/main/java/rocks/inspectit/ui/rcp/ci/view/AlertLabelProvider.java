@@ -11,7 +11,12 @@ import rocks.inspectit.ui.rcp.InspectITImages;
 import rocks.inspectit.ui.rcp.editor.viewers.StyledCellIndexLabelProvider;
 import rocks.inspectit.ui.rcp.provider.IAlertDefinitionProvider;
 
-
+/**
+ * Label provider for the {@link AlertManagerViewPart}.
+ *
+ * @author Alexander Wert
+ *
+ */
 public class AlertLabelProvider extends StyledCellIndexLabelProvider {
 
 	/**
@@ -27,16 +32,15 @@ public class AlertLabelProvider extends StyledCellIndexLabelProvider {
 			case 1:
 				StyledString styledString = new StyledString();
 
-				styledString.append(new StyledString(alertDef.getMeasurement()));
+				styledString.append(new StyledString(alertDef.getMeasurement() + "(" + alertDef.getField() + ")"));
 				StringBuilder tagsString = new StringBuilder();
 				for (Entry<String, String> tagKeyValue : alertDef.getTags().entrySet()) {
 					tagsString.append(", ");
 					tagsString.append(tagKeyValue.getKey());
-					tagsString.append("=");
+					tagsString.append('=');
 					tagsString.append(tagKeyValue.getValue());
 				}
 				styledString.append(new StyledString(tagsString.toString(), StyledString.QUALIFIER_STYLER));
-
 				return styledString;
 			case 2:
 				return new StyledString(String.valueOf(alertDef.getThreshold()));

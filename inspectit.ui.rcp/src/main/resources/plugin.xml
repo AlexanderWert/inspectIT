@@ -255,7 +255,7 @@
          </description>
       </wizard>
       <wizard
-            class="rocks.inspectit.ui.rcp.ci.wizard.CreateAlertDefinitionWizard"
+            class="rocks.inspectit.ui.rcp.ci.wizard.AlertDefinitionWizard"
             icon="icons/fugue/flag--plus.png"
             id="rocks.inspectit.ui.rcp.ci.wizard.createAlertDefinitionWizard"
             name="Create Alert Definition">

@@ -25,7 +25,7 @@ import rocks.inspectit.ui.rcp.repository.CmrRepositoryDefinition.OnlineStatus;
  * @author Alexander Wert
  *
  */
-public class CreateAlertDefinitionWizard extends Wizard implements INewWizard {
+public class AlertDefinitionWizard extends Wizard implements INewWizard {
 
 	/**
 	 * Wizard title.
@@ -33,24 +33,46 @@ public class CreateAlertDefinitionWizard extends Wizard implements INewWizard {
 	private static final String TITLE = "Create New Alert Definition";
 
 	/**
-	 * {@link CmrRepositoryDefinition} to create environment on.
+	 * {@link CmrRepositoryDefinition} to create alert definitions on.
 	 */
 	private CmrRepositoryDefinition cmrRepositoryDefinition;
 
+	/**
+	 * Source definition wizard page.
+	 */
 	private AlertSourceDefinitionWizardPage alertSourcePage;
 
+	/**
+	 * Alerting details wizard page.
+	 */
 	private AlertDetailsWizardPage alertdetailsPage;
 
+	/**
+	 * Initial {@link AlertingDefinition} instance. If set with the constructor, then this wizard is
+	 * used to edit this instance.
+	 */
 	private AlertingDefinition initialAlertDefinition;
 
 	/**
 	 * Default Constructor.
+	 *
+	 * If this constructor is called, the a new {@link AlertingDefinition} is created by this
+	 * wizard.
 	 */
-	public CreateAlertDefinitionWizard() {
+	public AlertDefinitionWizard() {
 		this(null);
 	}
 
-	public CreateAlertDefinitionWizard(AlertingDefinition initialAlertDefinition) {
+	/**
+	 * Constructor.
+	 *
+	 * If this constructor is called, then the passed {@link AlertingDefinition} instance is edited
+	 * in this wizard.
+	 *
+	 * @param initialAlertDefinition
+	 *            {@link AlertingDefinition} instance to be edited.
+	 */
+	public AlertDefinitionWizard(AlertingDefinition initialAlertDefinition) {
 		this.setWindowTitle(TITLE);
 		this.initialAlertDefinition = initialAlertDefinition;
 		if (null != initialAlertDefinition) {
@@ -83,16 +105,13 @@ public class CreateAlertDefinitionWizard extends Wizard implements INewWizard {
 				existingNames.add(alertDef.getName());
 			}
 
-			if (null != initialAlertDefinition) {
-				// remove name of the alert definition to be edited to allow to stay with the same
-				// name!
+			if (null != initialAlertDefinition) { // editing mode
 				existingNames.remove(initialAlertDefinition.getName());
-
 				alertSourcePage = new AlertSourceDefinitionWizardPage(cmrRepositoryDefinition.getInfluxDBService(), existingNames, initialAlertDefinition.getName(),
-						initialAlertDefinition.getMeasurement(), initialAlertDefinition.getTags());
+						initialAlertDefinition.getMeasurement(), initialAlertDefinition.getField(), initialAlertDefinition.getTags());
 				alertdetailsPage = new AlertDetailsWizardPage(initialAlertDefinition.getThreshold(), initialAlertDefinition.getThresholdType().equals(ThresholdType.LOWER_THRESHOLD),
 						initialAlertDefinition.getTimerange(), initialAlertDefinition.getNotificationEmailAddresses());
-			} else {
+			} else { // new alerting definition creation mode
 				alertSourcePage = new AlertSourceDefinitionWizardPage(cmrRepositoryDefinition.getInfluxDBService(), existingNames);
 				alertdetailsPage = new AlertDetailsWizardPage();
 			}
@@ -120,8 +139,9 @@ public class CreateAlertDefinitionWizard extends Wizard implements INewWizard {
 	public boolean performFinish() {
 		try {
 			AlertingDefinition alertDefinition = null != initialAlertDefinition ? initialAlertDefinition : new AlertingDefinition();
-			alertDefinition.setName(alertSourcePage.getName());
+			alertDefinition.setName(alertSourcePage.getAlertingDefinitionName());
 			alertDefinition.setMeasurement(alertSourcePage.getMeasurement());
+			alertDefinition.setField(alertSourcePage.getField());
 			alertDefinition.replaceTags(alertSourcePage.getTags());
 			alertDefinition.setThreshold(alertdetailsPage.getThreshold());
 			alertDefinition.setThresholdType(alertdetailsPage.getThresholdType());

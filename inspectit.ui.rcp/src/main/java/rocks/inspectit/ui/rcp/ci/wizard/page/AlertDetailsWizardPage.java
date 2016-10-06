@@ -36,34 +36,103 @@ import rocks.inspectit.ui.rcp.InspectIT;
 import rocks.inspectit.ui.rcp.InspectITImages;
 
 /**
+ * Wizard Page for the definition of the alerting details.
+ *
  * @author Alexander Wert
  *
  */
 public class AlertDetailsWizardPage extends WizardPage {
-
+	/**
+	 * Description text for the email addresses input field.
+	 */
+	private static final String EMAIL_INFO_TEXT = "Specify email addresses to which notifications about an alert shall be sent.\nEnter one address per line in the text box.";
+	/**
+	 * Title of the wizard page.
+	 */
 	private static final String TITLE = "Alert Threshold";
+	/**
+	 * Default message of the wizard page.
+	 */
 	private static final String DEFAULT_MESSAGE = "Define the threshold and check interval for the new alert definition.";
+	/**
+	 * Default value for the time range / check interval.
+	 */
 	private static final int DEFAULT_TIMERANGE = 5;
+
+	/**
+	 * Number of layout columns in the main composite of this page.
+	 */
 	private static final int NUM_LAYOUT_COLUMNS = 3;
+
+	/**
+	 * Regular expression pattern used to check for valid e-mail address entries.
+	 */
 	private static final Pattern EMAIL_PATTERN = Pattern.compile(
 			"(?:(?:\\r\\n)?[ \\t])*(?:(?:(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*))*@(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*))*|(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*)*\\<(?:(?:\\r\\n)?[ \\t])*(?:@(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*))*(?:,@(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*))*)*:(?:(?:\\r\\n)?[ \\t])*)?(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*))*@(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*))*\\>(?:(?:\\r\\n)?[ \\t])*)|(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*)*:(?:(?:\\r\\n)?[ \\t])*(?:(?:(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*))*@(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*))*|(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*)*\\<(?:(?:\\r\\n)?[ \\t])*(?:@(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*))*(?:,@(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*))*)*:(?:(?:\\r\\n)?[ \\t])*)?(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*))*@(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*))*\\>(?:(?:\\r\\n)?[ \\t])*)(?:,\\s*(?:(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*))*@(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*))*|(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*)*\\<(?:(?:\\r\\n)?[ \\t])*(?:@(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*))*(?:,@(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*))*)*:(?:(?:\\r\\n)?[ \\t])*)?(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\"(?:[^\\\"\\r\\\\]|\\\\.|(?:(?:\\r\\n)?[ \\t]))*\"(?:(?:\\r\\n)?[ \\t])*))*@(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*)(?:\\.(?:(?:\\r\\n)?[ \\t])*(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+(?:(?:(?:\\r\\n)?[ \\t])+|\\Z|(?=[\\[\"()<>@,;:\\\\\".\\[\\]]))|\\[([^\\[\\]\\r\\\\]|\\\\.)*\\](?:(?:\\r\\n)?[ \\t])*))*\\>(?:(?:\\r\\n)?[ \\t])*))*)?;\\s*)");
+
+	/**
+	 * Initial threshold value (used for editing mode).
+	 */
 	private Double initialThreshold;
-	private int initialTimerange;
-	private List<String> initialsEmails;
+
+	/**
+	 * Initial indicator whether the threshold is used as lower threshold.
+	 */
 	private boolean initialLowerThreshold;
 
+	/**
+	 * Initial time range value (used for editing mode).
+	 */
+	private int initialTimerange;
+
+	/**
+	 * Initial list of e-mail addresses (used for editing mode).
+	 */
+	private List<String> initialsEmails;
+
+	/**
+	 * Input field for the threshold value.
+	 */
 	private Text thresholdBox;
+
+	/**
+	 * Input Spinner for the time range value in minutes.
+	 */
 	private Spinner timerangeSpinner;
+
+	/**
+	 * Input field for email addresses.
+	 */
 	private StyledText emailsBox;
+
+	/**
+	 * Checkbox for the selection of the threshold type (lower vs. upper).
+	 */
 	private Button lowerThresholdCheckBox;
 
 	/**
 	 * Default Constructor.
+	 *
+	 * To be used for creation mode.
 	 */
 	public AlertDetailsWizardPage() {
 		this(null, false, DEFAULT_TIMERANGE, null);
 	}
 
+	/**
+	 * Constructor.
+	 *
+	 * To be used for editing mode.
+	 *
+	 * @param initialThreshold
+	 *            Initial threshold value (used for editing mode).
+	 * @param initialLowerThreshold
+	 *            Initial indicator whether the threshold is used as lower threshold.
+	 * @param initialTimerange
+	 *            Initial time range value (used for editing mode).
+	 * @param initialsEmails
+	 *            Initial list of e-mail addresses (used for editing mode).
+	 */
 	public AlertDetailsWizardPage(Double initialThreshold, boolean initialLowerThreshold, int initialTimerange, List<String> initialsEmails) {
 		super(TITLE);
 		setTitle(TITLE);
@@ -79,19 +148,84 @@ public class AlertDetailsWizardPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
+		// create main composite
 		final Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new GridLayout(NUM_LAYOUT_COLUMNS, false));
 
+		// create threshold controls
 		Label thresholdLabel = new Label(main, SWT.LEFT);
 		thresholdLabel.setText("Alert threshold:");
 		thresholdLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		thresholdBox = new Text(main, SWT.BORDER);
 		thresholdBox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		if (null != initialThreshold) {
-			thresholdBox.setText(String.valueOf(initialThreshold));
-		}
-		thresholdBox.addVerifyListener(new VerifyListener() {
 
+		// create threshold type controls
+		lowerThresholdCheckBox = new Button(main, SWT.CHECK);
+		lowerThresholdCheckBox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, NUM_LAYOUT_COLUMNS - 2, 1));
+		lowerThresholdCheckBox.setText("Use as lower threshold");
+
+		// create time range controls
+		Label timerangeLabel = new Label(main, SWT.LEFT);
+		timerangeLabel.setText("Check interval [min]:");
+		timerangeLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+		timerangeSpinner = new Spinner(main, SWT.BORDER);
+		timerangeSpinner.setMinimum(1);
+		timerangeSpinner.setMaximum(Integer.MAX_VALUE);
+		timerangeSpinner.setIncrement(1);
+		timerangeSpinner.setPageIncrement(10);
+		timerangeSpinner.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, NUM_LAYOUT_COLUMNS - 1, 1));
+
+		// create email addresses controls
+		Label emailsLabel = new Label(main, SWT.LEFT);
+		emailsLabel.setText("Send alerts to the following e-mail addresses:");
+		emailsLabel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, NUM_LAYOUT_COLUMNS - 1, 1));
+		Label infoLabel = new Label(main, SWT.RIGHT);
+		infoLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		infoLabel.setImage(InspectIT.getDefault().getImage(InspectITImages.IMG_INFORMATION));
+		infoLabel.setToolTipText(EMAIL_INFO_TEXT);
+		emailsBox = new StyledText(main, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+		emailsBox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, NUM_LAYOUT_COLUMNS, 1));
+
+		setupListeners();
+		initContents();
+		setControl(main);
+	}
+
+	/**
+	 * Sets the message based on the page contents.
+	 */
+	protected void setPageMessage() {
+		if (thresholdBox.getText().isEmpty()) {
+			setMessage("Threshold must not be empty!", ERROR);
+			return;
+		}
+
+		if (timerangeSpinner.getText().isEmpty()) {
+			setMessage("Check interval must not be empty!", ERROR);
+			return;
+		}
+		Pair<Integer, String> emailsErrorMessage = checkEmailText();
+		if (null != emailsErrorMessage) {
+			setMessage("The email address '" + emailsErrorMessage.getSecond() + "' in line " + emailsErrorMessage.getFirst() + " is not valid!", ERROR);
+			return;
+		}
+		setMessage(DEFAULT_MESSAGE);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isPageComplete() {
+		return !thresholdBox.getText().isEmpty() && !timerangeSpinner.getText().isEmpty() && (checkEmailText() == null);
+	}
+
+	/**
+	 * Sets up control listeners.
+	 */
+	private void setupListeners() {
+		thresholdBox.addVerifyListener(new VerifyListener() {
+			// verifies whether input is a valid number
 			@Override
 			public void verifyText(VerifyEvent event) {
 				Text text = (Text) event.getSource();
@@ -105,43 +239,6 @@ public class AlertDetailsWizardPage extends WizardPage {
 			}
 		});
 
-		lowerThresholdCheckBox = new Button(main, SWT.CHECK);
-		lowerThresholdCheckBox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, NUM_LAYOUT_COLUMNS - 2, 1));
-		lowerThresholdCheckBox.setText("Use as lower threshold");
-		lowerThresholdCheckBox.setSelection(initialLowerThreshold);
-
-		Label timerangeLabel = new Label(main, SWT.LEFT);
-		timerangeLabel.setText("Check interval [min]:");
-		timerangeLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
-		timerangeSpinner = new Spinner(main, SWT.BORDER);
-		timerangeSpinner.setMinimum(1);
-		timerangeSpinner.setMaximum(Integer.MAX_VALUE);
-		timerangeSpinner.setSelection(initialTimerange);
-		timerangeSpinner.setIncrement(1);
-		timerangeSpinner.setPageIncrement(10);
-		timerangeSpinner.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, NUM_LAYOUT_COLUMNS - 1, 1));
-
-		Label emailsLabel = new Label(main, SWT.LEFT);
-		emailsLabel.setText("Send alerts to the following e-mail addresses:");
-		emailsLabel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, NUM_LAYOUT_COLUMNS - 1, 1));
-
-		Label infoLabel = new Label(main, SWT.RIGHT);
-		infoLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		infoLabel.setImage(InspectIT.getDefault().getImage(InspectITImages.IMG_INFORMATION));
-		infoLabel.setToolTipText("Specify email addresses to which notifications about an alert shall be sent.\nEnter one address per line in the text box.");
-
-		emailsBox = new StyledText(main, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		emailsBox.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, NUM_LAYOUT_COLUMNS, 1));
-		if (null != initialsEmails) {
-			String emailsText = "";
-			for (String email : initialsEmails) {
-				if (!emailsText.isEmpty()) {
-					emailsText += System.getProperty("line.separator");
-				}
-				emailsText += email;
-			}
-			emailsBox.setText(emailsText);
-		}
 		emailsBox.addLineStyleListener(new LineStyleListener() {
 			@Override
 			public void lineGetStyle(LineStyleEvent event) {
@@ -175,39 +272,39 @@ public class AlertDetailsWizardPage extends WizardPage {
 		thresholdBox.addListener(SWT.Modify, pageCompletionListener);
 		timerangeSpinner.addListener(SWT.Modify, pageCompletionListener);
 		emailsBox.addListener(SWT.Modify, pageCompletionListener);
-
-		setControl(main);
 	}
 
 	/**
-	 * Sets the message based on the page selections.
+	 * Initializes the contents of all fields if there are initial values.
 	 */
-	protected void setPageMessage() {
-		if (thresholdBox.getText().isEmpty()) {
-			setMessage("Threshold must not be empty!", ERROR);
-			return;
+	private void initContents() {
+		if (null != initialThreshold) {
+			thresholdBox.setText(String.valueOf(initialThreshold));
 		}
 
-		if (timerangeSpinner.getText().isEmpty()) {
-			setMessage("Check interval must not be empty!", ERROR);
-			return;
+		lowerThresholdCheckBox.setSelection(initialLowerThreshold);
+		timerangeSpinner.setSelection(initialTimerange);
+
+		if (null != initialsEmails) {
+			String emailsText = "";
+			for (String email : initialsEmails) {
+				if (!emailsText.isEmpty()) {
+					emailsText += System.getProperty("line.separator");
+				}
+				emailsText += email;
+			}
+			emailsBox.setText(emailsText);
 		}
-		Pair<Integer, String> emailsErrorMessage = checkEmailText();
-		if (null != emailsErrorMessage) {
-			setMessage("The email address '" + emailsErrorMessage.getSecond() + "' in line " + emailsErrorMessage.getFirst() + " is not valid!", ERROR);
-			return;
-		}
-		setMessage(DEFAULT_MESSAGE);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Validates the content of the email addresses input field checking whether the e-mails have a
+	 * correct syntax.
+	 *
+	 * @return Returns a integer-string pair indicating the line number and e-mail address that is
+	 *         not correct. If all e-mail addresses have a correct syntax, then this method returns
+	 *         <code>null</code>.
 	 */
-	@Override
-	public boolean isPageComplete() {
-		return !thresholdBox.getText().isEmpty() && !timerangeSpinner.getText().isEmpty() && (checkEmailText() == null);
-	}
-
 	private Pair<Integer, String> checkEmailText() {
 		String emailText = emailsBox.getText();
 		if (emailText.isEmpty()) {
@@ -222,17 +319,40 @@ public class AlertDetailsWizardPage extends WizardPage {
 		}
 
 		return null;
-
 	}
 
+	/**
+	 * Returns the specified threshold value.
+	 *
+	 * @return Returns the specified threshold value.
+	 */
 	public double getThreshold() {
 		return Double.parseDouble(thresholdBox.getText());
 	}
 
+	/**
+	 * Returns the specified threshold type.
+	 *
+	 * @return Returns the specified threshold type.
+	 */
+	public ThresholdType getThresholdType() {
+		return lowerThresholdCheckBox.getSelection() ? ThresholdType.LOWER_THRESHOLD : ThresholdType.UPPER_THRESHOLD;
+	}
+
+	/**
+	 * Returns the specified time range value.
+	 *
+	 * @return Returns the specified time range value.
+	 */
 	public int getTimerange() {
 		return Integer.parseInt(timerangeSpinner.getText());
 	}
 
+	/**
+	 * Returns the specified email addresses.
+	 *
+	 * @return Returns the specified email addresses.
+	 */
 	public List<String> getEmailAddresses() {
 		String[] array = emailsBox.getText().split(System.getProperty("line.separator"));
 		List<String> emailAddresses = new ArrayList<>();
@@ -241,9 +361,4 @@ public class AlertDetailsWizardPage extends WizardPage {
 		}
 		return emailAddresses;
 	}
-
-	public ThresholdType getThresholdType() {
-		return lowerThresholdCheckBox.getSelection() ? ThresholdType.LOWER_THRESHOLD : ThresholdType.UPPER_THRESHOLD;
-	}
-
 }

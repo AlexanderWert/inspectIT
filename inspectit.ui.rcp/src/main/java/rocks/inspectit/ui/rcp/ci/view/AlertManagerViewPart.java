@@ -94,6 +94,9 @@ public class AlertManagerViewPart extends ViewPart implements IRefreshableView {
 	 */
 	private static class AlertManagerView extends AbstractTableBasedManagerView implements IAlertDefinitionChangeListener {
 
+		/**
+		 * A list of {@link AlertDefinitionLeaf}s displayed in this view.
+		 */
 		private List<AlertDefinitionLeaf> alertDefinitions;
 
 		/**
@@ -204,7 +207,7 @@ public class AlertManagerViewPart extends ViewPart implements IRefreshableView {
 		 *
 		 * @return {@link #alertDefinitions}
 		 */
-		public List<AlertDefinitionLeaf> getAlertDefinitions() {
+		private List<AlertDefinitionLeaf> getAlertDefinitions() {
 			if (null == alertDefinitions) {
 				alertDefinitions = new ArrayList<>();
 			}

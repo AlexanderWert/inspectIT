@@ -27,6 +27,12 @@ import rocks.inspectit.ui.rcp.provider.IAlertDefinitionProvider;
 import rocks.inspectit.ui.rcp.repository.CmrRepositoryDefinition;
 import rocks.inspectit.ui.rcp.repository.CmrRepositoryDefinition.OnlineStatus;
 
+/**
+ * Handler that deletes {@link AlertingDefinition} instances.
+ *
+ * @author Alexander Wert
+ *
+ */
 public class DeleteAlertDefinitionHandler extends AbstractHandler implements IHandler {
 
 	/**
