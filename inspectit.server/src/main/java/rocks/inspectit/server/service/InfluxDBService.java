@@ -44,7 +44,7 @@ public class InfluxDBService implements IInfluxDBService {
 	@Override
 	public List<String> getMeasurements() {
 		QueryResult queryResult = influxDbDao.query("SHOW MEASUREMENTS;");
-		return extractStringList(queryResult);
+		return extractStringList(queryResult, 0);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class InfluxDBService implements IInfluxDBService {
 		String query = "SHOW TAG KEYS FROM \"" + measurement + "\";";
 		try {
 			QueryResult queryResult = influxDbDao.query(query);
-			return extractStringList(queryResult);
+			return extractStringList(queryResult, 0);
 		} catch (Exception e) {
 			log.info("Exception while execution query: " + query);
 			return null;
@@ -70,7 +70,7 @@ public class InfluxDBService implements IInfluxDBService {
 		String query = "SHOW TAG VALUES FROM \"" + measurement + "\" WITH KEY = \"" + tagKey + "\";";
 		try {
 			QueryResult queryResult = influxDbDao.query(query);
-			return extractStringList(queryResult);
+			return extractStringList(queryResult, 1);
 		} catch (Exception e) {
 			log.info("Exception while execution query: " + query);
 			return null;
@@ -85,7 +85,7 @@ public class InfluxDBService implements IInfluxDBService {
 	 *            the {@link QueryResult} containing the data
 	 * @return list containing the values
 	 */
-	private List<String> extractStringList(QueryResult queryResult) {
+	private List<String> extractStringList(QueryResult queryResult, int columnIndex) {
 		List<String> list = new ArrayList<>();
 		if (queryResult == null) {
 			return list;
@@ -108,9 +108,7 @@ public class InfluxDBService implements IInfluxDBService {
 		}
 
 		for (List<Object> valueList : series.getValues()) {
-			for (Object object : valueList) {
-				list.add((String) object);
-			}
+			list.add((String) valueList.get(columnIndex));
 		}
 
 		return list;
