@@ -277,6 +277,8 @@ public class AlertingDefinition extends AbstractCiData {
 			throw new BusinessException("Adding empty email address.", AlertingDefinitionErrorCodeEnum.EMAIL_IS_EMPTY);
 		} else if (false) { // TODO use validator
 			throw new BusinessException("Adding invalid email address '" + email + "'.", AlertingDefinitionErrorCodeEnum.EMAIL_IS_NOT_VALID);
+		} else if (notificationEmailAddresses.contains(email)) {
+			throw new BusinessException("Adding email address '" + email + "'.", AlertingDefinitionErrorCodeEnum.EMAIL_ALREADY_EXISTS);
 		} else {
 			return notificationEmailAddresses.add(email);
 		}

@@ -31,7 +31,9 @@ public class AlertingDefinitionTest extends TestBase {
 	@InjectMocks
 	AlertingDefinition alertingDefinition;
 
-	final Map<String, String> tagMap = ImmutableMap.of("key1", "val1", "key2", "val2", "key3", "val3");
+	Map<String, String> tagMap = ImmutableMap.of("key1", "val1", "key2", "val2", "key3", "val3");
+
+	Map<String, String> tagMapBroken = ImmutableMap.of("key1", "val1", "", "val2", "key3", "");
 
 	List<String> emailList = Arrays.asList("test@example.com", "test2@example.com", "test3@example.com");
 
@@ -127,6 +129,16 @@ public class AlertingDefinitionTest extends TestBase {
 		public void replaceNullTags() throws BusinessException {
 			alertingDefinition.replaceTags(null);
 		}
+
+		@Test
+		public void replaceBrokenTags() throws BusinessException {
+			assertThat(alertingDefinition.getTags().size(), equalTo(0));
+			alertingDefinition.putTag("tagKey1", "tagValue");
+			alertingDefinition.putTag("tagKey2", "tagValue");
+			assertThat(alertingDefinition.getTags().size(), equalTo(2));
+			alertingDefinition.replaceTags(tagMapBroken);
+			assertThat(alertingDefinition.getTags().size(), equalTo(1));
+		}
 	}
 
 	/**
@@ -145,6 +157,15 @@ public class AlertingDefinitionTest extends TestBase {
 
 			String returnedEmail = alertingDefinition.getNotificationEmailAddresses().get(0);
 			assertThat(returnedEmail, equalTo(mailAddress));
+		}
+
+		@Test(expectedExceptions = { BusinessException.class })
+		public void putDuplicateEmail() throws BusinessException {
+			String mailAddress = "test@example.com";
+
+			assertThat(alertingDefinition.getNotificationEmailAddresses(), hasSize(0));
+			alertingDefinition.addNotificationEmailAddress(mailAddress);
+			alertingDefinition.addNotificationEmailAddress(mailAddress);
 		}
 
 		@Test(expectedExceptions = { BusinessException.class })
@@ -220,6 +241,14 @@ public class AlertingDefinitionTest extends TestBase {
 			assertThat(alertingDefinition.getNotificationEmailAddresses(), hasSize(1));
 			alertingDefinition.replaceNotificationEmailAddresses(emailListBroken);
 			assertThat(alertingDefinition.getNotificationEmailAddresses(), hasSize(2));
+		}
+
+		@Test(expectedExceptions = { BusinessException.class })
+		public void replaceEmailsByNull() throws BusinessException {
+			assertThat(alertingDefinition.getNotificationEmailAddresses(), hasSize(0));
+			alertingDefinition.addNotificationEmailAddress("test@example.com");
+			assertThat(alertingDefinition.getNotificationEmailAddresses(), hasSize(1));
+			alertingDefinition.replaceNotificationEmailAddresses(null);
 		}
 	}
 }

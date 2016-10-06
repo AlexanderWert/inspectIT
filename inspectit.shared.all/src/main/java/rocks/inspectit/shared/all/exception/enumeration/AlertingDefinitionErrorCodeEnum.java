@@ -73,7 +73,12 @@ public enum AlertingDefinitionErrorCodeEnum implements IErrorCode {
 	/**
 	 * Replacing notification e-mails with null.
 	 */
-	REPLACING_WITH_NULL("Replacing the current object with 'null'.", null, null);
+	REPLACING_WITH_NULL("Replacing the current object with 'null'.", null, null),
+
+	/**
+	 * The e-mail already exists.
+	 */
+	EMAIL_ALREADY_EXISTS("The e-mail address already exists.", null, null);
 
 	/**
 	 * Name of the component.
