@@ -45,7 +45,7 @@ public class AlertingDefinition extends AbstractCiData {
 	 * @author Marius Oehler
 	 *
 	 */
-	enum ThresholdType {
+	public enum ThresholdType {
 		/**
 		 * The specified threshold is an upper threshold. Alert is issued if the threshold is
 		 * exceeded.
@@ -69,7 +69,7 @@ public class AlertingDefinition extends AbstractCiData {
 	 * The type of the specified threshold.
 	 */
 	@XmlAttribute(name = "threshold-type")
-	private ThresholdType thresholdType;
+	private ThresholdType thresholdType = ThresholdType.UPPER_THRESHOLD;
 
 	/**
 	 * The measurement to monitor.

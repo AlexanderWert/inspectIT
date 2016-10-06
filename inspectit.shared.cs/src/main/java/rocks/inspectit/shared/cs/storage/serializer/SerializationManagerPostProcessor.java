@@ -14,6 +14,7 @@ import rocks.inspectit.shared.all.storage.serializer.impl.SerializationManager;
 import rocks.inspectit.shared.all.storage.serializer.schema.ClassSchemaManager;
 import rocks.inspectit.shared.cs.ci.AgentMapping;
 import rocks.inspectit.shared.cs.ci.AgentMappings;
+import rocks.inspectit.shared.cs.ci.AlertingDefinition;
 import rocks.inspectit.shared.cs.ci.BusinessContextDefinition;
 import rocks.inspectit.shared.cs.ci.Environment;
 import rocks.inspectit.shared.cs.ci.Profile;
@@ -376,6 +377,9 @@ public class SerializationManagerPostProcessor implements BeanPostProcessor {
 
 		// INSPECTIT-2071
 		kryo.register(JmxSensorConfig.class, new FieldSerializer<JmxSensorConfig>(kryo, JmxSensorConfig.class), nextRegistrationId++);
+
+		// INSPECTIT-1953
+		kryo.register(AlertingDefinition.class, new FieldSerializer<AlertingDefinition>(kryo, AlertingDefinition.class), nextRegistrationId++);
 	}
 
 }

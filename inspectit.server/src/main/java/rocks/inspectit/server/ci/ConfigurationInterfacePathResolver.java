@@ -61,7 +61,7 @@ public class ConfigurationInterfacePathResolver {
 	/**
 	 * Sub-folder for saving alert thresholds.
 	 */
-	private static final String ALERTING_DEFINITIONS_FOLDER = "alerting-definitions";
+	private static final String ALERTING_DEFINITIONS_FOLDER = "alerting";
 
 	/**
 	 * Used with {@link ResourcesPathResolver} to get the file of the ci dir.

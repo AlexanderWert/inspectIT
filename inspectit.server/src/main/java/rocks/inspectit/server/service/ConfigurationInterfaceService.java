@@ -31,6 +31,7 @@ import rocks.inspectit.shared.cs.cmr.service.IConfigurationInterfaceService;
  * Implementation of the {@link ICmrManagementService}.
  *
  * @author Ivan Senic
+ * @author Marius Oehler
  *
  */
 @Service
