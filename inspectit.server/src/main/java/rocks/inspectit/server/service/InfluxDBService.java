@@ -78,11 +78,28 @@ public class InfluxDBService implements IInfluxDBService {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<String> getFields(String measurement) {
+		String query = "SHOW FIELD KEYS FROM \"" + measurement + "\";";
+		try {
+			QueryResult queryResult = influxDbDao.query(query);
+			return extractStringList(queryResult, 0);
+		} catch (Exception e) {
+			log.info("Exception while execution query: " + query);
+			return null;
+		}
+	}
+
+	/**
 	 * Extracts the queried values of the given {@link QueryResult} and creates a list comprising
 	 * them.
 	 *
 	 * @param queryResult
 	 *            the {@link QueryResult} containing the data
+	 * @param columnIndex
+	 *            the index of the column to return
 	 * @return list containing the values
 	 */
 	private List<String> extractStringList(QueryResult queryResult, int columnIndex) {

@@ -163,6 +163,7 @@
           </xs:element>
         </xs:sequence>
         <xs:attribute name="threshold" type="xs:double"/>
+        <xs:attribute name="field" type="xs:string"/>
         <xs:attribute name="threshold-type" type="thresholdType"/>
         <xs:attribute name="measurement" type="xs:string"/>
         <xs:attribute name="timerange" type="xs:int"/>

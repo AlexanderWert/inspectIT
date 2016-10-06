@@ -66,6 +66,12 @@ public class AlertingDefinition extends AbstractCiData {
 	private Double threshold;
 
 	/**
+	 * The field to check against the threshold.
+	 */
+	@XmlAttribute(name = "field")
+	private String field;
+
+	/**
 	 * The type of the specified threshold.
 	 */
 	@XmlAttribute(name = "threshold-type")
@@ -95,6 +101,25 @@ public class AlertingDefinition extends AbstractCiData {
 	@XmlElementWrapper(name = "notification-email-addresses")
 	@XmlElement(name = "notification-email-address")
 	private final List<String> notificationEmailAddresses = new ArrayList<>();
+
+	/**
+	 * Gets {@link #field}.
+	 *
+	 * @return {@link #field}
+	 */
+	public String getField() {
+		return field;
+	}
+
+	/**
+	 * Sets {@link #field}.
+	 *
+	 * @param field
+	 *            New value for {@link #field}
+	 */
+	public void setField(String field) {
+		this.field = field;
+	}
 
 	/**
 	 * Gets {@link #threshold}.

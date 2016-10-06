@@ -43,4 +43,13 @@ public interface IInfluxDBService {
 	 * @return list of the values of the tag
 	 */
 	List<String> getTagValues(String measurement, String tagKey);
+
+	/**
+	 * Returns all existing fields in the specified measurement.
+	 *
+	 * @param measurement
+	 *            the measurement
+	 * @return a list containing fields
+	 */
+	List<String> getFields(String measurement);
 }
