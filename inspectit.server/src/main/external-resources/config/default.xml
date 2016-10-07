@@ -376,6 +376,7 @@
 			</string-property>
 			<string-property name="From E-Mail Address" default-value="sender@inspectit.rocks" server-restart-required="false" logical-name="mail.from" advanced="false" description="The e-mail address to be used as sender when e-mails are sent by inspectIT.">
 				<validators>
+					<isNotEmpty />
 					<isValidEMail />
 				</validators>
 			</string-property>
@@ -388,6 +389,9 @@
 				<validators>
 					<isValidEMailList />
 				</validators>
+			</string-property>
+			<string-property name="SMTP Properties" default-value="" server-restart-required="false" logical-name="mail.smtp.properties" advanced="true" description="A comma separated list of additional SMTP properties that might be needed by certain SMTP servers.\n\nExample:\nmail.smtp.auth=true,mail.smtp.starttls.enable=true">
+				<validators />
 			</string-property>
 		</properties>
 	</section>

@@ -2,9 +2,14 @@ package rocks.inspectit.server.mail.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
 
+import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.slf4j.Logger;
@@ -14,6 +19,7 @@ import org.springframework.stereotype.Component;
 import rocks.inspectit.server.mail.IEMailSender;
 import rocks.inspectit.shared.all.cmr.property.spring.PropertyUpdate;
 import rocks.inspectit.shared.all.spring.logger.Log;
+import rocks.inspectit.shared.all.util.StringUtils;
 
 /**
  * Central component for sending e-mails.
@@ -72,15 +78,35 @@ public class EMailSender implements IEMailSender {
 	private String defaultRecipientString;
 
 	/**
+	 * Additional SMTP properties as a comma separated string.
+	 */
+	@Value("${mail.smtp.properties}")
+	private String smtpPropertiesString;
+
+	/**
 	 * Unwrapped list of default recipients.
 	 */
 	private final List<String> defaultRecipients = new ArrayList<>();
 
 	/**
+	 * SMTP connection state.
+	 */
+	private boolean connected = false;
+
+	/**
+	 * Additional SMTP properties that might be required for certain SMTP servers.
+	 */
+	private final Properties additionalProperties = new Properties();
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean sendEMail(List<String> recipients, String subject, String htmlMessage, String textMessage) {
+	public boolean sendEMail(String subject, String htmlMessage, String textMessage, List<String> recipients) {
+		if (!connected) {
+			log.warn("Failed sending e-mail! E-Mail service cannot connect to the SMTP server. Check the connection settings!");
+			return false;
+		}
 		try {
 			HtmlEmail email = prepareHtmlEmail(recipients);
 			email.setSubject(subject);
@@ -89,9 +115,30 @@ public class EMailSender implements IEMailSender {
 			email.send();
 			return true;
 		} catch (EmailException e) {
-			log.warn("Failed sneding e-mail!", e);
+			log.warn("Failed sending e-mail!", e);
 			return false;
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean sendEMail(String subject, String htmlMessage, String textMessage, String... recipients) {
+		List<String> recipientsList = new ArrayList<>();
+		for (String recipient : recipients) {
+			recipientsList.add(recipient);
+		}
+
+		return sendEMail(subject, htmlMessage, textMessage, recipientsList);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isConnected() {
+		return connected;
 	}
 
 	/**
@@ -133,15 +180,62 @@ public class EMailSender implements IEMailSender {
 	/**
 	 * Unwrap the comma separated list string of default recipients into a real list.
 	 */
-	@PostConstruct
 	@PropertyUpdate(properties = { "mail.default.to" })
-	public void parseRecipientsString() {
+	protected void parseRecipientsString() {
 		if (null != defaultRecipientString) {
 			defaultRecipients.clear();
 			String[] strArray = defaultRecipientString.split(",");
 			for (String element : strArray) {
-				defaultRecipients.add(element.trim());
+				String address = element.trim();
+				if (StringUtils.isValidEmailAddress(address)) {
+					defaultRecipients.add(address);
+				}
 			}
 		}
+
+	}
+
+	/**
+	 * Unwrap the comma separated list string of additional properties into real properties object.
+	 */
+	@PropertyUpdate(properties = { "mail.smtp.properties" })
+	protected void parseAdditionalPropertiesString() {
+		if (null != smtpPropertiesString) {
+			additionalProperties.clear();
+			String[] strArray = smtpPropertiesString.split(",");
+			for (String property : strArray) {
+				int equalsIndex = property.indexOf('=');
+				if ((equalsIndex > 0) && (equalsIndex < (property.length() - 1))) {
+					additionalProperties.put(property.substring(0, equalsIndex), property.substring(equalsIndex + 1));
+				}
+			}
+		}
+	}
+	/**
+	 * Checks connection to SMTP server.
+	 */
+	@PropertyUpdate(properties = { "mail.smpt.host", "mail.smpt.port", "mail.smpt.user", "mail.smpt.passwd" })
+	protected void checkConnection() {
+		try {
+			Session session = Session.getInstance(additionalProperties, new DefaultAuthenticator(smptUser, smptPassword));
+			Transport transport = session.getTransport("smtp");
+			transport.connect(smptHost, smptPort, smptUser, smptPassword);
+			transport.close();
+			log.info("|-eMail Service active and connected...");
+			connected = true;
+		} catch (MessagingException e) {
+			log.warn("|-eMail Service was not able to connect! Check connection settings!");
+			connected = false;
+		}
+	}
+
+	/**
+	 * Initialize E-Mail service.
+	 */
+	@PostConstruct
+	protected void init() {
+		parseRecipientsString();
+		parseAdditionalPropertiesString();
+		checkConnection();
 	}
 }

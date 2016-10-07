@@ -305,8 +305,9 @@ public class AlertDetailsWizardPage extends WizardPage {
 		}
 		String[] emails = emailText.split(System.getProperty("line.separator"));
 		for (int i = 0; i < emails.length; i++) {
-			if (!StringUtils.isValidEmailAddress(emails[i].trim())) {
-				return new Pair<Integer, String>(i + 1, emails[i]);
+			String address = emails[i].trim();
+			if (!address.isEmpty() && !StringUtils.isValidEmailAddress(address)) {
+				return new Pair<Integer, String>(i + 1, address);
 			}
 		}
 
@@ -349,7 +350,10 @@ public class AlertDetailsWizardPage extends WizardPage {
 		String[] array = emailsBox.getText().split(System.getProperty("line.separator"));
 		List<String> emailAddresses = new ArrayList<>();
 		for (String element : array) {
-			emailAddresses.add(element.trim());
+			String address = element.trim();
+			if (!address.isEmpty()) {
+				emailAddresses.add(element.trim());
+			}
 		}
 		return emailAddresses;
 	}
