@@ -56,8 +56,7 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 	 * Description text for the metric input fields.
 	 */
 	private static final String METRIC_INFO_TEXT = "Specify the target metric on which this alerting rule shall be applied.\n"
-			+ "A metric is determined by the name of the measurement in the corresponding influxDB\n"
-			+ "and the field name.";
+			+ "A metric is determined by the name of the measurement in the corresponding influxDB and the field name.";
 
 	/**
 	 * Description text for the tags input fields.
@@ -263,7 +262,7 @@ public class AlertSourceDefinitionWizardPage extends WizardPage {
 			return;
 		}
 
-		if (alreadyExists(getName())) {
+		if (alreadyExists(getAlertingDefinitionName())) {
 			setMessage("An alert definition with this name already exists!", ERROR);
 			return;
 		}

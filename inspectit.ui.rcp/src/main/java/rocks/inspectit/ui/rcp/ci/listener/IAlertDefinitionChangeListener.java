@@ -33,7 +33,7 @@ public interface IAlertDefinitionChangeListener extends EventListener {
 	void alertDefinitionUpdated(AlertingDefinition alertDefinition, CmrRepositoryDefinition repositoryDefinition);
 
 	/**
-	 * Notifies that an {@link AlertingDefinition} has been updated.
+	 * Notifies that an {@link AlertingDefinition} has been deleted.
 	 *
 	 * @param alertDefinition
 	 *            deleted {@link AlertingDefinition}.

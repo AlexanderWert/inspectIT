@@ -154,7 +154,7 @@ public class StorageInvocationDataAccessService extends AbstractStorageService<I
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<InvocationSequenceData> getInvocationSequenceOverview(long platformId, String alertId, int limit, ResultComparator<InvocationSequenceData> resultComparator) {
+	public List<InvocationSequenceData> getInvocationSequenceOverview(String alertId, int limit, ResultComparator<InvocationSequenceData> resultComparator) {
 		throw new UnsupportedOperationException();
 	}
 }

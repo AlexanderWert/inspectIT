@@ -6,9 +6,8 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 
 import rocks.inspectit.shared.cs.ci.AlertingDefinition;
-import rocks.inspectit.ui.rcp.InspectIT;
-import rocks.inspectit.ui.rcp.InspectITImages;
 import rocks.inspectit.ui.rcp.editor.viewers.StyledCellIndexLabelProvider;
+import rocks.inspectit.ui.rcp.formatter.ImageFormatter;
 import rocks.inspectit.ui.rcp.provider.IAlertDefinitionProvider;
 
 /**
@@ -60,7 +59,7 @@ public class AlertLabelProvider extends StyledCellIndexLabelProvider {
 		if (element instanceof IAlertDefinitionProvider) {
 			switch (index) {
 			case 0:
-				return InspectIT.getDefault().getImage(InspectITImages.IMG_ALARM);
+				return ImageFormatter.getAlertImage();
 			default:
 				return super.getColumnImage(element, index);
 			}

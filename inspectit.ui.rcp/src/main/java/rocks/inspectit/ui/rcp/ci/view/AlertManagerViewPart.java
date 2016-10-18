@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPartSite;
@@ -16,8 +17,8 @@ import org.eclipse.ui.part.ViewPart;
 
 import rocks.inspectit.shared.cs.ci.AlertingDefinition;
 import rocks.inspectit.ui.rcp.InspectIT;
-import rocks.inspectit.ui.rcp.ci.handler.EditAlertDefinitionHandler;
 import rocks.inspectit.ui.rcp.ci.listener.IAlertDefinitionChangeListener;
+import rocks.inspectit.ui.rcp.ci.wizard.EditAlertDefinitionWizard;
 import rocks.inspectit.ui.rcp.model.ci.AlertDefinitionLeaf;
 import rocks.inspectit.ui.rcp.repository.CmrRepositoryDefinition;
 import rocks.inspectit.ui.rcp.repository.CmrRepositoryDefinition.OnlineStatus;
@@ -97,7 +98,7 @@ public class AlertManagerViewPart extends ViewPart implements IRefreshableView {
 		/**
 		 * A list of {@link AlertDefinitionLeaf}s displayed in this view.
 		 */
-		private List<AlertDefinitionLeaf> alertDefinitions;
+		private List<AlertDefinitionLeaf> alertDefinitions = new ArrayList<>();
 
 		/**
 		 * Menu id.
@@ -144,11 +145,11 @@ public class AlertManagerViewPart extends ViewPart implements IRefreshableView {
 		 */
 		@Override
 		protected void updateContent() {
-			getAlertDefinitions().clear();
+			alertDefinitions.clear();
 			if ((null != displayedCmrRepositoryDefinition) && (displayedCmrRepositoryDefinition.getOnlineStatus() == OnlineStatus.ONLINE)) {
-				List<AlertingDefinition> alertDefinitions = displayedCmrRepositoryDefinition.getConfigurationInterfaceService().getAlertingDefinitions();
-				for (AlertingDefinition alertDef : alertDefinitions) {
-					getAlertDefinitions().add(new AlertDefinitionLeaf(alertDef, displayedCmrRepositoryDefinition));
+				List<AlertingDefinition> cmrAlertDefinitions = displayedCmrRepositoryDefinition.getConfigurationInterfaceService().getAlertingDefinitions();
+				for (AlertingDefinition alertDef : cmrAlertDefinitions) {
+					alertDefinitions.add(new AlertDefinitionLeaf(alertDef, displayedCmrRepositoryDefinition));
 				}
 			}
 		}
@@ -158,7 +159,7 @@ public class AlertManagerViewPart extends ViewPart implements IRefreshableView {
 		 */
 		@Override
 		protected List<?> getTableInput() {
-			return getAlertDefinitions();
+			return alertDefinitions;
 		}
 
 		/**
@@ -197,21 +198,12 @@ public class AlertManagerViewPart extends ViewPart implements IRefreshableView {
 				@Override
 				public void doubleClick(DoubleClickEvent event) {
 					StructuredSelection selection = (StructuredSelection) event.getSelection();
-					EditAlertDefinitionHandler.openEditWizard(selection, getWorkbenchSite().getWorkbenchWindow().getWorkbench(), getWorkbenchSite().getShell());
+					EditAlertDefinitionWizard wizard = new EditAlertDefinitionWizard();
+					wizard.init(getWorkbenchSite().getWorkbenchWindow().getWorkbench(), selection);
+					WizardDialog wizardDialog = new WizardDialog(getWorkbenchSite().getShell(), wizard);
+					wizardDialog.open();
 				}
 			};
-		}
-
-		/**
-		 * Gets {@link #alertDefinitions}.
-		 *
-		 * @return {@link #alertDefinitions}
-		 */
-		private List<AlertDefinitionLeaf> getAlertDefinitions() {
-			if (null == alertDefinitions) {
-				alertDefinitions = new ArrayList<>();
-			}
-			return alertDefinitions;
 		}
 
 		/**

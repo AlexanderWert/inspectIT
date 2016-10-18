@@ -83,7 +83,17 @@ public enum AlertingDefinitionErrorCodeEnum implements IErrorCode {
 	/**
 	 * The id is null.
 	 */
-	MISSING_ID("The id of the alerting definition is null.", "The alerting definition was possibly not created by the configuration interface manager.", null);
+	MISSING_ID("The id of the alerting definition is null.", "The alerting definition was possibly not created by the configuration interface manager.", null),
+
+	/**
+	 * Database offline.
+	 */
+	DATABASE_OFFLINE("The timeseries database is offline.", "Either the connection settings are wrong or the timeseries database is not running.", null),
+
+	/**
+	 * Unknown alert id.
+	 */
+	UNKNOWN_ALERT_ID("The given alert id is unknown.", "Either the alert id has expired or is invalid (has a typo).", null);
 
 	/**
 	 * Name of the component.

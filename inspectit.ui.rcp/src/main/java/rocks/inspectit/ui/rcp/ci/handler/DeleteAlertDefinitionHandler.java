@@ -22,7 +22,7 @@ import org.eclipse.ui.progress.IProgressConstants;
 
 import rocks.inspectit.shared.cs.ci.AlertingDefinition;
 import rocks.inspectit.ui.rcp.InspectIT;
-import rocks.inspectit.ui.rcp.InspectITImages;
+import rocks.inspectit.ui.rcp.formatter.ImageFormatter;
 import rocks.inspectit.ui.rcp.provider.IAlertDefinitionProvider;
 import rocks.inspectit.ui.rcp.repository.CmrRepositoryDefinition;
 import rocks.inspectit.ui.rcp.repository.CmrRepositoryDefinition.OnlineStatus;
@@ -90,7 +90,7 @@ public class DeleteAlertDefinitionHandler extends AbstractHandler implements IHa
 				}
 			};
 			deleteAlertDefinitionJob.setUser(true);
-			deleteAlertDefinitionJob.setProperty(IProgressConstants.ICON_PROPERTY, InspectIT.getDefault().getImageDescriptor(InspectITImages.IMG_ALARM));
+			deleteAlertDefinitionJob.setProperty(IProgressConstants.ICON_PROPERTY, ImageFormatter.getAlertImage());
 			deleteAlertDefinitionJob.schedule();
 		}
 

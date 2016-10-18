@@ -2,7 +2,6 @@ package rocks.inspectit.server.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -13,14 +12,18 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import rocks.inspectit.server.alerting.BusinessTransactionsAlertRegistry;
+import rocks.inspectit.server.alerting.Alert;
+import rocks.inspectit.server.alerting.AlertRegistry;
 import rocks.inspectit.server.dao.InvocationDataDao;
 import rocks.inspectit.server.influx.dao.IInfluxDBDao;
+import rocks.inspectit.server.influx.dao.InfluxQueryFactory;
 import rocks.inspectit.server.influx.util.QueryResultWrapper;
 import rocks.inspectit.server.spring.aop.MethodLog;
 import rocks.inspectit.shared.all.cmr.service.ICachedDataService;
 import rocks.inspectit.shared.all.communication.comparator.ResultComparator;
 import rocks.inspectit.shared.all.communication.data.InvocationSequenceData;
+import rocks.inspectit.shared.all.exception.BusinessException;
+import rocks.inspectit.shared.all.exception.enumeration.AlertingDefinitionErrorCodeEnum;
 import rocks.inspectit.shared.all.spring.logger.Log;
 import rocks.inspectit.shared.cs.cmr.service.IInvocationDataAccessService;
 
@@ -51,7 +54,7 @@ public class InvocationDataAccessService implements IInvocationDataAccessService
 	 * The alert registry for business transaction alerts.
 	 */
 	@Autowired
-	private BusinessTransactionsAlertRegistry alertRegistry;
+	private AlertRegistry alertRegistry;
 
 	/**
 	 * DAO for the influxDB data.
@@ -152,18 +155,16 @@ public class InvocationDataAccessService implements IInvocationDataAccessService
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<InvocationSequenceData> getInvocationSequenceOverview(long platformId, String alertId, int limit, ResultComparator<InvocationSequenceData> resultComparator) {
+	public List<InvocationSequenceData> getInvocationSequenceOverview(String alertId, int limit, ResultComparator<InvocationSequenceData> resultComparator) throws BusinessException {
 		if (!influxDBDao.isOnline()) {
-			log.warn("Was not able to retrieve invocation sequences for the given alert. InfluxDB DAO is not connected to the influxDB instance!");
-			return Collections.emptyList();
+			throw new BusinessException("Retrieving invocation sequences for alert with id '" + alertId + "'", AlertingDefinitionErrorCodeEnum.DATABASE_OFFLINE);
+		}
+		Alert alert = alertRegistry.getAlert(alertId);
+		if (null == alert) {
+			throw new BusinessException("Retrieving invocation sequences for alert with id '" + alertId + "'", AlertingDefinitionErrorCodeEnum.UNKNOWN_ALERT_ID);
 		}
 
-		String influxDbQuery = alertRegistry.createInfluxDBQueryForAlert(alertId, platformId);
-		if (null == influxDbQuery) {
-			log.warn("Was not able to retrieve invocation sequences for the given alert. The alert id '" + alertId + "' is unknown or has been evicted!");
-			return Collections.emptyList();
-		}
-
+		String influxDbQuery = InfluxQueryFactory.buildTraceIdForAlertQuery(alert);
 		QueryResult queryResult = influxDBDao.query(influxDbQuery);
 		QueryResultWrapper resultWrapper = new QueryResultWrapper(queryResult);
 
@@ -173,7 +174,7 @@ public class InvocationDataAccessService implements IInvocationDataAccessService
 			invocationSequenceIds.add(id);
 		}
 
-		return getInvocationSequenceOverview(platformId, invocationSequenceIds, limit, resultComparator);
+		return getInvocationSequenceOverview(0, invocationSequenceIds, limit, resultComparator);
 	}
 
 	/**

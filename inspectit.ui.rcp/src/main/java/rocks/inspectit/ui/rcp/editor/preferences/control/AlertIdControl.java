@@ -17,24 +17,41 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 
 import rocks.inspectit.ui.rcp.InspectIT;
-import rocks.inspectit.ui.rcp.editor.inputdefinition.InputDefinition;
 import rocks.inspectit.ui.rcp.editor.preferences.IPreferenceGroup;
 import rocks.inspectit.ui.rcp.editor.preferences.IPreferencePanel;
 import rocks.inspectit.ui.rcp.editor.preferences.PreferenceEventCallback;
 import rocks.inspectit.ui.rcp.editor.preferences.PreferenceId;
 import rocks.inspectit.ui.rcp.editor.root.FormRootEditor;
 
+/**
+ * Control for editing the alert id.
+ * 
+ * @author Alexander Wert
+ *
+ */
 public class AlertIdControl extends AbstractPreferenceControl implements IPreferenceControl, PreferenceEventCallback {
 
+	/**
+	 * Input field for alert id.
+	 */
 	private Text inputField;
 
-	private String initialValue;
 	/**
-	 * @param preferencePanel
+	 * The initial alert id.
 	 */
-	public AlertIdControl(IPreferencePanel preferencePanel, InputDefinition inputDefinition) {
+	private String alertId;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param preferencePanel
+	 *            Preference panel.
+	 * @param alertId
+	 *            The alert id.
+	 */
+	public AlertIdControl(IPreferencePanel preferencePanel, String alertId) {
 		super(preferencePanel);
-		initialValue = inputDefinition.getIdDefinition().getAlertId();
+		this.alertId = alertId;
 	}
 
 	/**
@@ -81,7 +98,7 @@ public class AlertIdControl extends AbstractPreferenceControl implements IPrefer
 		};
 		inputField.addSelectionListener(selectionListener);
 
-		inputField.setText(initialValue);
+		inputField.setText(alertId);
 
 		getPreferencePanel().registerCallback(this);
 

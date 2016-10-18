@@ -8,6 +8,7 @@ import rocks.inspectit.shared.all.cmr.service.ServiceExporterType;
 import rocks.inspectit.shared.all.cmr.service.ServiceInterface;
 import rocks.inspectit.shared.all.communication.comparator.ResultComparator;
 import rocks.inspectit.shared.all.communication.data.InvocationSequenceData;
+import rocks.inspectit.shared.all.exception.BusinessException;
 
 /**
  * Service interface which defines the methods to retrieve data objects based on the invocation
@@ -161,8 +162,6 @@ public interface IInvocationDataAccessService {
 	 * associations to other objects. Thus this list can be used to get an overview of the available
 	 * invocation sequences. The limit defines the size of the list.
 	 *
-	 * @param platformId
-	 *            The ID of the platform.
 	 * @param alertId
 	 *            The ID of the alert the invocation sequences belong to.
 	 * @param limit
@@ -171,7 +170,9 @@ public interface IInvocationDataAccessService {
 	 *            Comparator that will be used to sort the results. Can be <code>null</code> and in
 	 *            that case no sorting will be done.
 	 * @return Returns the list of invocation sequences.
+	 * @throws BusinessException
+	 *             If data cannot be retrieved.
 	 */
-	List<InvocationSequenceData> getInvocationSequenceOverview(long platformId, String alertId, int limit, ResultComparator<InvocationSequenceData> resultComparator);
+	List<InvocationSequenceData> getInvocationSequenceOverview(String alertId, int limit, ResultComparator<InvocationSequenceData> resultComparator) throws BusinessException;
 
 }

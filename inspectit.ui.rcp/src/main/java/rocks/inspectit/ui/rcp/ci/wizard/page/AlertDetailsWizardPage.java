@@ -6,22 +6,13 @@ import java.util.List;
 import org.apache.commons.lang.math.NumberUtils;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.Bullet;
-import org.eclipse.swt.custom.LineStyleEvent;
-import org.eclipse.swt.custom.LineStyleListener;
-import org.eclipse.swt.custom.ST;
-import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.swt.graphics.GlyphMetrics;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -33,6 +24,7 @@ import rocks.inspectit.shared.all.util.StringUtils;
 import rocks.inspectit.shared.cs.ci.AlertingDefinition.ThresholdType;
 import rocks.inspectit.ui.rcp.InspectIT;
 import rocks.inspectit.ui.rcp.InspectITImages;
+import rocks.inspectit.ui.rcp.util.LineNumbersStyleListener;
 
 /**
  * Wizard Page for the definition of the alerting details.
@@ -256,27 +248,7 @@ public class AlertDetailsWizardPage extends WizardPage {
 			}
 		});
 
-		emailsBox.addLineStyleListener(new LineStyleListener() {
-			@Override
-			public void lineGetStyle(LineStyleEvent event) {
-				StyleRange range = new StyleRange();
-				range.foreground = Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
-				int maxNumLine = emailsBox.getLineCount();
-				int bulletLength = Integer.toString(maxNumLine).length();
-				// right padding
-				int widthBullet = ((bulletLength + 1) * emailsBox.getLineHeight()) / 2;
-				range.metrics = new GlyphMetrics(0, 0, widthBullet);
-				event.bullet = new Bullet(ST.BULLET_TEXT, range);
-				event.bullet.text = String.format("%" + bulletLength + "s", emailsBox.getLineAtOffset(event.lineOffset) + 1);
-			}
-		});
-		emailsBox.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				// redraw line numbers
-				emailsBox.redraw();
-			}
-		});
+		LineNumbersStyleListener.apply(emailsBox);
 
 		Listener pageCompletionListener = new Listener() {
 			@Override
@@ -323,18 +295,13 @@ public class AlertDetailsWizardPage extends WizardPage {
 	 *         <code>null</code>.
 	 */
 	private Pair<Integer, String> checkEmailText() {
-		String emailText = emailsBox.getText();
-		if (emailText.isEmpty()) {
-			return null;
-		}
-		String[] emails = emailText.split(System.getProperty("line.separator"));
-		for (int i = 0; i < emails.length; i++) {
-			String address = emails[i].trim();
+		int i = 0;
+		for (String address : getEmailAddresses()) {
 			if (!address.isEmpty() && !StringUtils.isValidEmailAddress(address)) {
 				return new Pair<Integer, String>(i + 1, address);
 			}
+			i++;
 		}
-
 		return null;
 	}
 

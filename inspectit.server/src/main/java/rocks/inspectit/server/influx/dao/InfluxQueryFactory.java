@@ -61,24 +61,20 @@ public final class InfluxQueryFactory {
 	 *
 	 * @param alert
 	 *            the alert to retrieve the invocation IDs for.
-	 * @param agentId
-	 *            the identifier of the agent for which the invocation sequences shall be retrieved.
 	 * @return Returns the query string.
 	 */
-	public static String buildTraceIdForAlertQuery(Alert alert, long agentId) {
+	public static String buildTraceIdForAlertQuery(Alert alert) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SELECT \"").append(Series.BusinessTransaction.FIELD_TRACE_ID).append("\" FROM \"").append(Series.BusinessTransaction.NAME);
-		builder.append("\" WHERE \"").append(Series.BusinessTransaction.TAG_AGENT_ID).append("\" = '").append(String.valueOf(agentId)).append('\'');
-		for (Entry<String, String> entry : alert.getAlertingDefinition().getTags().entrySet()) {
-			builder.append(" AND \"").append(entry.getKey()).append("\" = '").append(entry.getValue()).append('\'');
-		}
-
-		builder.append(" AND time >= ").append(alert.getStartTimestamp()).append("ms");
+		builder.append("\" WHERE \"");
+		builder.append(" time >= ").append(alert.getStartTimestamp()).append("ms");
 		if (alert.getStopTimestamp() >= 0) {
 			builder.append(" AND time < ").append(alert.getStopTimestamp()).append("ms");
 		}
+		for (Entry<String, String> entry : alert.getAlertingDefinition().getTags().entrySet()) {
+			builder.append(" AND \"").append(entry.getKey()).append("\" = '").append(entry.getValue()).append('\'');
+		}
 		builder.append(" AND \"").append(Series.BusinessTransaction.FIELD_DURATION).append("\" >= ").append(alert.getAlertingDefinition().getThreshold());
-
 		return builder.toString();
 	}
 }

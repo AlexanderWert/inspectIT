@@ -39,7 +39,6 @@ public class InfluxQueryFactoryTest extends TestBase {
 		long stopTime = 123456789L;
 		String alertDefName = "MyAlert";
 		double threshold = 100.1;
-		long agentId = 123;
 
 		@BeforeMethod
 		public void init() {
@@ -52,10 +51,9 @@ public class InfluxQueryFactoryTest extends TestBase {
 
 		@Test
 		public void queryForNotFinalized() {
-			String query = InfluxQueryFactory.buildTraceIdForAlertQuery(new Alert(alertingDefinition, time), agentId);
+			String query = InfluxQueryFactory.buildTraceIdForAlertQuery(new Alert(alertingDefinition, time));
 
 			assertThat(query, containsString("SELECT \"" + Series.BusinessTransaction.FIELD_TRACE_ID + "\" FROM \"" + Series.BusinessTransaction.NAME + "\""));
-			assertThat(query, containsString("\"agentId\" = '" + agentId + "'"));
 			assertThat(query, containsString("time >= " + time));
 			assertThat(query, containsString("\"duration\" >= " + threshold));
 			assertThat(query, not(containsString("time < " + stopTime)));
@@ -63,10 +61,9 @@ public class InfluxQueryFactoryTest extends TestBase {
 
 		@Test
 		public void queryForFinalized() {
-			String query = InfluxQueryFactory.buildTraceIdForAlertQuery(new Alert(alertingDefinition, time, stopTime), agentId);
+			String query = InfluxQueryFactory.buildTraceIdForAlertQuery(new Alert(alertingDefinition, time, stopTime));
 
 			assertThat(query, containsString("SELECT \"" + Series.BusinessTransaction.FIELD_TRACE_ID + "\" FROM \"" + Series.BusinessTransaction.NAME + "\""));
-			assertThat(query, containsString("\"agentId\" = '" + agentId + "'"));
 			assertThat(query, containsString("time >= " + time));
 			assertThat(query, containsString("\"duration\" >= " + threshold));
 			assertThat(query, containsString("time < " + stopTime));
@@ -81,10 +78,9 @@ public class InfluxQueryFactoryTest extends TestBase {
 			alertingDefinition.putTag(key1, value1);
 			alertingDefinition.putTag(key2, value2);
 
-			String query = InfluxQueryFactory.buildTraceIdForAlertQuery(new Alert(alertingDefinition, time), agentId);
+			String query = InfluxQueryFactory.buildTraceIdForAlertQuery(new Alert(alertingDefinition, time));
 
 			assertThat(query, containsString("SELECT \"" + Series.BusinessTransaction.FIELD_TRACE_ID + "\" FROM \"" + Series.BusinessTransaction.NAME + "\""));
-			assertThat(query, containsString("\"agentId\" = '" + agentId + "'"));
 			assertThat(query, containsString("time >= " + time));
 			assertThat(query, not(containsString("time < " + stopTime)));
 			assertThat(query, containsString("\"duration\" >= " + threshold));
@@ -94,7 +90,7 @@ public class InfluxQueryFactoryTest extends TestBase {
 
 		@Test(expectedExceptions = { NullPointerException.class })
 		public void queryForInvalidAlertId() {
-			InfluxQueryFactory.buildTraceIdForAlertQuery(null, agentId);
+			InfluxQueryFactory.buildTraceIdForAlertQuery(null);
 		}
 	}
 

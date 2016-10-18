@@ -1,10 +1,12 @@
 package rocks.inspectit.server.alerting;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import rocks.inspectit.server.alerting.util.AlertingUtils;
-import rocks.inspectit.server.influx.dao.InfluxQueryFactory;
 import rocks.inspectit.shared.all.spring.logger.Log;
 import rocks.inspectit.shared.all.util.FifoMap;
 
@@ -15,7 +17,7 @@ import rocks.inspectit.shared.all.util.FifoMap;
  *
  */
 @Component
-public class BusinessTransactionsAlertRegistry {
+public class AlertRegistry {
 	/**
 	 * The capacity of the registry buffer.
 	 */
@@ -36,7 +38,8 @@ public class BusinessTransactionsAlertRegistry {
 	 *
 	 * @param alertId
 	 *            the alert identifier.
-	 * @return Returns the {@link Alert} for the given id.
+	 * @return Returns the {@link Alert} for the given id or <code>null</code> if Alert for the
+	 *         given id cannot be found.
 	 */
 	public Alert getAlert(String alertId) {
 		return registry.get(alertId);
@@ -50,32 +53,30 @@ public class BusinessTransactionsAlertRegistry {
 	 *            the {@link Alert} to register
 	 */
 	public void registerAlert(Alert alert) {
-		if (!AlertingUtils.isBusinessTransactionAlert(alert.getAlertingDefinition())) {
-			log.warn("Alerts can be only registered for business transaction metrics in this registry!");
-			return;
-		}
-
 		registry.put(alert.getId(), alert);
 	}
 
 	/**
-	 * Creates a influxDB query for the given alert id. The query retrieves the ids of the
-	 * invocation sequences that constitute the alert.
-	 *
-	 * @param alertId
-	 *            the identifier of the alert
-	 * @param agentId
-	 *            the identifier of the agent for which the invocation sequences shall be retrieved.
-	 * @return Returns the query string.
+	 * Returns all alerts in the registry.
+	 * 
+	 * @return Returns all alerts in the registry.
 	 */
-	public String createInfluxDBQueryForAlert(String alertId, long agentId) {
-		Alert alert = registry.get(alertId);
-		if (null != alert) {
-			return InfluxQueryFactory.buildTraceIdForAlertQuery(alert, agentId);
-		} else {
-			log.warn("Could not retrieve influxDB query for alert with id " + alertId + "! Alert with that id does not exist (anymore).");
-			return null;
-		}
+	public List<Alert> getAlerts() {
+		return new ArrayList<>(registry.values());
 	}
 
+	/**
+	 * Returns all business transaction alerts in the registry.
+	 * 
+	 * @return Returns all business transaction alerts in the registry.
+	 */
+	public List<Alert> getBusinessTransactionAlerts() {
+		List<Alert> resultList = new ArrayList<>();
+		for (Alert alert : getAlerts()) {
+			if (AlertingUtils.isBusinessTransactionAlert(alert.getAlertingDefinition())) {
+				resultList.add(alert);
+			}
+		}
+		return resultList;
+	}
 }

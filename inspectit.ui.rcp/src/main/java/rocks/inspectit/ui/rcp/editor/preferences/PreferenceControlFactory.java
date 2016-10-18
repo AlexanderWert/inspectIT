@@ -4,6 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 import rocks.inspectit.ui.rcp.editor.inputdefinition.InputDefinition;
+import rocks.inspectit.ui.rcp.editor.inputdefinition.extra.InputDefinitionExtrasMarkerFactory;
 import rocks.inspectit.ui.rcp.editor.preferences.control.AlertIdControl;
 import rocks.inspectit.ui.rcp.editor.preferences.control.IPreferenceControl;
 import rocks.inspectit.ui.rcp.editor.preferences.control.SamplingRateControl;
@@ -50,9 +51,13 @@ public final class PreferenceControlFactory {
 			samplingRateControl.createControls(parent, toolkit);
 			return samplingRateControl;
 		case ALERT_INFO:
-			IPreferenceControl alertIdControl = new AlertIdControl(preferencePanel, inputDefinition);
-			alertIdControl.createControls(parent, toolkit);
-			return alertIdControl;
+			if (inputDefinition.hasInputDefinitionExtra(InputDefinitionExtrasMarkerFactory.ALERT_EXTRAS_MARKER)) {
+				IPreferenceControl alertIdControl = new AlertIdControl(preferencePanel, inputDefinition.getInputDefinitionExtra(InputDefinitionExtrasMarkerFactory.ALERT_EXTRAS_MARKER).getAlertId());
+				alertIdControl.createControls(parent, toolkit);
+				return alertIdControl;
+			} else {
+				throw new IllegalStateException("Input definition must have an ALERT_EXTRAS_MARKER!");
+			}
 		default:
 			return null;
 		}

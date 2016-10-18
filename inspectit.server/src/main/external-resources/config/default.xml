@@ -368,12 +368,8 @@
 					<isPositive />
 				</validators>
 			</long-property>
-			<string-property name="Username" default-value="" server-restart-required="false" logical-name="mail.smtp.user" advanced="false" description="The username to be used to connect to the SMTP server.">
-				<validators/>
-			</string-property>
-			<string-property name="Password" default-value="" server-restart-required="false" logical-name="mail.smtp.passwd" advanced="false" description="The password to be used to connect to the SMTP server.">
-				<validators/>
-			</string-property>
+			<string-property name="Username" default-value="" server-restart-required="false" logical-name="mail.smtp.user" advanced="false" description="The username to be used to connect to the SMTP server." />
+			<string-property name="Password" default-value="" server-restart-required="false" logical-name="mail.smtp.passwd" advanced="false" description="The password to be used to connect to the SMTP server." />
 			<string-property name="From E-Mail Address" default-value="sender@inspectit.rocks" server-restart-required="false" logical-name="mail.from" advanced="false" description="The e-mail address to be used as sender when e-mails are sent by inspectIT.">
 				<validators>
 					<isNotEmpty />
@@ -390,9 +386,7 @@
 					<isValidEMailList />
 				</validators>
 			</string-property>
-			<string-property name="SMTP Properties" default-value="" server-restart-required="false" logical-name="mail.smtp.properties" advanced="true" description="A comma separated list of additional SMTP properties that might be needed by certain SMTP servers.\n\nExample:\nmail.smtp.auth=true,mail.smtp.starttls.enable=true">
-				<validators />
-			</string-property>
+			<string-property name="SMTP Properties" default-value="" server-restart-required="false" logical-name="mail.smtp.properties" advanced="true" description="A comma separated list of additional SMTP properties that might be needed by certain SMTP servers.\n\nExample:\nmail.smtp.auth=true,mail.smtp.starttls.enable=true" />
 		</properties>
 	</section>
 	<section name="Alerting">

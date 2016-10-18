@@ -36,7 +36,6 @@ public class AlertDefinitionLeaf extends Leaf implements IAlertDefinitionProvide
 	 *            {@link CmrRepositoryDefinition}.
 	 */
 	public AlertDefinitionLeaf(AlertingDefinition alertDefinition, CmrRepositoryDefinition cmrRepositoryDefinition) {
-		super();
 		Assert.isNotNull(alertDefinition);
 		Assert.isNotNull(cmrRepositoryDefinition);
 		this.alertDefinition = alertDefinition;

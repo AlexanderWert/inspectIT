@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.testng.annotations.Test;
 
 import rocks.inspectit.server.alerting.Alert;
-import rocks.inspectit.server.alerting.BusinessTransactionsAlertRegistry;
+import rocks.inspectit.server.alerting.AlertRegistry;
 import rocks.inspectit.server.alerting.action.impl.EmailAlertAction;
 import rocks.inspectit.server.alerting.state.AlertingState;
 import rocks.inspectit.server.influx.constants.Series;
@@ -44,7 +44,7 @@ public class AlertingActionServiceTest extends TestBase {
 	Logger log;
 
 	@Mock
-	BusinessTransactionsAlertRegistry businessTransactionsAlertRegistry;
+	AlertRegistry businessTransactionsAlertRegistry;
 
 	@Spy
 	List<IAlertAction> actions = new ArrayList<>(Collections.singletonList((IAlertAction) emailAction));

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import rocks.inspectit.server.alerting.Alert;
-import rocks.inspectit.server.alerting.BusinessTransactionsAlertRegistry;
+import rocks.inspectit.server.alerting.AlertRegistry;
 import rocks.inspectit.server.alerting.state.AlertingState;
 import rocks.inspectit.server.alerting.util.AlertingUtils;
 import rocks.inspectit.shared.all.spring.logger.Log;
@@ -35,10 +35,10 @@ public class AlertingActionService {
 	private List<IAlertAction> alertActions;
 
 	/**
-	 * {@link BusinessTransactionsAlertRegistry} instance.
+	 * {@link AlertRegistry} instance.
 	 */
 	@Autowired
-	private BusinessTransactionsAlertRegistry businessTransactionsAlertRegistry;
+	private AlertRegistry businessTransactionsAlertRegistry;
 
 	/**
 	 * This method is called when a new alert is started.
