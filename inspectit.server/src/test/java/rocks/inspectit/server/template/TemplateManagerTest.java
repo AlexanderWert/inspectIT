@@ -58,7 +58,7 @@ public class TemplateManagerTest extends TestBase {
 	 */
 	public static class ResolveTemplate extends TemplateManagerTest {
 
-		@Test(priority = 0)
+		@Test
 		public void resolveSuccessful() throws IOException {
 			TemplateManager templateManager = new TemplateManager();
 			templateManager.templatesDir = Paths.get(TEST_FOLDER).toAbsolutePath().toFile();
@@ -75,7 +75,7 @@ public class TemplateManagerTest extends TestBase {
 			assertThat(resolved, endsWith(TEMPLATE_END));
 		}
 
-		@Test(priority = 1)
+		@Test
 		public void resolveWithMissingReplacement() throws IOException {
 			TemplateManager templateManager = new TemplateManager();
 			templateManager.templatesDir = Paths.get(TEST_FOLDER).toAbsolutePath().toFile();
@@ -91,7 +91,7 @@ public class TemplateManagerTest extends TestBase {
 			assertThat(resolved, endsWith(TEMPLATE_END));
 		}
 
-		@Test(priority = 2, expectedExceptions = { NoSuchFileException.class })
+		@Test(expectedExceptions = { NoSuchFileException.class })
 		public void resolveWithWrongTemplate() throws IOException {
 			TemplateManager templateManager = new TemplateManager();
 			templateManager.templatesDir = Paths.get(TEST_FOLDER).toAbsolutePath().toFile();

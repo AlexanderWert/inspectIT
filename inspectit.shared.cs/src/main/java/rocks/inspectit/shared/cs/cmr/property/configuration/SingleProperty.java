@@ -199,7 +199,7 @@ public abstract class SingleProperty<T> extends AbstractProperty {
 	 *            Value to check for.
 	 * @return {@link PropertyValidation} with errors if ones exist.
 	 */
-	public PropertyValidation validateForValue(T value) {
+	protected PropertyValidation validateForValue(T value) {
 		PropertyValidation propertyValidation = PropertyValidation.createFor(this);
 		if (CollectionUtils.isNotEmpty(validators)) {
 			for (ISinglePropertyValidator<? super T> validator : validators) {

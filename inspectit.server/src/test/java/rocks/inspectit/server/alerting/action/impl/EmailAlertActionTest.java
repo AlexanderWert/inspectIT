@@ -108,7 +108,7 @@ public class EmailAlertActionTest extends TestBase {
 	 * {@link EmailAlertAction#onStarting(rocks.inspectit.server.alerting.state.AlertingState, double)}
 	 * method.
 	 */
-	public static class OnStart extends EmailAlertActionTest {
+	public static class OnStarting extends EmailAlertActionTest {
 
 		@Test
 		@SuppressWarnings({ "unchecked", "rawtypes" })

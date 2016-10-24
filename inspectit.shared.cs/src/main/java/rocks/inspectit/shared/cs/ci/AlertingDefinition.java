@@ -440,8 +440,8 @@ public class AlertingDefinition extends AbstractCiData {
 	 */
 	@Override
 	public String toString() {
-		String thresholdString = threshold == null ? "" : " [threshold=" + getThreshold();
-		String timeRangeString = timeRange == null ? "" : ", timerange=" + getTimeRange(TimeUnit.MINUTES) + "]";
+		String thresholdString = threshold == null ? "" : " threshold=" + getThreshold();
+		String timeRangeString = timeRange == null ? "" : ", timerange=" + getTimeRange(TimeUnit.MINUTES);
 		return getName() + thresholdString + ", type=" + getThresholdType() + timeRangeString;
 	}
 

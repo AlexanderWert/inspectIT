@@ -1,5 +1,7 @@
 package rocks.inspectit.server.alerting;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -11,6 +13,7 @@ import java.util.Collections;
 
 import org.influxdb.dto.QueryResult;
 import org.influxdb.dto.QueryResult.Result;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.slf4j.Logger;
@@ -79,8 +82,12 @@ public class ThresholdCheckerTest extends TestBase {
 			when(influxDao.query(any(String.class))).thenReturn(new QueryResult());
 			when(alertingState.getAlertingDefinition()).thenReturn(alertingDefinition);
 
+			long startTime = System.currentTimeMillis();
 			thresholdChecker.checkThreshold(alertingState);
 
+			ArgumentCaptor<Long> lastChecktimeCaptor = ArgumentCaptor.forClass(Long.class);
+			verify(alertingState, times(1)).setLastCheckTime(lastChecktimeCaptor.capture());
+			assertThat(lastChecktimeCaptor.getValue(), greaterThanOrEqualTo(startTime));
 			verify(stateManager, times(1)).noData(alertingState);
 			verifyNoMoreInteractions(stateManager);
 		}
@@ -94,8 +101,12 @@ public class ThresholdCheckerTest extends TestBase {
 			when(alertingDefinition.getThreshold()).thenReturn(THRESHOLD);
 			when(alertingState.getAlertingDefinition()).thenReturn(alertingDefinition);
 
+			long startTime = System.currentTimeMillis();
 			thresholdChecker.checkThreshold(alertingState);
 
+			ArgumentCaptor<Long> lastChecktimeCaptor = ArgumentCaptor.forClass(Long.class);
+			verify(alertingState, times(1)).setLastCheckTime(lastChecktimeCaptor.capture());
+			assertThat(lastChecktimeCaptor.getValue(), greaterThanOrEqualTo(startTime));
 			verify(stateManager, times(1)).valid(alertingState);
 			verifyNoMoreInteractions(stateManager);
 		}
@@ -109,8 +120,12 @@ public class ThresholdCheckerTest extends TestBase {
 			when(alertingDefinition.getThreshold()).thenReturn(THRESHOLD);
 			when(alertingState.getAlertingDefinition()).thenReturn(alertingDefinition);
 
+			long startTime = System.currentTimeMillis();
 			thresholdChecker.checkThreshold(alertingState);
 
+			ArgumentCaptor<Long> lastChecktimeCaptor = ArgumentCaptor.forClass(Long.class);
+			verify(alertingState, times(1)).setLastCheckTime(lastChecktimeCaptor.capture());
+			assertThat(lastChecktimeCaptor.getValue(), greaterThanOrEqualTo(startTime));
 			verify(stateManager, times(1)).valid(alertingState);
 			verifyNoMoreInteractions(stateManager);
 		}
@@ -124,8 +139,12 @@ public class ThresholdCheckerTest extends TestBase {
 			when(alertingDefinition.getThreshold()).thenReturn(THRESHOLD);
 			when(alertingState.getAlertingDefinition()).thenReturn(alertingDefinition);
 
+			long startTime = System.currentTimeMillis();
 			thresholdChecker.checkThreshold(alertingState);
 
+			ArgumentCaptor<Long> lastChecktimeCaptor = ArgumentCaptor.forClass(Long.class);
+			verify(alertingState, times(1)).setLastCheckTime(lastChecktimeCaptor.capture());
+			assertThat(lastChecktimeCaptor.getValue(), greaterThanOrEqualTo(startTime));
 			verify(stateManager, times(1)).violation(alertingState, THRESHOLD + 1.0);
 			verifyNoMoreInteractions(stateManager);
 		}
@@ -139,8 +158,12 @@ public class ThresholdCheckerTest extends TestBase {
 			when(alertingDefinition.getThreshold()).thenReturn(THRESHOLD);
 			when(alertingState.getAlertingDefinition()).thenReturn(alertingDefinition);
 
+			long startTime = System.currentTimeMillis();
 			thresholdChecker.checkThreshold(alertingState);
 
+			ArgumentCaptor<Long> lastChecktimeCaptor = ArgumentCaptor.forClass(Long.class);
+			verify(alertingState, times(1)).setLastCheckTime(lastChecktimeCaptor.capture());
+			assertThat(lastChecktimeCaptor.getValue(), greaterThanOrEqualTo(startTime));
 			verify(stateManager, times(1)).violation(alertingState, THRESHOLD - 1.0);
 			verifyNoMoreInteractions(stateManager);
 		}

@@ -178,6 +178,7 @@ public class Alert {
 		final int prime = 31;
 		int result = 1;
 		result = (prime * result) + ((this.alertingDefinition == null) ? 0 : this.alertingDefinition.hashCode());
+		result = (prime * result) + ((this.closingReason == null) ? 0 : this.closingReason.hashCode());
 		result = (prime * result) + ((this.id == null) ? 0 : this.id.hashCode());
 		result = (prime * result) + (int) (this.startTimestamp ^ (this.startTimestamp >>> 32));
 		result = (prime * result) + (int) (this.stopTimestamp ^ (this.stopTimestamp >>> 32));
@@ -206,6 +207,9 @@ public class Alert {
 		} else if (!this.alertingDefinition.equals(other.alertingDefinition)) {
 			return false;
 		}
+		if (this.closingReason != other.closingReason) {
+			return false;
+		}
 		if (this.id == null) {
 			if (other.id != null) {
 				return false;
@@ -221,4 +225,5 @@ public class Alert {
 		}
 		return true;
 	}
+
 }

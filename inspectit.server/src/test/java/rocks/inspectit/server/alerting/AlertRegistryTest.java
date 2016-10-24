@@ -3,6 +3,7 @@ package rocks.inspectit.server.alerting;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 
 import org.mockito.InjectMocks;
@@ -49,30 +50,36 @@ public class AlertRegistryTest extends TestBase {
 		public void registerSuccessful() throws Exception {
 			when(alertingDefinition.getMeasurement()).thenReturn(Series.BusinessTransaction.NAME);
 			when(alertingDefinition.getField()).thenReturn(Series.BusinessTransaction.FIELD_DURATION);
+			when(testAlert.getAlertingDefinition()).thenReturn(alertingDefinition);
 
 			alertRegistry.registerAlert(testAlert);
 
 			assertThat(alertRegistry.getAlerts(), hasItem(testAlert));
+			assertThat(alertRegistry.getBusinessTransactionAlerts(), hasItem(testAlert));
 		}
 
 		@Test
 		public void registerNonBusinessTransactionAlertWrongField() throws Exception {
 			when(alertingDefinition.getMeasurement()).thenReturn(Series.BusinessTransaction.NAME);
 			when(alertingDefinition.getField()).thenReturn("utilization");
+			when(testAlert.getAlertingDefinition()).thenReturn(alertingDefinition);
 
 			alertRegistry.registerAlert(testAlert);
 
 			assertThat(alertRegistry.getAlerts(), hasItem(testAlert));
+			assertThat(alertRegistry.getBusinessTransactionAlerts(), not(hasItem(testAlert)));
 		}
 
 		@Test
 		public void registerNonBusinessTransactionAlertWrongMeasurement() throws Exception {
 			when(alertingDefinition.getMeasurement()).thenReturn("cpu");
 			when(alertingDefinition.getField()).thenReturn(Series.BusinessTransaction.FIELD_DURATION);
+			when(testAlert.getAlertingDefinition()).thenReturn(alertingDefinition);
 
 			alertRegistry.registerAlert(testAlert);
 
 			assertThat(alertRegistry.getAlerts(), hasItem(testAlert));
+			assertThat(alertRegistry.getBusinessTransactionAlerts(), not(hasItem(testAlert)));
 		}
 
 		@Test(expectedExceptions = { NullPointerException.class })

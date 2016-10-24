@@ -56,7 +56,7 @@ public class StringPropertyControl extends AbstractPropertyControl<StringPropert
 			@Override
 			public void focusLost(FocusEvent e) {
 				String value = text.getText();
-				if (value.isEmpty() && property.validateForValue(value).hasErrors()) {
+				if (value.isEmpty() && (null == StringPropertyControl.super.propertyUpdate)) {
 					text.setText(getLastCorrectValue());
 				}
 			}
