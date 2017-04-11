@@ -22,7 +22,10 @@ import rocks.inspectit.shared.cs.ci.business.impl.BusinessTransactionDefinition;
  */
 @Component
 public class BusinessTransactionPointBuilder extends DefaultDataPointBuilder<InvocationSequenceData> {
-
+	/**
+	 * If country code is not available this value will be used.
+	 */
+	public static final String COUNTRY_CODE_NOT_AVAILABLE = "N/A";
 	/**
 	 * {@inheritDoc}
 	 */
@@ -48,6 +51,15 @@ public class BusinessTransactionPointBuilder extends DefaultDataPointBuilder<Inv
 
 		String businessTxName = BusinessTransactionDefinition.UNKNOWN_BUSINESS_TX;
 		String applicationName = ApplicationDefinition.UNKNOWN_APP;
+		String countryCode = COUNTRY_CODE_NOT_AVAILABLE;
+
+		if (InvocationSequenceDataHelper.hasHttpTimerData(data)) {
+			String remoteAddress = ((HttpTimerData) data.getTimerData()).getHttpInfo().getRemoteAddress();
+			if (null != remoteAddress) {
+				// TODO: use Marius' code
+				countryCode = "NICE COUNTRY CODE FROM REMOTEADRESS";
+			}
+		}
 
 		BusinessTransactionData businessTx = cachedDataService.getBusinessTransactionForId(data.getApplicationId(), data.getBusinessTransactionId());
 		if (null != businessTx) {
@@ -57,6 +69,7 @@ public class BusinessTransactionPointBuilder extends DefaultDataPointBuilder<Inv
 
 		builder.tag(Series.BusinessTransaction.TAG_APPLICATION_NAME, applicationName);
 		builder.tag(Series.BusinessTransaction.TAG_BUSINESS_TRANSACTION_NAME, businessTxName);
+		builder.tag(Series.BusinessTransaction.TAG_COUNTRY_CODE, countryCode);
 	}
 
 	/**

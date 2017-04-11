@@ -84,6 +84,12 @@ public class HttpInfo implements Sizeable, Serializable {
 	private String queryString;
 
 	/**
+	 * The remote address of the client.
+	 */
+	@Column
+	private String remoteAddress;
+
+	/**
 	 * The request method.
 	 */
 	private String requestMethod = UNDEFINED;
@@ -291,6 +297,25 @@ public class HttpInfo implements Sizeable, Serializable {
 	 */
 	public void setInspectItTaggingHeaderValue(String inspectItTaggingHeaderValue) {
 		this.inspectItTaggingHeaderValue = inspectItTaggingHeaderValue;
+	}
+
+	/**
+	 * Gets {@link #remoteAddress}.
+	 * 
+	 * @return {@link #remoteAddress}
+	 */
+	public String getRemoteAddress() {
+		return remoteAddress;
+	}
+
+	/**
+	 * Sets {@link #remoteAddress}.
+	 * 
+	 * @param remoteAddress
+	 *            New value for {@link #remoteAddress}
+	 */
+	public void setRemoteAddress(String remoteAddress) {
+		this.remoteAddress = remoteAddress;
 	}
 
 	/**
